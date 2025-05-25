@@ -1,0 +1,7 @@
+streamlit
+python-dotenv
+pypdf
+resend
+requests
+openai
+boto3
