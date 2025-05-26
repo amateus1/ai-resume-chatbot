@@ -117,5 +117,7 @@ if user_input:
 # Show chat history
 for user, bot in reversed(st.session_state.history):
     st.markdown(f"**🧑 You:** {user}")
-    st.markdown(f"**🤖 Al:** {bot}")
+#    st.markdown(f"**🤖 Al:** {bot}")
+    st.markdown("**🤖 Al:**")
+    st.markdown(bot, unsafe_allow_html=True)
 
