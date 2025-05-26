@@ -73,7 +73,7 @@ class Me:
         )
         bucket = os.getenv("S3_BUCKET")
 
-        # Load summary.txt
+        # Loads summary.txt
         summary_key = os.getenv("SUMMARY_KEY")
         summary_obj = s3.get_object(Bucket=bucket, Key=summary_key)
         self.summary = summary_obj['Body'].read().decode("utf-8")
