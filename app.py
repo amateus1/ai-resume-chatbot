@@ -7,7 +7,6 @@ st.set_page_config(
     layout="centered",
 )
 
-# Language selector UI
 language_options = {
     "English": {
         "title": "🤖 Meet Hernan 'Al' Mateus — AI Resume Agent",
@@ -48,7 +47,6 @@ language_options = {
     }
 }
 
-# Follow-up prompts to encourage further questions
 follow_ups = [
     "Tell me more about the tools used.",
     "What were the business outcomes?",
@@ -60,7 +58,6 @@ follow_ups = [
     "What’s a lesson learned from that project?"
 ]
 
-# Language logic
 selected_lang = st.selectbox("🌐 Language / 语言 / Idioma", list(language_options.keys()))
 ui = language_options[selected_lang]
 
@@ -70,21 +67,17 @@ if st.session_state.lang_prev != selected_lang:
     st.session_state.history = []
     st.session_state.lang_prev = selected_lang
 
-# Page header
 st.markdown(f"## {ui['title']}")
 st.markdown(ui["desc"])
 
-# Init bot
 me = Me()
 
-# Session setup
 if "history" not in st.session_state:
     st.session_state.history = []
 
 if "user_input" not in st.session_state:
     st.session_state.user_input = ""
 
-# Examples
 with st.expander("💡 Examples", expanded=True):
     cols = st.columns(2)
     for i, example in enumerate(ui["examples"]):
@@ -92,14 +85,12 @@ with st.expander("💡 Examples", expanded=True):
             if st.button(example):
                 st.session_state.user_input = example
 
-# Input box
 user_input = st.chat_input(ui["input_placeholder"])
 
 if st.session_state.user_input:
     user_input = st.session_state.user_input
     st.session_state.user_input = ""
 
-# Process response
 if user_input:
     display_input = user_input
     if selected_lang == "中文 (Chinese)":
@@ -114,10 +105,8 @@ if user_input:
     if st.button(f"💡 {suggested}"):
         st.session_state.user_input = suggested
 
-# Show chat history
 for user, bot in reversed(st.session_state.history):
     st.markdown(f"**🧑 You:** {user}")
-#    st.markdown(f"**🤖 Al:** {bot}")
     st.markdown("**🤖 Al:**")
     st.markdown(bot, unsafe_allow_html=True)
 
