@@ -107,7 +107,7 @@ with st.expander("💡 Examples", expanded=True):
                 st.session_state.user_input = prompt
 
 # Input
-user_input = st.text_input(ui["input_placeholder"])
+user_input = st.chat_input(ui["input_placeholder"])
 
 if st.session_state.user_input:
     user_input = st.session_state.user_input
