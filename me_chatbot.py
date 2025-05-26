@@ -2,12 +2,21 @@ import os
 import json
 import re
 import requests
+from io import BytesIO
+from functools import lru_cache
 from openai import OpenAI
 from dotenv import load_dotenv
 from pypdf import PdfReader
 import resend
 
 load_dotenv()
+
+def get_user_country():
+    try:
+        res = requests.get("https://ipinfo.io/json", timeout=3)
+        return res.json().get("country", "").lower()
+    except:
+        return os.getenv("USER_COUNTRY", "").lower()
 
 def call_openai(messages):
     client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
@@ -36,8 +45,12 @@ def call_deepseek(messages):
 class Me:
     def __init__(self):
         self.name = "Al Mateus"
-        self.linkedin = ""
-        self.summary = ""
+        self.linkedin, self.summary = self._load_resume()
+
+    @lru_cache(maxsize=1)
+    def _load_resume(self):
+        linkedin = ""
+        summary = ""
 
         if os.getenv("S3_BUCKET"):
             import boto3
@@ -51,20 +64,23 @@ class Me:
             summary_key = os.getenv("SUMMARY_KEY")
             linkedin_key = os.getenv("LINKEDIN_KEY")
 
-            self.summary = s3.get_object(Bucket=bucket, Key=summary_key)["Body"].read().decode("utf-8")
-            reader = PdfReader(s3.get_object(Bucket=bucket, Key=linkedin_key)["Body"])
+            summary = s3.get_object(Bucket=bucket, Key=summary_key)["Body"].read().decode("utf-8")
+            pdf_bytes = BytesIO(s3.get_object(Bucket=bucket, Key=linkedin_key)["Body"].read())
+            reader = PdfReader(pdf_bytes)
             for page in reader.pages:
                 text = page.extract_text()
                 if text:
-                    self.linkedin += text
+                    linkedin += text
         else:
             with open("me/summary.txt", "r", encoding="utf-8") as f:
-                self.summary = f.read()
+                summary = f.read()
             reader = PdfReader("me/linkedin.pdf")
             for page in reader.pages:
                 text = page.extract_text()
                 if text:
-                    self.linkedin += text
+                    linkedin += text
+
+        return linkedin, summary
 
     def system_prompt(self):
         return f"""
@@ -84,7 +100,7 @@ Your mission is to explain Hernan’s work, philosophy, and career as if *he* we
 - Lives with 5 cats and 2 dogs.
 - Loves Tesla racing, Thai food, and diving at night.
 - A Star Wars geek — don’t be afraid to reference Yoda if it fits.
-- Speaks English, Mandarin, and some Spanish.
+- Speaks English, Spanish,  and intermediate Mandarin.
 
 ## Summary
 {self.summary}
@@ -97,9 +113,8 @@ Your mission is to explain Hernan’s work, philosophy, and career as if *he* we
         messages = [{"role": "system", "content": self.system_prompt()}]
         messages.append({"role": "user", "content": message})
 
-        # Automatic switch: use DeepSeek for China or if OPENAI_API_KEY is unavailable
-        country = os.getenv("USER_COUNTRY", "").lower()
-        if country == "china" or not os.getenv("OPENAI_API_KEY"):
+        user_country = get_user_country()
+        if user_country == "cn" or not os.getenv("OPENAI_API_KEY"):
             return call_deepseek(messages)
         else:
             return call_openai(messages)
