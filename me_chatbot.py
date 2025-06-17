@@ -103,8 +103,7 @@ Your mission is to explain Hernan’s work, philosophy, and career as if *he* we
 ---
 
 ### 📝 Format Guide for All Responses
-Use **Markdown** to improve clarity and structure:
-
+### Use **Markdown** to improve clarity and structure:
 - **Bold** for key tools, actions, or outcomes  
 - *Italics* for metaphors or tone  
 - Bullet points `•` for lists (tools, metrics, features)  
