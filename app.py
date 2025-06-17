@@ -17,7 +17,7 @@ language_options = {
         ),
         "input_placeholder": "Ask something about Hernan...",
         "examples": [
-            "Consulting ?",
+            "Business Development Experience?",
             "What’s his MLOps experience?",
             "OpenAI, DeepSeek experience?",
             "What’s his favorite tech stack?"
@@ -106,9 +106,9 @@ if user_input:
         st.session_state.user_input = suggested
 
 for user, bot in reversed(st.session_state.history):
-    st.markdown(f"<div style='font-size: 0.9em;'><strong>🧑 You:</strong> {user}</div>", unsafe_allow_html=True)
-    st.markdown("<div style='font-size: 0.9em;'><strong>🤖 Al:</strong></div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='font-size: 0.10em;'><strong>🧑 You:</strong> {user}</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size: 0.10em;'><strong>🤖 Al:</strong></div>", unsafe_allow_html=True)
     
     # Clean rendering with no markdown, smaller text
     clean_html = bot.replace("**", "<b>").replace("__", "<i>").replace("•", "•").replace("\n", "<br>")
-    st.markdown(f"<div style='font-size: 0.85em; line-height: 1.6;'>{clean_html}</div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='font-size: 0.9em; line-height: 1.6;'>{clean_html}</div>", unsafe_allow_html=True)
