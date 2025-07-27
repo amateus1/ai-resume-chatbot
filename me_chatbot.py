@@ -138,22 +138,21 @@ Use this format on every answer — make it skimmable and useful.
             return call_openai(messages)
 
     def chat_stream(self, message):
-        messages = [{"role": "system", "content": self.system_prompt()}]
-        messages.append({"role": "user", "content": message})
+    messages = [{"role": "system", "content": self.system_prompt()}]
+    messages.append({"role": "user", "content": message})
 
-        user_country = get_user_country()
-        if user_country == "cn" or not os.getenv("OPENAI_API_KEY"):
-            # Stream not supported for DeepSeek yet; fall back to full response
-            yield call_deepseek(messages)
-        else:
-            client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-            response = client.chat.completions.create(
-                model="gpt-4o",
-                messages=messages,
-                stream=True
-            )
-            for chunk in response:
-                delta = chunk.choices[0].delta.content
-                if delta:
-                    yield delta
-    
+    user_country = get_user_country()
+    if user_country == "cn" or not os.getenv("OPENAI_API_KEY"):
+        # Stream not supported for DeepSeek — yield full response
+        yield call_deepseek(messages)
+    else:
+        client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        response = client.chat.completions.create(
+            model="gpt-4o",
+            messages=messages,
+            stream=True
+        )
+        for chunk in response:
+            # Only yield when content is present
+            if hasattr(chunk.choices[0].delta, "content") and chunk.choices[0].delta.content:
+                yield chunk.choices[0].delta.content
