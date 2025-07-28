@@ -55,7 +55,7 @@ st.markdown("""
 language_options = {
     "English": {
         "title": "🤖 Meet 'Al' Mateus — AI Resume Agent",
-        "desc": (
+        "desc": 
             "Welcome! I'm Al's digital twin — trained on his global career, Agile Product Management, Agentic LLM Engineering experience, MLOps mastery, "
             "love of Thai food, Star Wars, and GPT-powered systems. Ask me anything about his work or education, "
             "such as: (Certifications, LLM engineering projects, MLOps Tools in project experiene, career journey, or how to create an Agentic workforce).",
