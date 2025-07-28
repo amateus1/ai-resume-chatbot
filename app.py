@@ -55,28 +55,34 @@ st.markdown("""
 language_options = {
     "English": {
         "title": "🤖 Meet 'Al' Mateus — AI Resume Agent",
-        "desc": 
+        "desc": (
             "Welcome! I'm Al's digital twin — trained on his global career, Agile Product Management, Agentic LLM Engineering experience, MLOps mastery, "
             "love of Thai food, Star Wars, and GPT-powered systems. Ask me anything about his work or education, "
-            "such as: (Certifications, LLM engineering projects, MLOps Tools in project experiene, career journey, or how to create an Agentic workforce).",
-        "input_placeholder": "Ask something about Al's carrer  ..."
+            "such as: Certifications, LLM engineering projects, MLOps tools used in projects, career journey, or how to create an Agentic workforce."
+        ),
+        "input_placeholder": "Ask something about Al's career..."
     },
     "中文 (Chinese)": {
         "title": "🤖 认识 'Al' Mateus —— AI 简历助手",
-        "desc": 
-            "欢迎！我是 Al 的数字分身 —— 基于他在全球范围内的职业经历、敏捷产品管理、Agentic 大语言模型工程、MLOps 精通程度、 🧠🌏",
-            "对泰国美食、星球大战以及基于 GPT 的系统的热爱训练而成。你可以向我询问他在工作或教育方面的任何内容, ",
-            "比如：认证资质、LLM 工程项目、项目中使用的 MLOps 工具、职业发展历程，或者如何打造一个 Agentic 人工智能团队。",
+        "desc": (
+            "欢迎！我是 Al 的数字分身 —— 基于他在全球范围内的职业经历、敏捷产品管理、Agentic 大语言模型工程、MLOps 精通程度、 🧠🌏"
+            "对泰国美食、星球大战以及基于 GPT 的系统的热爱训练而成。你可以向我询问他在工作或教育方面的任何内容，"
+            "比如：认证资质、LLM 工程项目、项目中使用的 MLOps 工具、职业发展历程，或者如何打造一个 Agentic 人工智能团队。"
+        ),
         "input_placeholder": "请输入你想了解 Al 的内容..."
     },
     "Español": {
         "title": "🤖 Conoce a 'Al' Mateus — Asistente AI",
-        "desc": "Bienvenido! Soy el gemelo digital de Al — entrenado con base en su trayectoria profesional global, experiencia en",
-        "Gestión Ágil de Productos, Ingeniería de LLMs Agénticos, dominio de MLOps, amor por la comida tailandesa, Star Wars y ",
-        "sistemas potenciados por GPT."
-        "Pregúntame lo que quieras sobre su trabajo o formación, como por ejemplo: certificaciones, proyectos de ingeniería con LLMs,",
-        "herramientas de MLOps utilizadas en proyectos, trayectoria profesional o cómo crear una fuerza laboral agéntica. 🚀",
+        "desc": (
+            "¡Bienvenido! Soy el gemelo digital de Al — entrenado con base en su trayectoria profesional global, experiencia en Gestión Ágil de Productos, "
+            "Ingeniería de LLMs Agénticos, dominio de MLOps, amor por la comida tailandesa, Star Wars y sistemas potenciados por GPT. "
+            "Pregúntame lo que quieras sobre su trabajo o formación, como por ejemplo: certificaciones, proyectos de ingeniería con LLMs, "
+            "herramientas de MLOps utilizadas en proyectos, trayectoria profesional o cómo crear una fuerza laboral agéntica. 🚀"
+        ),
         "input_placeholder": "Haz una pregunta sobre Al..."
+    }
+}
+
     }
 }
 
