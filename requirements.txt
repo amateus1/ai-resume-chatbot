@@ -5,3 +5,4 @@ resend
 requests
 openai
 boto3
+streamlit-webrtc
