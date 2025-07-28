@@ -1,12 +1,57 @@
 import streamlit as st
-import random
+import time
 from me_chatbot import Me
 
+# 🌐 Layout
 st.set_page_config(
     page_title="Meet Hernan 'Al' Mateus — AI Resume Agent",
-    layout="centered",
+    layout="wide"
 )
 
+# 🎨 Style
+st.markdown("""
+    <style>
+    .main .block-container {
+        max-width: 1000px;
+        padding-top: 1.5rem;
+        padding-bottom: 2rem;
+        margin: auto;
+    }
+    h1, h2, h3, h4 {
+        font-size: 1.2rem !important;
+    }
+    p, li {
+        font-size: 0.95rem !important;
+        line-height: 1.6;
+    }
+    .message-container {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .user-bubble {
+        background-color: #eef6ff;
+        padding: 10px 16px;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        max-width: 85%;
+        text-align: right;
+        word-break: break-word;
+    }
+    .assistant-bubble {
+        background-color: #f8f8f8;
+        padding: 10px 16px;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        max-width: 85%;
+        text-align: left;
+        word-break: break-word;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# 🌍 Language options
 language_options = {
     "English": {
         "title": "🤖 Meet Hernan 'Al' Mateus — AI Resume Agent",
@@ -15,62 +60,30 @@ language_options = {
             "love of Thai food, Star Wars, and GPT-powered systems. Ask me anything about his work, "
             "LLMOps projects, career journey, or how to scale AI across 3 clouds and 9 countries 🌏"
         ),
-        "input_placeholder": "Ask something about Hernan...",
-        "examples": [
-            "Business Development Experience?",
-            "What’s his MLOps experience?",
-            "OpenAI, DeepSeek experience?",
-            "What’s his favorite tech stack?"
-        ]
+        "input_placeholder": "Ask something about Hernan..."
     },
     "中文 (Chinese)": {
         "title": "🤖 认识 Hernan 'Al' Mateus —— AI 简历助手",
         "desc": "我是 Hernan 的数字分身——欢迎咨询他的 AI 项目、技术战略或职业旅程 🧠🌏",
-        "input_placeholder": "请输入你想了解 Hernan 的内容...",
-        "examples": [
-            "他领导过哪些项目？",
-            "他有 MLOps 经验吗？",
-            "OpenAI、DeepSeek 的经验？",
-            "他最喜欢的技术栈是？"
-        ]
+        "input_placeholder": "请输入你想了解 Hernan 的内容..."
     },
     "Español": {
         "title": "🤖 Conoce a Hernan 'Al' Mateus — Asistente AI",
         "desc": "Soy el gemelo digital de Hernan — pregúntame sobre sus proyectos, trayectoria y pasión por la IA 🚀",
-        "input_placeholder": "Haz una pregunta sobre Hernan...",
-        "examples": [
-            "¿Qué proyectos ha liderado?",
-            "¿Tiene experiencia en MLOps?",
-            "¿Experiencia con OpenAI y DeepSeek?",
-            "¿Cuál es su stack favorito?"
-        ]
+        "input_placeholder": "Haz una pregunta sobre Hernan..."
     }
 }
 
-follow_ups = [
-    "Tell me more about the tools used.",
-    "What were the business outcomes?",
-    "Did this involve OpenAI or DeepSeek?",
-    "Was this done across multiple countries?",
-    "Can you show an example from healthcare?",
-    "How did DevSecOps play a role here?",
-    "Were any compliance standards involved?",
-    "What’s a lesson learned from that project?"
-]
-
+# 🌐 Language select
 selected_lang = st.selectbox("🌐 Language / 语言 / Idioma", list(language_options.keys()))
 ui = language_options[selected_lang]
 
+# 🧠 Session state
 if "lang_prev" not in st.session_state:
     st.session_state.lang_prev = selected_lang
 if st.session_state.lang_prev != selected_lang:
     st.session_state.history = []
     st.session_state.lang_prev = selected_lang
-
-st.markdown(f"## {ui['title']}")
-st.markdown(ui["desc"])
-
-me = Me()
 
 if "history" not in st.session_state:
     st.session_state.history = []
@@ -78,13 +91,31 @@ if "history" not in st.session_state:
 if "user_input" not in st.session_state:
     st.session_state.user_input = ""
 
-with st.expander("💡 Examples", expanded=True):
-    cols = st.columns(2)
-    for i, example in enumerate(ui["examples"]):
-        with cols[i % 2]:
-            if st.button(example):
-                st.session_state.user_input = example
+# 🤖 Load bot
+me = Me()
 
+# 🧢 Header
+st.markdown(f"## {ui['title']}")
+st.markdown(ui["desc"])
+
+# 💬 History rendering
+for user, bot in st.session_state.history:
+    st.markdown(
+        f"""
+        <div class="message-container">
+            <div class="user-bubble">{user}</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+    st.markdown(
+        f"""
+        <div class="assistant-bubble">{bot}</div>
+        """,
+        unsafe_allow_html=True
+    )
+
+# 🧾 Input box
 user_input = st.chat_input(ui["input_placeholder"])
 
 if st.session_state.user_input:
@@ -93,22 +124,40 @@ if st.session_state.user_input:
 
 if user_input:
     display_input = user_input
+
+    # 🌐 Multilingual Prompt Handling
     if selected_lang == "中文 (Chinese)":
         user_input = f"请用中文回答：{user_input}"
     elif selected_lang == "Español":
         user_input = f"Por favor responde en español: {user_input}"
 
+    # ✅ Right-aligned user bubble
+    st.markdown(
+        f"""
+        <div class="message-container">
+            <div class="user-bubble">{display_input}</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    # 🧠 Generate assistant response
     response = me.chat(user_input, [])
+
+    # 📡 Stream assistant response
+    stream_box = st.empty()
+    full_response = ""
+    for word in response.split():
+        full_response += word + " "
+        stream_box.markdown(
+            f"<div class='assistant-bubble'>{full_response}▌</div>",
+            unsafe_allow_html=True
+        )
+        time.sleep(0.03)
+    stream_box.markdown(
+        f"<div class='assistant-bubble'>{response}</div>",
+        unsafe_allow_html=True
+    )
+
+    # 💾 Save to history
     st.session_state.history.append((display_input, response))
-
-    suggested = random.choice(follow_ups)
-    if st.button(f"💡 {suggested}"):
-        st.session_state.user_input = suggested
-
-for user, bot in reversed(st.session_state.history):
-    st.markdown(f"<div style='font-size: 0.10em;'><strong>🧑 You:</strong> {user}</div>", unsafe_allow_html=True)
-    st.markdown("<div style='font-size: 0.10em;'><strong>🤖 Al:</strong></div>", unsafe_allow_html=True)
-    
-    # Clean rendering with no markdown, smaller text
-    clean_html = bot.replace("**", "<b>").replace("__", "<i>").replace("•", "•").replace("\n", "<br>")
-    st.markdown(f"<div style='font-size: 0.9em; line-height: 1.6;'>{clean_html}</div>", unsafe_allow_html=True)
