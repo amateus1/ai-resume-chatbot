@@ -141,7 +141,29 @@ if user_input:
     elif selected_lang == "Español":
         user_input = f"Por favor responde en español: {user_input}"
 
-    # ✅ Right-aligned user bubble
+    # 👉 Check for greeting trigger
+    if user_input.lower() in ["hello", "hi", "你好", "hola"]:
+        response = (
+            "👋 Hello there! I’m Hernan “Al” Mateus’ digital twin — your playful, insightful guide to all things "
+            "**Agentic AI, Agile Product Management**, and **MLOps wizardry**.\n\n"
+            "### 🤖 What can I do for you?\n"
+            "I'm built to help you understand Hernan’s:\n"
+            "• **Career path** — from leading Agile transformations to building autonomous AI systems\n"
+            "• **Engineering expertise** — including **CrewAI, LangGraph, LangChain, AutoGen**, and more\n"
+            "• **Project insights** — real-world stories, challenges, and results from finance, pharma, e-commerce, etc.\n"
+            "• **Fun stuff** — from Star Wars geek-outs to how he uses AI in everyday life\n\n"
+            "### 💬 Ask me about:\n"
+            "• Certifications or engineering projects\n"
+            "• MLOps tools used in production\n"
+            "• Building an Agentic AI team\n"
+            "• Or even *why GPT-4o is like the Millennium Falcon of LLMs* 🛸\n\n"
+            "Let’s dive in — what would you like to explore first?"
+        )
+    else:
+        # 🧠 Generate assistant response
+        response = me.chat(user_input, [])
+
+    # ✅ Display user message
     st.markdown(
         f"""
         <div class="message-container">
@@ -150,9 +172,6 @@ if user_input:
         """,
         unsafe_allow_html=True
     )
-
-    # 🧠 Generate assistant response
-    response = me.chat(user_input, [])
 
     # 📡 Stream assistant response
     stream_box = st.empty()
