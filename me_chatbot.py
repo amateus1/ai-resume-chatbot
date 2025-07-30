@@ -35,7 +35,7 @@ def call_deepseek(messages):
         "Content-Type": "application/json"
     }
     payload = {
-        "model": "deepseek-llm-7b-chat"
+        "model": "deepseek-llm-7b-chat",
         # "model": "deepseek-chat",
         "messages": messages,
         "temperature": 0.85
