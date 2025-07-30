@@ -144,10 +144,10 @@ if user_input:
     # 👉 Check for greeting trigger
     if user_input.lower() in ["hello", "hi", "你好", "hola"]:
         response = (
-            "👋 Hello there! I’m Hernan “Al” Mateus’ digital twin — your playful, insightful guide to all things "
+            "👋 Hello there! I’m “Al” Mateus’ digital twin — your playful, insightful guide to all things "
             "**Agentic AI, Agile Product Management**, and **MLOps wizardry**.\n\n"
             "### 🤖 What can I do for you?\n"
-            "I'm built to help you understand Hernan’s:\n"
+            "I'm built to help you understand Al’s:\n"
             "• **Career path** — from leading Agile transformations to building autonomous AI systems\n"
             "• **Engineering expertise** — including **CrewAI, LangGraph, LangChain, AutoGen**, and more\n"
             "• **Project insights** — real-world stories, challenges, and results from finance, pharma, e-commerce, etc.\n"
