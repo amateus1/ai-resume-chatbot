@@ -136,3 +136,15 @@ Use this format on every answer — make it skimmable and useful.
             return call_deepseek(messages)
         else:
             return call_openai(messages)
+
+def send_email_alert(user_email: str):
+    """
+    Send an alert email using Resend when a user provides their email.
+    Requires ALERT_EMAIL in your .env and a verified sender address.
+    """
+    resend.Emails.send({
+        "from": "chatbot@optimops.ai",        # replace with your verified Resend sender
+        "to": os.getenv("ALERT_EMAIL"),       # set this in your .env
+        "subject": "New Contact Request from Resume Agent",
+        "html": f"<p>User wants to connect: {user_email}</p>"
+    })

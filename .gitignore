@@ -1,0 +1,20 @@
+# Ignore Python cache/compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore backup files
+app-BKUP-*.py
+app-SAV.py
+me_chatbot-SAV.py
+backup_before_recovery/
+
+# Ignore virtual environments
+.venv/
+venv/
+env/
+
+# Ignore environment files and logs
+.env
+*.log

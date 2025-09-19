@@ -96,6 +96,10 @@ if "history" not in st.session_state:
 if "user_input" not in st.session_state:
     st.session_state.user_input = ""
 
+if "prompt_count" not in st.session_state:
+    st.session_state.prompt_count = 0
+
+
 # 🤖 Load bot
 me = Me()
 
@@ -127,7 +131,16 @@ if st.session_state.user_input:
     st.session_state.user_input = ""
 
 if user_input:
+    st.session_state.prompt_count += 1
     display_input = user_input
+    if st.session_state.prompt_count >= 3 and "email" not in st.session_state:
+    email = st.text_input("📧 Please leave your email so Al can reach you directly:")
+    if email:
+        from me_chatbot import send_email_alert
+        send_email_alert(email)
+        st.success("✅ Thanks! Al has been notified and will contact you soon.")
+        st.session_state.email = email
+    st.stop()  # stop further chat until email entered
 
     if selected_lang == "中文 (Chinese)":
         user_input = f"请用中文回答：{user_input}"
