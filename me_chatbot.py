@@ -4,7 +4,6 @@ from functools import lru_cache
 from pathlib import Path
 from pypdf import PdfReader
 
-from llm_engines import call_openai, call_deepseek
 from utils import get_user_country
 
 
@@ -18,13 +17,11 @@ class Me:
         summary = ""
         resume_text = ""
 
-        # Load summary
         summary_path = Path("me/summary.txt")
         if summary_path.exists():
             with open(summary_path, "r", encoding="utf-8") as f:
                 summary = f.read()
 
-        # Load resume from selected file (linkedin.pdf)
         resume_path = Path("me/linkedin.pdf")
         if resume_path.exists():
             try:
@@ -71,8 +68,6 @@ Your mission is to explain Al’s work, philosophy, and career as if *he* were t
             "resume", "cv", "job", "project", "experience",
             "certification", "education", "career", "work history"
         ]
-
-        # Normalize input
         cleaned_msg = re.sub(r"[^\w\s]", "", message.lower())
         include_resume = any(word in cleaned_msg for word in keywords)
 
@@ -84,3 +79,26 @@ Your mission is to explain Al’s work, philosophy, and career as if *he* were t
             return call_deepseek(messages)
         else:
             return call_openai(messages)
+
+
+# 🔁 LLM Dispatch Logic — added back to prevent ModuleNotFoundError
+
+def call_openai(messages):
+    import openai
+    return openai.ChatCompletion.create(
+        model="gpt-4o",
+        messages=messages
+    )["choices"][0]["message"]["content"]
+
+
+def call_deepseek(messages):
+    from openai import OpenAI
+    client = OpenAI(
+        base_url="https://api.deepseek.com/v1",
+        api_key=os.getenv("DEEPSEEK_API_KEY")
+    )
+    return client.chat.completions.create(
+        model="deepseek-chat",
+        messages=messages
+    ).choices[0].message.content
+
