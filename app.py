@@ -56,28 +56,34 @@ language_options = {
     "English": {
         "title": "🤖 Meet 'Al' Mateus — AI Career Agent",
         "desc": (
-            "Welcome! I'm Al's digital twin — trained on his global career, Agile Product Management, Agentic LLM Engineering experience, MLOps mastery, "
-            "love of Thai food, Star Wars, and GPT-powered systems. Ask me anything about his work or education, "
-            "such as: Certifications, LLM engineering projects, MLOps tools used in projects, career journey, or how to create an Agentic workforce."
+            "👋 Welcome! I’m Al’s digital twin — part strategist, part engineer, and a little bit of Star Wars geek.  \n\n"
+            "I’ve been trained on his journey as a **Global AI/MLOps Architect**, **LLM Engineering leader**, and **Scrum 2.0 pioneer**. "
+            "I can walk you through how he builds multi-agent AI systems, scales MLOps pipelines, or even how he’s shaping the next era of work with **Agentic AI teams managed by Agile Product Management tools**.  \n\n"
+            "Curious where to start? Ask me about his certifications, engineering projects, leadership style, or how to create an Agentic workforce that blends humans and AI.  \n\n"
+            "And if you just want the fun stuff — yes, I’ll happily tell you about Thai food, Teslas, or why GPT-5 and DeepSeek are basically the Millennium Falcon of LLMs. 🚀"
+)
         ),
         "input_placeholder": "Ask something about Al's career..."
     },
     "中文 (Chinese)": {
         "title": "🤖 认识 'Al' Mateus —— AI 简历助手",
         "desc": (
-            "欢迎！我是 Al 的数字分身 —— 基于他在全球范围内的职业经历、敏捷产品管理、Agentic 大语言模型工程、MLOps 精通程度、 🧠🌏"
-            "对泰国美食、星球大战以及基于 GPT 的系统的热爱训练而成。你可以向我询问他在工作或教育方面的任何内容，"
-            "比如：认证资质、LLM 工程项目、项目中使用的 MLOps 工具、职业发展历程，或者如何打造一个 Agentic 人工智能团队。"
+            "👋 欢迎！我是 Al 的数字分身 —— 既是战略家，也是工程师，还带点星球大战极客的味道。  \n\n"
+            "我基于他作为 **全球 AI/MLOps 架构师**、**LLM 工程领导者** 和 **Scrum 2.0 先行者** 的职业旅程而训练。 "
+            "我可以向你展示他如何构建多智能体 AI 系统、扩展 MLOps 流水线，甚至如何通过 **由敏捷产品管理工具驱动的 Agentic AI 团队** 来塑造工作的下一个时代。  \n\n"
+            "想知道从哪里开始吗？可以问我他的认证、工程项目、领导风格，或者如何打造一个融合人类与 AI 的 Agentic 团队。  \n\n"
+            "当然，如果你只是想聊轻松点的 —— 我也可以分享他对泰国美食、特斯拉赛道体验的热爱，或者为什么 DeepSeek 就像 LLM 世界里的千年隼号。 🚀"
         ),
         "input_placeholder": "请输入你想了解 Al 的内容..."
     },
     "Español": {
         "title": "🤖 Conoce a 'Al' Mateus — Asistente AI",
         "desc": (
-            "¡Bienvenido! Soy el gemelo digital de Al — entrenado con base en su trayectoria profesional global, experiencia en Gestión Ágil de Productos, "
-            "Ingeniería de LLMs Agénticos, dominio de MLOps, amor por la comida tailandesa, Star Wars y sistemas potenciados por GPT. "
-            "Pregúntame lo que quieras sobre su trabajo o formación, como por ejemplo: certificaciones, proyectos de ingeniería con LLMs, "
-            "herramientas de MLOps utilizadas en proyectos, trayectoria profesional o cómo crear una fuerza laboral agéntica. 🚀"
+            "👋 ¡Bienvenido! Soy el gemelo digital de Al — parte estratega, parte ingeniero y con un toque de fanático de Star Wars.  \n\n"
+            "He sido entrenado en su trayectoria como **Arquitecto Global de AI/MLOps**, **líder en Ingeniería de LLMs** y **pionero de Scrum 2.0**. "
+            "Puedo mostrarte cómo construye sistemas de IA multi-agente, cómo escala pipelines de MLOps, o incluso cómo está dando forma a la próxima era del trabajo con **equipos Agentic AI gestionados por herramientas de Agile Product Management**.  \n\n"
+            "¿Con qué quieres empezar? Pregúntame sobre sus certificaciones, proyectos de ingeniería, estilo de liderazgo o cómo crear una fuerza laboral agéntica que combine humanos y AI.  \n\n"
+            "Y si prefieres lo divertido — claro, puedo contarte sobre su pasión por la comida tailandesa, las carreras con Tesla o por qué GPT-5 and DeepSeek son básicamente el Halcón Milenario de los LLMs. 🚀"
         ),
         "input_placeholder": "Haz una pregunta sobre Al..."
     }
