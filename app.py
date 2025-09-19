@@ -133,15 +133,22 @@ if st.session_state.user_input:
 if user_input:
     st.session_state.prompt_count += 1
     display_input = user_input
-    if st.session_state.prompt_count >= 3 and "email" not in st.session_state:
-        st.markdown("💡 If you'd like a consultation with Al, feel free to share your email below. The chat will continue regardless.")
-        email = st.text_input("📧 Your email (optional)")
+    
+    # 📧 Show email prompt if conditions are met
+    if (
+        st.session_state.prompt_count >= 3 
+        or "get in touch" in user_input.lower() 
+        or "contact" in user_input.lower()
+    ) and "email" not in st.session_state:
+        st.markdown(ui["consult_prompt"])
+        email = st.text_input(ui["consult_input"])
         if email:
             from me_chatbot import send_email_alert
             send_email_alert(email)
-            st.success("✅ Thanks! Al has been notified and will contact you soon.")
+            st.success(ui["✅ Thanks! Al has been notified and will contact you soon."])
             st.session_state.email = email
-        # st.stop()  # stop further chat until email entered
+
+       
 
     if selected_lang == "中文 (Chinese)":
         user_input = f"请用中文回答：{user_input}"
