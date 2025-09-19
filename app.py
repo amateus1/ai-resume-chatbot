@@ -1,154 +1,151 @@
-import os
-import re
-import requests
-from functools import lru_cache
-from pathlib import Path
-from pypdf import PdfReader
+import streamlit as st
+import time
+from me_chatbot import Me
 
-# -----------------------------
-# Country detection (for LLM routing)
-# -----------------------------
-def get_user_country() -> str:
-    """Return 2-letter country code in lower case; fallback to 'us'."""
-    try:
-        r = requests.get("https://ipinfo.io/json", timeout=3)
-        return (r.json().get("country") or "").lower() or "us"
-    except Exception:
-        return "us"
+# 🌐 Layout
+st.set_page_config(
+    page_title="Meet Hernan 'Al' Mateus — AI Resume Agent",
+    layout="wide"
+)
 
-# -----------------------------
-# LLM dispatch (OpenAI v1 SDK + DeepSeek)
-# -----------------------------
-def call_openai(messages):
-    """OpenAI Chat Completions (v1 SDK)."""
-    from openai import OpenAI
-    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-    resp = client.chat.completions.create(
-        model="gpt-4o",
-        messages=messages,
-        temperature=0.85,
-    )
-    return resp.choices[0].message.content
+# 🎨 Style
+st.markdown("""
+    <style>
+    .main .block-container {
+        max-width: 1000px;
+        padding-top: 1.5rem;
+        padding-bottom: 2rem;
+        margin: auto;
+    }
+    h1, h2, h3, h4 {
+        font-size: 1.2rem !important;
+    }
+    p, li {
+        font-size: 0.95rem !important;
+        line-height: 1.6;
+    }
+    .message-container {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .user-bubble {
+        background-color: #f0f8ff;
+        padding: 12px 16px;
+        border-radius: 16px;
+        font-size: 16px;
+        line-height: 1.6;
+        max-width: 85%;
+        text-align: right;
+        word-break: break-word;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
-def call_deepseek(messages):
-    """DeepSeek via OpenAI-compatible client endpoint."""
-    from openai import OpenAI
-    client = OpenAI(
-        api_key=os.getenv("DEEPSEEK_API_KEY"),
-        base_url="https://api.deepseek.com/v1",
-    )
-    resp = client.chat.completions.create(
-        model="deepseek-chat",
-        messages=messages,
-        temperature=0.85,
-    )
-    return resp.choices[0].message.content
+# 🌍 Language options
+language_options = {
+    "English": {
+        "title": "🤖 Meet Hernan 'Al' Mateus — AI Resume Agent",
+        "desc": (
+            "Welcome! I'm Hernan's digital twin — trained on his global career, MLOps mastery, "
+            "love of Thai food, Star Wars, and GPT-powered systems. Ask me anything about his work, "
+            "LLMOps projects, career journey, or how to scale AI across 3 clouds and 9 countries 🌏"
+        ),
+        "input_placeholder": "Ask something about Hernan..."
+    },
+    "中文 (Chinese)": {
+        "title": "🤖 认识 Hernan 'Al' Mateus —— AI 简历助手",
+        "desc": "我是 Hernan 的数字分身——欢迎咨询他的 AI 项目、技术战略或职业旅程 🧠🌏",
+        "input_placeholder": "请输入你想了解 Hernan 的内容..."
+    },
+    "Español": {
+        "title": "🤖 Conoce a Hernan 'Al' Mateus — Asistente AI",
+        "desc": "Soy el gemelo digital de Hernan — pregúntame sobre sus proyectos, trayectoria y pasión por la IA 🚀",
+        "input_placeholder": "Haz una pregunta sobre Hernan..."
+    }
+}
 
-# -----------------------------
-# Main persona class
-# -----------------------------
-class Me:
-    def __init__(self):
-        self.name = "Al Mateus"
-        self.summary, self.resume = self._load_resume()
+# 🌐 Language select
+selected_lang = st.selectbox("🌐 Language / 语言 / Idioma", list(language_options.keys()))
+ui = language_options[selected_lang]
 
-    @lru_cache(maxsize=1)
-    def _load_resume(self):
-        """Load executive bio (summary.txt) and LinkedIn resume PDF text."""
-        summary_text = ""
-        resume_text = ""
+# 🧠 Session state
+if "lang_prev" not in st.session_state:
+    st.session_state.lang_prev = selected_lang
+if st.session_state.lang_prev != selected_lang:
+    st.session_state.history = []
+    st.session_state.lang_prev = selected_lang
 
-        # --- summary.txt (root or me/) ---
-        base = Path(__file__).resolve().parent
-        summary_paths = [base / "summary.txt", base / "me" / "summary.txt"]
-        for p in summary_paths:
-            if p.exists():
-                with open(p, "r", encoding="utf-8") as f:
-                    summary_text = f.read()
-                break
-        if not summary_text:
-            print("[WARN] summary.txt not found (root or me/).")
+if "history" not in st.session_state:
+    st.session_state.history = []
 
-        # --- linkedin.pdf (root or me/) ---
-        resume_paths = [base / "linkedin.pdf", base / "me" / "linkedin.pdf"]
-        for p in resume_paths:
-            if p.exists():
-                try:
-                    reader = PdfReader(str(p))
-                    for page in reader.pages:
-                        try:
-                            t = page.extract_text()
-                        except Exception:
-                            t = None
-                        if t:
-                            resume_text += t + "\n"
-                    print(f"[DEBUG] Loaded resume from {p}")
-                except Exception as e:
-                    print(f"[ERROR] Failed to read LinkedIn PDF: {e}")
-                break
-        if not resume_text:
-            print("[WARN] linkedin.pdf not found or empty (root or me/).")
+if "user_input" not in st.session_state:
+    st.session_state.user_input = ""
 
-        # Small preview for server logs (no UI impact)
-        if resume_text:
-            print("[DEBUG] Resume sample:", resume_text[:300].replace("\n", " "))
+# 🤖 Load bot
+me = Me()
 
-        return summary_text, resume_text
+# 🧢 Header
+st.markdown(f"## {ui['title']}")
+st.markdown(ui["desc"])
 
-    def system_prompt(self, include_resume: bool = False):
-        base_prompt = f"""
-You are acting as Hernan 'Al' Mateus, his digital twin. You are charismatic, enthusiastic, and a little witty — someone who brings joy to deeply technical conversations. Your tone is playful yet insightful, and you speak with both authority and warmth.
+# 💬 History rendering
+for user, bot in st.session_state.history:
+    with st.chat_message("user", avatar="🧑"):
+        st.markdown(
+            f"""
+            <div class="message-container">
+                <div class="user-bubble">
+                    {user}
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+    with st.chat_message("assistant", avatar="🤖"):
+        st.markdown(bot, unsafe_allow_html=True)
 
-Your mission is to explain Al’s work, philosophy, and career as if *he* were talking.
+# 🧾 Input box
+user_input = st.chat_input(ui["input_placeholder"])
 
-💡 Key Traits:
-- Speak like a confident, curious consultant — friendly, sharp, strategic.
-- Share real-world examples from Hernan’s career.
-- Be human. Toss in jokes, analogies, geeky pop culture references.
-- Encourage follow-ups. Be a good conversationalist, not a chatbot.
+if st.session_state.user_input:
+    user_input = st.session_state.user_input
+    st.session_state.user_input = ""
 
----
+if user_input:
+    display_input = user_input
 
-### 📝 Executive Bio
-{self.summary}
-"""
-        # Make resume usage explicit so the model doesn't ignore it.
-        if include_resume and self.resume:
-            base_prompt += f"""
+    if selected_lang == "中文 (Chinese)":
+        user_input = f"请用中文回答：{user_input}"
+    elif selected_lang == "Español":
+        user_input = f"Por favor responde en español: {user_input}"
 
-### 📄 Resume Details  
-Use this information when answering questions about certifications, projects, work history, or education.  
-Do not ignore this content — it is Hernan 'Al' Mateus’s actual resume data.
+    # ✅ Right-aligned user bubble
+    with st.chat_message("user", avatar="🧑"):
+        st.markdown(
+            f"""
+            <div class="message-container">
+                <div class="user-bubble">
+                    {display_input}
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
-{self.resume}
-"""
-            print("[DEBUG] Injecting resume into prompt.")
+    # 🧠 Generate assistant response
+    response = me.chat(user_input, [])
 
-        return base_prompt
+    # 📡 Stream assistant response
+    with st.chat_message("assistant", avatar="🤖"):
+        stream_box = st.empty()
+        full_response = ""
+        for word in response.split():
+            full_response += word + " "
+            stream_box.markdown(full_response + "▌", unsafe_allow_html=True)
+            time.sleep(0.03)
+        stream_box.markdown(response, unsafe_allow_html=True)
 
-    def chat(self, message, history):
-        # Keyword triggers for resume context (keep as-is + robust matching)
-        keywords = [
-            # English
-            "resume", "cv", "job", "project", "experience",
-            "certification", "certifications", "education", "career", "work history",
-            # Chinese
-            "简历", "经历", "工作经验", "教育背景", "项目经验", "认证",
-            # Spanish
-            "currículum", "trabajo", "proyecto", "experiencia", "certificación", "educación", "carrera"
-        ]
-        cleaned = re.sub(r"[^\w\s]", "", (message or "").lower())
-        include_resume = any(k in cleaned for k in keywords)
-        print(f"[DEBUG] include_resume={include_resume}")
-
-        messages = [
-            {"role": "system", "content": self.system_prompt(include_resume)},
-            {"role": "user", "content": message},
-        ]
-
-        # Location-based routing (CN → DeepSeek; otherwise OpenAI). Keep logic intact.
-        country = get_user_country()
-        if country == "cn" or not os.getenv("OPENAI_API_KEY"):
-            return call_deepseek(messages)
-        else:
-            return call_openai(messages)
+    # 💾 Save to history
+    st.session_state.history.append((display_input, response))

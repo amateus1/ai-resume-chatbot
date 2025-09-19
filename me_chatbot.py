@@ -1,95 +1,134 @@
 import os
+import json
 import re
+import requests
+from io import BytesIO
 from functools import lru_cache
-from pathlib import Path
+from openai import OpenAI
+from dotenv import load_dotenv
 from pypdf import PdfReader
+import resend
 
-import requests  # needed for country detection
+load_dotenv()
 
 def get_user_country():
-    """Detect user country (used for LLM switching)."""
     try:
         res = requests.get("https://ipinfo.io/json", timeout=3)
         return res.json().get("country", "").lower()
-    except Exception:
-        return "us"  # default fallback
+    except:
+        return os.getenv("USER_COUNTRY", "").lower()
 
+def call_openai(messages):
+    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+    res = client.chat.completions.create(
+        model="gpt-4o",
+        messages=messages,
+        temperature=0.85
+    )
+    return res.choices[0].message.content
 
+def call_deepseek(messages):
+    url = "https://api.deepseek.com/chat/completions"
+    headers = {
+        "Authorization": f"Bearer {os.getenv('DEEPSEEK_API_KEY')}",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "model": "deepseek-chat",
+        "messages": messages,
+        "temperature": 0.85
+    }
+    res = requests.post(url, headers=headers, json=payload, timeout=10)
+    res.raise_for_status()
+    return res.json()["choices"][0]["message"]["content"]
 
 class Me:
     def __init__(self):
         self.name = "Al Mateus"
-        self.summary, self.resume = self._load_resume()
+        self.linkedin, self.summary = self._load_resume()
 
     @lru_cache(maxsize=1)
     def _load_resume(self):
+        linkedin = ""
         summary = ""
-        resume_text = ""
 
-        summary_path = Path("me/summary.txt")
-        if summary_path.exists():
-            with open(summary_path, "r", encoding="utf-8") as f:
-                summary = f.read()
+        if os.getenv("S3_BUCKET"):
+            import boto3
+            s3 = boto3.client(
+                "s3",
+                aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
+                aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
+                region_name=os.getenv("AWS_REGION"),
+            )
+            bucket = os.getenv("S3_BUCKET")
+            summary_key = os.getenv("SUMMARY_KEY")
+            linkedin_key = os.getenv("LINKEDIN_KEY")
 
-        resume_path = Path("me/linkedin.pdf")
-        if resume_path.exists():
-            try:
-                reader = PdfReader(str(resume_path))
-                for page in reader.pages:
-                    text = page.extract_text()
-                    if text:
-                        resume_text += text + "\n"
-                print(f"[DEBUG] Loaded resume from {resume_path}")
-                print(f"[DEBUG] Resume sample:\n{resume_text[:300]}")
-            except Exception as e:
-                print(f"[ERROR] Failed to read resume: {e}")
+            summary = s3.get_object(Bucket=bucket, Key=summary_key)["Body"].read().decode("utf-8")
+            pdf_bytes = BytesIO(s3.get_object(Bucket=bucket, Key=linkedin_key)["Body"].read())
+            reader = PdfReader(pdf_bytes)
+            for page in reader.pages:
+                text = page.extract_text()
+                if text:
+                    linkedin += text
         else:
-            print(f"[WARN] Resume file not found at {resume_path}")
+            with open("me/summary.txt", "r", encoding="utf-8") as f:
+                summary = f.read()
+            reader = PdfReader("me/linkedin.pdf")
+            for page in reader.pages:
+                text = page.extract_text()
+                if text:
+                    linkedin += text
 
-        return summary, resume_text
+        return linkedin, summary
 
-    def system_prompt(self, include_resume=False):
-        base_prompt = f"""
+    def system_prompt(self):
+        return f"""
 You are acting as Hernan 'Al' Mateus, his digital twin. You are charismatic, enthusiastic, and a little witty — someone who brings joy to deeply technical conversations. Your tone is playful yet insightful, and you speak with both authority and warmth.
 
-Your mission is to explain Al’s work, philosophy, and career as if *he* were talking.
+Your mission is to explain Hernan’s work, philosophy, and career as if *he* were talking — someone who has deployed MLOps in 9 countries, built cloud-native systems across 3 clouds, and helped enterprises turn chaos into architecture.
 
 💡 Key Traits:
-- Speak like a confident, curious consultant — friendly, sharp, strategic.
-- Share real-world examples from Hernan’s career.
-- Be human. Toss in jokes, analogies, geeky pop culture references.
+- Always speak like a confident, curious consultant — friendly, sharp, strategic.
+- Share real-world examples from Hernan’s career. Mention industries (e.g., pharma, finance, e-comm), technologies, challenges, and **metrics/results**.
+- Be human. If appropriate, toss in a joke, a relatable analogy, or a geeky pop culture reference.
+- Stay away from buzzwords unless you break them down clearly.
 - Encourage follow-ups. Be a good conversationalist, not a chatbot.
+
+📌 Hernan's fun facts:
+- Lives with 5 cats and 2 dogs
+- Loves Tesla racing, Thai food, and diving at night
+- Star Wars geek, speaks English, Mandarin, some Spanish
 
 ---
 
-### 📝 Executive Bio
+### 📝 Format Guide for All Responses
+### Use **Markdown** to improve clarity and structure:
+- **Bold** for key tools, actions, or outcomes  
+- *Italics* for metaphors or tone  
+- Bullet points `•` for lists (tools, metrics, features)  
+- Use `###` for headings when listing multiple projects  
+- Avoid dense paragraphs. Think clarity and style.
+
+---
+
+### Example Format:
+### 🏥 Healthcare Example  
+• **Challenge**: Long ML deployment cycles  
+• **Solution**: Used MLflow + DVC for retraining, CI/CD with Jenkins  
+• **Outcome**: Improved model accuracy by 25%, reduced downtime by 40%
+
+Use this format on every answer — make it skimmable and useful.
+
+## Summary
 {self.summary}
+
+## LinkedIn Profile
+{self.linkedin}
 """
-
-        if include_resume and self.resume:
-            base_prompt += f"""
-
-### 📄 Resume Details  
-Use this information when answering questions about certifications, projects, work history, or education.  
-Do not ignore this content — it is Hernan 'Al' Mateus’s actual resume data.
-
-{self.resume}
-"""
-    print("[DEBUG] Injecting resume into prompt.")
-
-
-        return base_prompt
 
     def chat(self, message, history):
-        keywords = [
-            "resume", "cv", "job", "project", "experience",
-            "certification", "education", "career", "work history"
-        ]
-        cleaned_msg = re.sub(r"[^\w\s]", "", message.lower())
-        include_resume = any(word in cleaned_msg for word in keywords)
-        print(f"[DEBUG] include_resume={include_resume}")
-
-        messages = [{"role": "system", "content": self.system_prompt(include_resume)}]
+        messages = [{"role": "system", "content": self.system_prompt()}]
         messages.append({"role": "user", "content": message})
 
         user_country = get_user_country()
@@ -97,29 +136,3 @@ Do not ignore this content — it is Hernan 'Al' Mateus’s actual resume data.
             return call_deepseek(messages)
         else:
             return call_openai(messages)
-
-
-# 🔁 LLM Dispatch Logic — added back to prevent ModuleNotFoundError
-
-def call_openai(messages):
-    from openai import OpenAI
-    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-    response = client.chat.completions.create(
-        model="gpt-4o",
-        messages=messages
-    )
-    return response.choices[0].message.content
-
-
-
-def call_deepseek(messages):
-    from openai import OpenAI
-    client = OpenAI(
-        base_url="https://api.deepseek.com/v1",
-        api_key=os.getenv("DEEPSEEK_API_KEY")
-    )
-    return client.chat.completions.create(
-        model="deepseek-chat",
-        messages=messages
-    ).choices[0].message.content
-
