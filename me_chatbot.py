@@ -1,4 +1,12 @@
+import os
+from pathlib import Path
 from functools import lru_cache
+from pypdf import PdfReader
+
+# Assuming you already have these helpers in your project:
+# - get_user_country()
+# - call_openai()
+# - call_deepseek()
 
 class Me:
     def __init__(self):
@@ -10,17 +18,35 @@ class Me:
         summary = ""
         resume_text = ""
 
-        # Load short executive bio (always used)
-        with open("me/summary.txt", "r", encoding="utf-8") as f:
-            summary = f.read()
+        base_dir = Path(__file__).resolve().parent
 
-        # Load resume PDF (conditionally used)
-        from pypdf import PdfReader
-        reader = PdfReader("me/Al_Mateus_09-25-v4_compressed.pdf")
-        for page in reader.pages:
-            text = page.extract_text()
-            if text:
-                resume_text += text + "\n"
+        # --- Load summary.txt (always used) ---
+        summary_path = base_dir / "summary.txt"
+        if not summary_path.exists():
+            summary_path = base_dir / "me" / "summary.txt"
+
+        if summary_path.exists():
+            with open(summary_path, "r", encoding="utf-8") as f:
+                summary = f.read()
+        else:
+            summary = "Summary file not found."
+
+        # --- Load linkedin.pdf (conditionally used) ---
+        resume_path = base_dir / "linkedin.pdf"
+        if not resume_path.exists():
+            resume_path = base_dir / "me" / "linkedin.pdf"
+
+        if resume_path.exists():
+            try:
+                reader = PdfReader(str(resume_path))
+                for page in reader.pages:
+                    text = page.extract_text()
+                    if text:
+                        resume_text += text + "\n"
+            except Exception as e:
+                resume_text = f"Could not read LinkedIn PDF: {e}"
+        else:
+            resume_text = "LinkedIn PDF not found."
 
         return summary, resume_text
 
@@ -63,3 +89,4 @@ Your mission is to explain Al’s work, philosophy, and career as if *he* were t
             return call_deepseek(messages)
         else:
             return call_openai(messages)
+
