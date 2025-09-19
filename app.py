@@ -176,17 +176,11 @@ if user_input:
     # 📡 Stream assistant response
     stream_box = st.empty()
     full_response = ""
-    for word in response.split():
-        full_response += word + " "
-        stream_box.markdown(
-            f"<div class='assistant-bubble'>{full_response}▌</div>",
-            unsafe_allow_html=True
-        )
-        time.sleep(0.03)
-    stream_box.markdown(
-        f"<div class='assistant-bubble'>{response}</div>",
-        unsafe_allow_html=True
-    )
+    for line in response.split("\n"):
+        full_response += line + "\n"
+        stream_box.markdown(full_response + " ▌")
+        time.sleep(0.2)  # simulate typing effect per line
+    stream_box.markdown(response)
 
     # 💾 Save to history
     st.session_state.history.append((display_input, response))
