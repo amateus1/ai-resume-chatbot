@@ -2,7 +2,7 @@
 
 # 🤖 AI Resume Chatbot
 
-**`ai-resume-chatbot`** is an AI-powered, location-aware virtual assistant that represents **Hernan “Al” Mateus** — a global MLOps and DevSecOps consultant — in an interactive, conversational format. Built using **Streamlit**, it dynamically serves resume information and switches between **OpenAI** and **DeepSeek** depending on user region (global vs. China).
+**`ai-resume-chatbot`** is an AI-powered, location-aware virtual assistant that represents **Al Mateus** — a global Agentic, LLM Engineering, MLOps and DevSecOps consultant — in an interactive, conversational format. Built using **Streamlit**, it dynamically serves resume information and switches between **OpenAI** and **DeepSeek** depending on user region (global vs. China).
 
 [![CI/CD](https://github.com/yourusername/ai-resume-chatbot/actions/workflows/ci.yml/badge.svg)](https://github.com/yourusername/ai-resume-chatbot/actions)
 [![Streamlit App](https://img.shields.io/badge/Live%20App-Streamlit-orange?logo=streamlit)](https://yourapp.streamlit.app)
