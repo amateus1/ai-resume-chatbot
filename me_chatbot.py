@@ -93,11 +93,14 @@ Your mission is to explain Al’s work, philosophy, and career as if *he* were t
 # 🔁 LLM Dispatch Logic — added back to prevent ModuleNotFoundError
 
 def call_openai(messages):
-    import openai
-    return openai.ChatCompletion.create(
+    from openai import OpenAI
+    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+    response = client.chat.completions.create(
         model="gpt-4o",
         messages=messages
-    )["choices"][0]["message"]["content"]
+    )
+    return response.choices[0].message.content
+
 
 
 def call_deepseek(messages):
