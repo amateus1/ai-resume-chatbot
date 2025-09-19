@@ -1,12 +1,53 @@
 import os
+import requests
 from pathlib import Path
 from functools import lru_cache
 from pypdf import PdfReader
+from openai import OpenAI
 
-# Assuming you already have these helpers in your project:
-# - get_user_country()
-# - call_openai()
-# - call_deepseek()
+# -------------------------------
+# Helper functions
+# -------------------------------
+
+def get_user_country():
+    """Try to detect user country from IP, fallback to env variable."""
+    try:
+        res = requests.get("https://ipinfo.io/json", timeout=3)
+        return res.json().get("country", "").lower()
+    except:
+        return os.getenv("USER_COUNTRY", "").lower()
+
+
+def call_openai(messages):
+    """Wrapper to call OpenAI Chat API."""
+    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+    res = client.chat.completions.create(
+        model="gpt-4o-mini",  # lightweight, fast model
+        messages=messages,
+        temperature=0.85
+    )
+    return res.choices[0].message.content
+
+
+def call_deepseek(messages):
+    """Wrapper to call DeepSeek API if OpenAI key not available or user is in CN."""
+    url = "https://api.deepseek.com/chat/completions"
+    headers = {
+        "Authorization": f"Bearer {os.getenv('DEEPSEEK_API_KEY')}",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "model": "deepseek-llm-7b-chat",
+        "messages": messages,
+        "temperature": 0.85
+    }
+    res = requests.post(url, headers=headers, json=payload, timeout=10)
+    res.raise_for_status()
+    return res.json()["choices"][0]["message"]["content"]
+
+# -------------------------------
+# Main Me class
+# -------------------------------
 
 class Me:
     def __init__(self):
@@ -15,6 +56,7 @@ class Me:
 
     @lru_cache(maxsize=1)
     def _load_resume(self):
+        """Load executive bio (summary.txt) and LinkedIn resume PDF."""
         summary = ""
         resume_text = ""
 
@@ -51,6 +93,7 @@ class Me:
         return summary, resume_text
 
     def system_prompt(self, include_resume=False):
+        """Generate the system prompt with summary always, resume optionally."""
         base_prompt = f"""
 You are acting as Hernan 'Al' Mateus, his digital twin. You are charismatic, enthusiastic, and a little witty — someone who brings joy to deeply technical conversations. Your tone is playful yet insightful, and you speak with both authority and warmth.
 
@@ -74,10 +117,16 @@ Your mission is to explain Al’s work, philosophy, and career as if *he* were t
         return base_prompt
 
     def chat(self, message, history):
-        # Trigger resume only if user asks about work/career specifics
+        """Send a message to the model, optionally with resume context."""
         keywords = [
+            # English
             "resume", "cv", "job", "project", "experience",
-            "certification", "education", "career", "work history"
+            "certification", "education", "career", "work history",
+            # Chinese
+            "简历", "经历", "工作经验", "教育背景", "项目经验", "认证",
+            # Spanish
+            "currículum", "cv en español", "trabajo", "proyecto",
+            "experiencia", "certificación", "educación", "carrera"
         ]
         include_resume = any(word in message.lower() for word in keywords)
 
@@ -89,4 +138,3 @@ Your mission is to explain Al’s work, philosophy, and career as if *he* were t
             return call_deepseek(messages)
         else:
             return call_openai(messages)
-
