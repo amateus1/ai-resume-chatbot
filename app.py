@@ -1,3 +1,4 @@
+import re
 import streamlit as st
 import time
 from me_chatbot import Me
@@ -176,7 +177,15 @@ if user_input:
             """,
             unsafe_allow_html=True
         )
-
+    # 📧 Check if user input looks like an email
+    email_match = re.search(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}", user_input)
+    if email_match and "email" not in st.session_state:
+        from me_chatbot import send_email_alert
+        user_email = email_match.group(0)
+        send_email_alert(user_email)
+        st.success(f"✅ Thanks! Al has been notified of your email: {user_email}")
+        st.session_state.email = user_email
+        
     # 🧠 Generate assistant response
     response = me.chat(user_input, [])
 
