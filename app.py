@@ -113,22 +113,10 @@ me = Me()
 st.markdown(f"## {ui['title']}")
 st.markdown(ui["desc"])
 
-# 💬 History rendering
+# 💬 History rendering (consistent bubble style)
 for user, bot in st.session_state.history:
-    st.markdown(
-        f"""
-        <div class="message-container">
-            <div class="user-bubble">{user}</div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-    st.markdown(
-        f"""
-        <div class="assistant-bubble">{bot}</div>
-        """,
-        unsafe_allow_html=True
-    )
+    st.markdown(f"<div class='message-container'><div class='user-bubble'>{user}</div></div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='assistant-bubble'>{bot}</div>", unsafe_allow_html=True)
 
 # 🧾 Input box
 user_input = st.chat_input(ui["input_placeholder"])
@@ -178,14 +166,16 @@ if user_input:
         unsafe_allow_html=True
     )
 
-    # 📡 Stream assistant response
+    # 📡 Stream assistant response (line-by-line with bubble styling)
     stream_box = st.empty()
     full_response = ""
     for line in response.split("\n"):
         full_response += line + "\n"
-        stream_box.markdown(full_response + " ▌")
-        time.sleep(0.2)  # simulate typing effect per line
-    stream_box.markdown(response)
+        stream_box.markdown(f"<div class='assistant-bubble'>{full_response} ▌</div>", unsafe_allow_html=True)
+        time.sleep(0.2)
+
+    # Final render in styled bubble
+    stream_box.markdown(f"<div class='assistant-bubble'>{response}</div>", unsafe_allow_html=True)
 
     # 💾 Save to history
     st.session_state.history.append((display_input, response))
