@@ -134,7 +134,7 @@ if user_input:
     st.session_state.prompt_count += 1
     display_input = user_input
     if st.session_state.prompt_count >= 3 and "email" not in st.session_state:
-        st.markdown("💡 If you'd like to connect with Al for a consultation, please share your email:")
+        st.markdown("💡 If you'd like a consultation with Al, feel free to share your email below. The chat will continue regardless.")
         email = st.text_input("📧 Your email (optional)")
         if email:
             from me_chatbot import send_email_alert

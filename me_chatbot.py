@@ -143,8 +143,8 @@ def send_email_alert(user_email: str):
     Requires ALERT_EMAIL in your .env and a verified sender address.
     """
     resend.Emails.send({
-        "from": "chatbot@optimops.ai",        # replace with your verified Resend sender
+        "from": "al@optimops.ai",        # replace with your verified Resend sender
         "to": os.getenv("ALERT_EMAIL"),       # set this in your .env
-        "subject": "New Contact Request from Resume Agent",
-        "html": f"<p>User wants to connect: {user_email}</p>"
+        "subject": "New Consultation Request from Resume Agent",
+        "html": f"<p>User wants to connect: <strong>{user_email}</strong></p>"
     })
