@@ -4,7 +4,7 @@ from me_chatbot import Me
 
 # 🌐 Layout
 st.set_page_config(
-    page_title="Meet Hernan 'Al' Mateus — AI Resume Agent",
+    page_title="Meet Al Mateus — AI Career Agent",
     layout="wide"
 )
 

@@ -90,24 +90,19 @@ View CI results: CI Dashboard
 
 Try the app live: yourname.me
 
-    (or Streamlit URL: https://yourapp.streamlit.app)
+    (or Streamlit URL: https://almateus.me)
 
 📜 License
 
 MIT License — use, modify, and share freely.
 🤝 Contact
 
-Built by Hernan “Al” Mateus
+Built by Al Mateus
 ✉️ al@optimops.ai
 🌐 LinkedIn
 
 
 ---
 
-### 🛠️ Next Step:
 
-- Replace `yourusername`, `yourname.me`, and URLs with your actual GitHub + domain
-- Commit as `README.md` at the root of your repo
-
-Would you like this exported as a `.md` file in your downloadable zip?
 
