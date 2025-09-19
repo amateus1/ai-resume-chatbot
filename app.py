@@ -46,26 +46,39 @@ st.markdown("""
 # 🌍 Language options
 language_options = {
     "English": {
-        "title": "🤖 Meet Hernan 'Al' Mateus — AI Resume Agent",
+        "title": "🤖 Meet 'Al' Mateus — AI Career Agent",
         "desc": (
-            "Welcome! I'm Hernan's digital twin — trained on his global career, MLOps mastery, "
-            "love of Thai food, Star Wars, and GPT-powered systems. Ask me anything about his work, "
-            "LLMOps projects, career journey, or how to scale AI across 3 clouds and 9 countries 🌏"
+            "👋 Welcome! I’m Al’s digital twin — part strategist, part engineer, and a little bit of Star Wars geek.  \n\n"
+            "I’ve been trained on his journey as a **Global AI/MLOps Architect**, **LLM Engineering leader**, and **Scrum 2.0 pioneer**. "
+            "I can walk you through how he builds multi-agent AI systems, scales MLOps pipelines, or even how he’s shaping the next era of work with **Agentic AI teams managed by Agile Product Management tools**.  \n\n"
+            "Curious where to start? Ask me about his certifications, engineering projects, leadership style, or how to create an Agentic workforce that blends humans and AI.  \n\n"
+            "And if you just want the fun stuff — yes, I’ll happily tell you about Thai food, Teslas, or why GPT-5 and DeepSeek are basically the Millennium Falcon of LLMs. 🚀"
         ),
-        "input_placeholder": "Ask something about Hernan..."
+        "input_placeholder": "Ask something about Al's career..."
     },
     "中文 (Chinese)": {
-        "title": "🤖 认识 Hernan 'Al' Mateus —— AI 简历助手",
-        "desc": "我是 Hernan 的数字分身——欢迎咨询他的 AI 项目、技术战略或职业旅程 🧠🌏",
-        "input_placeholder": "请输入你想了解 Hernan 的内容..."
+        "title": "🤖 认识 'Al' Mateus —— AI 简历助手",
+        "desc": (
+            "👋 欢迎！我是 Al 的数字分身 —— 既是战略家，也是工程师，还带点星球大战极客的味道。  \n\n"
+            "我基于他作为 **全球 AI/MLOps 架构师**、**LLM 工程领导者** 和 **Scrum 2.0 先行者** 的职业旅程而训练。 "
+            "我可以向你展示他如何构建多智能体 AI 系统、扩展 MLOps 流水线，甚至如何通过 **由敏捷产品管理工具驱动的 Agentic AI 团队** 来塑造工作的下一个时代。  \n\n"
+            "想知道从哪里开始吗？可以问我他的认证、工程项目、领导风格，或者如何打造一个融合人类与 AI 的 Agentic 团队。  \n\n"
+            "当然，如果你只是想聊轻松点的 —— 我也可以分享他对泰国美食、特斯拉赛道体验的热爱，或者为什么 DeepSeek 就像 LLM 世界里的千年隼号。 🚀"
+        ),
+        "input_placeholder": "请输入你想了解 Al 的内容..."
     },
     "Español": {
-        "title": "🤖 Conoce a Hernan 'Al' Mateus — Asistente AI",
-        "desc": "Soy el gemelo digital de Hernan — pregúntame sobre sus proyectos, trayectoria y pasión por la IA 🚀",
-        "input_placeholder": "Haz una pregunta sobre Hernan..."
+        "title": "🤖 Conoce a 'Al' Mateus — Asistente AI",
+        "desc": (
+            "👋 ¡Bienvenido! Soy el gemelo digital de Al — parte estratega, parte ingeniero y con un toque de fanático de Star Wars.  \n\n"
+            "He sido entrenado en su trayectoria como **Arquitecto Global de AI/MLOps**, **líder en Ingeniería de LLMs** y **pionero de Scrum 2.0**. "
+            "Puedo mostrarte cómo construye sistemas de IA multi-agente, cómo escala pipelines de MLOps, o incluso cómo está dando forma a la próxima era del trabajo con **equipos Agentic AI gestionados por herramientas de Agile Product Management**.  \n\n"
+            "¿Con qué quieres empezar? Pregúntame sobre sus certificaciones, proyectos de ingeniería, estilo de liderazgo o cómo crear una fuerza laboral agéntica que combine humanos y AI.  \n\n"
+            "Y si prefieres lo divertido — claro, puedo contarte sobre su pasión por la comida tailandesa, las carreras con Tesla o por qué GPT-5 and DeepSeek son básicamente el Halcón Milenario de los LLMs. 🚀"
+        ),
+        "input_placeholder": "Haz una pregunta sobre Al..."
     }
 }
-
 # 🌐 Language select
 selected_lang = st.selectbox("🌐 Language / 语言 / Idioma", list(language_options.keys()))
 ui = language_options[selected_lang]
