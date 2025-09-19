@@ -141,11 +141,20 @@ if user_input:
     with st.chat_message("assistant", avatar="🤖"):
         stream_box = st.empty()
         full_response = ""
-        for word in response.split():
-            full_response += word + " "
-            stream_box.markdown(full_response + "▌", unsafe_allow_html=True)
-            time.sleep(0.03)
-        stream_box.markdown(response, unsafe_allow_html=True)
+        for char in response:
+            full_response += char
+            stream_box.markdown(full_response + "▌")   # ✅ no unsafe_allow_html
+            time.sleep(0.01)
+        stream_box.markdown(response)  # ✅ final clean render with Markdown
+    #with st.chat_message("assistant", avatar="🤖"):
+    #    stream_box = st.empty()
+    #    full_response = ""
+    #    for word in response.split():
+    #        full_response += word + " "
+    #        stream_box.markdown(full_response + "▌", unsafe_allow_html=True)
+    #        time.sleep(0.03)
+    #    stream_box.markdown(response, unsafe_allow_html=True)
+
 
     # 💾 Save to history
     st.session_state.history.append((display_input, response))
