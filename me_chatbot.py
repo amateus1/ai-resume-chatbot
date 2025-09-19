@@ -6,6 +6,17 @@ from pypdf import PdfReader
 
 from utils import get_user_country
 
+import requests  # needed for country detection
+
+def get_user_country():
+    """Detect user country (used for LLM switching)."""
+    try:
+        res = requests.get("https://ipinfo.io/json", timeout=3)
+        return res.json().get("country", "").lower()
+    except Exception:
+        return "us"  # default fallback
+
+
 
 class Me:
     def __init__(self):
