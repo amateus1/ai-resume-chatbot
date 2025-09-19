@@ -1,3 +1,5 @@
+from functools import lru_cache
+
 class Me:
     def __init__(self):
         self.name = "Al Mateus"
