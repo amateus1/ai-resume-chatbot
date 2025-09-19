@@ -171,11 +171,17 @@ if user_input:
     full_response = ""
     for line in response.split("\n"):
         full_response += line + "\n"
-        stream_box.markdown(f"<div class='assistant-bubble'>{full_response} ▌</div>", unsafe_allow_html=True)
+        stream_box.markdown(
+            f"<div class='assistant-bubble'>{full_response} ▌</div>",
+            unsafe_allow_html=True
+        )
         time.sleep(0.2)
 
     # Final render in styled bubble
-    stream_box.markdown(f"<div class='assistant-bubble'>{response}</div>", unsafe_allow_html=True)
+    stream_box.markdown(
+        f"<div class='assistant-bubble'>{response}</div>",
+        unsafe_allow_html=True
+    )
 
-    # 💾 Save to history
+    # 💾 Save to history (persist bubbles across prompts)
     st.session_state.history.append((display_input, response))
