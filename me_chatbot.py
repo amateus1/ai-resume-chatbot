@@ -67,8 +67,16 @@ Your mission is to explain Al’s work, philosophy, and career as if *he* were t
 """
 
         if include_resume and self.resume:
-            base_prompt += f"\n\n### 📄 Resume Details\n{self.resume}"
-            print("[DEBUG] Injecting resume into prompt.")
+            base_prompt += f"""
+
+### 📄 Resume Details  
+Use this information when answering questions about certifications, projects, work history, or education.  
+Do not ignore this content — it is Hernan 'Al' Mateus’s actual resume data.
+
+{self.resume}
+"""
+    print("[DEBUG] Injecting resume into prompt.")
+
 
         return base_prompt
 
@@ -79,6 +87,7 @@ Your mission is to explain Al’s work, philosophy, and career as if *he* were t
         ]
         cleaned_msg = re.sub(r"[^\w\s]", "", message.lower())
         include_resume = any(word in cleaned_msg for word in keywords)
+        print(f"[DEBUG] include_resume={include_resume}")
 
         messages = [{"role": "system", "content": self.system_prompt(include_resume)}]
         messages.append({"role": "user", "content": message})
