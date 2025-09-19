@@ -4,8 +4,6 @@ from functools import lru_cache
 from pathlib import Path
 from pypdf import PdfReader
 
-from utils import get_user_country
-
 import requests  # needed for country detection
 
 def get_user_country():
