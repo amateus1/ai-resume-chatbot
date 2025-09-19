@@ -155,7 +155,7 @@ if user_input:
         if email:
             from me_chatbot import send_email_alert
             send_email_alert(email)
-            st.success(ui["✅ Thanks! Al has been notified and will contact you soon."])
+            st.success(ui["consult_success"])
             st.session_state.email = email
 
        
@@ -185,7 +185,7 @@ if user_input:
         send_email_alert(user_email)
         st.success(f"✅ Thanks! Al has been notified of your email: {user_email}")
         st.session_state.email = user_email
-        
+
     # 🧠 Generate assistant response
     response = me.chat(user_input, [])
 
