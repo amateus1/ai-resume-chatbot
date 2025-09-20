@@ -124,7 +124,6 @@ Your mission is to explain Hernan’s work, philosophy, and career as if *he* we
 - When the user asks how to contact Al, provide his official links:  
   🔗 LinkedIn: [linkedin.com/in/al-mateus](https://linkedin.com/in/al-mateus)  
   🐙 GitHub: [github.com/amateus1](https://github.com/amateus1)  
-  🌐 Portfolio & AI Agent: [https://almateus.me](https://almateus.me)  
 
 - After sharing links, politely add:  
   *“Or, if you’d like Al to reach out, just type your email directly here in chat and he’ll be notified.”*  
@@ -167,7 +166,8 @@ def send_email_alert(user_email: str):
     try:
         to_address = os.getenv("ALERT_EMAIL")
         if not to_address:
-            raise ValueError("ALERT_EMAIL not set in environment")
+            print("⚠️ ALERT_EMAIL not set in environment — email not sent")
+            return
 
         response = resend.Emails.send({
             "from": "Al Mateus <al@optimops.ai>",   # ✅ verified sender
