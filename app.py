@@ -150,15 +150,19 @@ if user_input:
     st.session_state.prompt_count += 1
     display_input = user_input
 
+    contact_keywords = ["contact", "reach", "connect", "talk", "email", "get in touch"]
+
     # 📧 Capture email typed directly in chat
     email_match = re.search(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}", user_input)
     if email_match and not st.session_state.get("email"):
         from me_chatbot import send_email_alert
         user_email = email_match.group(0)
-        send_email_alert(user_email)
-        st.success(f"✅ Thanks! Al has been notified of your email: {user_email}")
-        st.session_state.email = user_email
-
+        try:
+            send_email_alert(user_email)
+            st.success(f"✅ Thanks! Al has been notified of your email: {user_email}")
+            st.session_state.email = user_email
+        except Exception as e:
+            st.error(f"❌ Failed to send email: {e}")
 
     # ---- multilingual transform after we’ve done any email capture ----
     if selected_lang == "中文 (Chinese)":
@@ -169,22 +173,16 @@ if user_input:
     # ---- show email input ONCE if conditions match and we don't have an email yet ----
     should_suggest_email = (
         (st.session_state.prompt_count >= 3 or any(
-            k in display_input.lower() for k in ["get in touch", "contact", "reach", "email"]
+            kw in display_input.lower() for kw in contact_keywords
         ))
         and not st.session_state.email
-        and not st.session_state.email_prompt_shown
+        and not st.session_state.get("email_prompt_shown", False)
     )
 
     if should_suggest_email:
         st.markdown(ui["consult_prompt"])
-        email_box_value = st.text_input(ui["consult_input"], key="consult_email")
         st.session_state.email_prompt_shown = True  # ✅ only show once
-        if email_box_value:
-            from me_chatbot import send_email_alert
-            send_email_alert(email_box_value)
-            st.success(ui["consult_success"])
-            st.session_state.email = email_box_value
-    # >>> END CHANGE 2 <<<
+            
 
     # ✅ Right-aligned user bubble
     with st.chat_message("user", avatar="🧑"):

@@ -164,9 +164,18 @@ def send_email_alert(user_email: str):
     Send an alert email using Resend when a user provides their email.
     Requires ALERT_EMAIL in your .env and a verified sender address.
     """
-    resend.Emails.send({
-        "from": "al@optimops.ai",        # replace with your verified Resend sender
-        "to": os.getenv("ALERT_EMAIL"),       # set this in your .env
-        "subject": "New Consultation Request from Resume Agent",
-        "html": f"<p>User wants to connect: <strong>{user_email}</strong></p>"
-    })
+    try:
+        to_address = os.getenv("ALERT_EMAIL")
+        if not to_address:
+            raise ValueError("ALERT_EMAIL not set in environment")
+
+        response = resend.Emails.send({
+            "from": "Al Mateus <al@optimops.ai>",   # ✅ verified sender
+            "to": [to_address],                     # ✅ always a list
+            "subject": "📩 New Consultation Request",
+            "html": f"<p>User wants to connect: <strong>{user_email}</strong></p>"
+        })
+        return response
+    except Exception as e:
+        print("❌ Resend send_email_alert failed:", e)
+        raise
