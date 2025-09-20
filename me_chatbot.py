@@ -10,7 +10,10 @@ from pypdf import PdfReader
 import resend
 
 from dotenv import load_dotenv
-load_dotenv()
+import pathlib
+# ✅ Explicitly point to .env in project root
+env_path = pathlib.Path(__file__).parent / ".env"
+load_dotenv(dotenv_path=env_path, override=True)
 
 def get_user_country():
     try:
@@ -160,27 +163,23 @@ Use this format on every answer — make it skimmable and useful.
             return call_openai(messages)
 
 def send_email_alert(user_email: str):
-    """
-    Send an alert email using Resend when a user provides their email.
-    """
     try:
         resend.api_key = os.getenv("RESEND_API_KEY")
         to_address = os.getenv("ALERT_EMAIL")
 
+        print("📧 DEBUG RESEND_API_KEY set:", bool(resend.api_key))
+        print("📧 DEBUG ALERT_EMAIL value:", repr(to_address))
+
         if not to_address:
-            print("⚠️ ALERT_EMAIL not set in environment — email not sent")
+            print("❌ ALERT_EMAIL not set — email not sent")
             return None
 
         response = resend.Emails.send({
-            "from": "al@optimops.ai",   # ✅ verified domain sender
-            "to": to_address,           # ✅ use string, not [to_address]
+            "from": "al@optimops.ai",
+            "to": to_address.strip(),   # ✅ strip whitespace
             "subject": "📩 New Consultation Request",
-            "html": f"""
-                <p>User wants to connect with Al.</p>
-                <p><strong>Email:</strong> {user_email}</p>
-            """
+            "html": f"<p>User wants to connect with Al: <strong>{user_email}</strong></p>"
         })
-
         print("✅ Email sent:", response)
         return response
 
