@@ -150,16 +150,15 @@ if user_input:
     st.session_state.prompt_count += 1
     display_input = user_input
 
-    # >>> START CHANGE 2: capture + suggest email logic <<<
-    # ---- capture email typed directly in chat ----
+    # 📧 Capture email typed directly in chat
     email_match = re.search(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}", user_input)
-    if email_match and not st.session_state.email:
+    if email_match and not st.session_state.get("email"):
         from me_chatbot import send_email_alert
         user_email = email_match.group(0)
         send_email_alert(user_email)
         st.success(f"✅ Thanks! Al has been notified of your email: {user_email}")
         st.session_state.email = user_email
-        st.session_state.email_prompt_shown = True  # prevent showing box later
+
 
     # ---- multilingual transform after we’ve done any email capture ----
     if selected_lang == "中文 (Chinese)":
