@@ -13,7 +13,8 @@ from dotenv import load_dotenv
 import pathlib
 # ✅ Explicitly point to .env in project root
 env_path = pathlib.Path(__file__).parent / ".env"
-load_dotenv(dotenv_path=env_path, override=True)
+if env_path.exists():
+    load_dotenv(dotenv_path=env_path, override=True)
 
 def get_user_country():
     try:
@@ -167,16 +168,15 @@ def send_email_alert(user_email: str):
         resend.api_key = os.getenv("RESEND_API_KEY")
         to_address = os.getenv("ALERT_EMAIL")
 
-        print("📧 DEBUG RESEND_API_KEY set:", bool(resend.api_key))
-        print("📧 DEBUG ALERT_EMAIL value:", repr(to_address))
-
+        print("DEBUG RESEND_API_KEY:", os.getenv("RESEND_API_KEY"))
+        print("DEBUG ALERT_EMAIL:", os.getenv("ALERT_EMAIL"))
         if not to_address:
             print("❌ ALERT_EMAIL not set — email not sent")
             return None
 
         response = resend.Emails.send({
             "from": "al@optimops.ai",
-            "to": to_address.strip(),   # ✅ strip whitespace
+            "to": str(to_address).strip(),
             "subject": "📩 New Consultation Request",
             "html": f"<p>User wants to connect with Al: <strong>{user_email}</strong></p>"
         })
