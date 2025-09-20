@@ -166,18 +166,24 @@ def send_email_alert(user_email: str):
     try:
         resend.api_key = os.getenv("RESEND_API_KEY")
         to_address = os.getenv("ALERT_EMAIL")
+
         if not to_address:
             print("⚠️ ALERT_EMAIL not set in environment — email not sent")
             return None
 
         response = resend.Emails.send({
-            "from": "al@optimops.ai",    # verified sender
-            "to": to_address,            # ✅ use string (works in test_resend.py)
+            "from": "al@optimops.ai",   # ✅ verified domain sender
+            "to": to_address,           # ✅ use string, not [to_address]
             "subject": "📩 New Consultation Request",
-            "html": f"<p>User wants to connect: <strong>{user_email}</strong></p>"
+            "html": f"""
+                <p>User wants to connect with Al.</p>
+                <p><strong>Email:</strong> {user_email}</p>
+            """
         })
+
         print("✅ Email sent:", response)
         return response
+
     except Exception as e:
         print("❌ Resend send_email_alert failed:", e)
         return None
