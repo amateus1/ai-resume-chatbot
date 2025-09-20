@@ -109,6 +109,12 @@ if "user_input" not in st.session_state:
 if "prompt_count" not in st.session_state:
     st.session_state.prompt_count = 0
 
+# >>> START CHANGE 1: add flags for email tracking <<<
+if "email" not in st.session_state:
+    st.session_state.email = None
+if "email_prompt_shown" not in st.session_state:
+    st.session_state.email_prompt_shown = False
+# >>> END CHANGE 1 <<<
 
 # 🤖 Load bot
 me = Me()
@@ -143,27 +149,43 @@ if st.session_state.user_input:
 if user_input:
     st.session_state.prompt_count += 1
     display_input = user_input
-    
-    # 📧 Show email prompt if conditions are met
-    if (
-        st.session_state.prompt_count >= 3 
-        or "get in touch" in user_input.lower() 
-        or "contact" in user_input.lower()
-    ) and "email" not in st.session_state:
-        st.markdown(ui["consult_prompt"])
-        email = st.text_input(ui["consult_input"])
-        if email:
-            from me_chatbot import send_email_alert
-            send_email_alert(email)
-            st.success(ui["consult_success"])
-            st.session_state.email = email
 
-       
+    # >>> START CHANGE 2: capture + suggest email logic <<<
+    # ---- capture email typed directly in chat ----
+    email_match = re.search(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}", user_input)
+    if email_match and not st.session_state.email:
+        from me_chatbot import send_email_alert
+        user_email = email_match.group(0)
+        send_email_alert(user_email)
+        st.success(f"✅ Thanks! Al has been notified of your email: {user_email}")
+        st.session_state.email = user_email
+        st.session_state.email_prompt_shown = True  # prevent showing box later
 
+    # ---- multilingual transform after we’ve done any email capture ----
     if selected_lang == "中文 (Chinese)":
         user_input = f"请用中文回答：{user_input}"
     elif selected_lang == "Español":
         user_input = f"Por favor responde en español: {user_input}"
+
+    # ---- show email input ONCE if conditions match and we don't have an email yet ----
+    should_suggest_email = (
+        (st.session_state.prompt_count >= 3 or any(
+            k in display_input.lower() for k in ["get in touch", "contact", "reach", "email"]
+        ))
+        and not st.session_state.email
+        and not st.session_state.email_prompt_shown
+    )
+
+    if should_suggest_email:
+        st.markdown(ui["consult_prompt"])
+        email_box_value = st.text_input(ui["consult_input"], key="consult_email")
+        st.session_state.email_prompt_shown = True  # ✅ only show once
+        if email_box_value:
+            from me_chatbot import send_email_alert
+            send_email_alert(email_box_value)
+            st.success(ui["consult_success"])
+            st.session_state.email = email_box_value
+    # >>> END CHANGE 2 <<<
 
     # ✅ Right-aligned user bubble
     with st.chat_message("user", avatar="🧑"):
@@ -177,14 +199,6 @@ if user_input:
             """,
             unsafe_allow_html=True
         )
-    # 📧 Check if user input looks like an email
-    email_match = re.search(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}", user_input)
-    if email_match and "email" not in st.session_state:
-        from me_chatbot import send_email_alert
-        user_email = email_match.group(0)
-        send_email_alert(user_email)
-        st.success(f"✅ Thanks! Al has been notified of your email: {user_email}")
-        st.session_state.email = user_email
 
     # 🧠 Generate assistant response
     response = me.chat(user_input, [])
@@ -198,15 +212,6 @@ if user_input:
             stream_box.markdown(full_response + "▌")   # ✅ no unsafe_allow_html
             time.sleep(0.01)
         stream_box.markdown(response)  # ✅ final clean render with Markdown
-    #with st.chat_message("assistant", avatar="🤖"):
-    #    stream_box = st.empty()
-    #    full_response = ""
-    #    for word in response.split():
-    #        full_response += word + " "
-    #        stream_box.markdown(full_response + "▌", unsafe_allow_html=True)
-    #        time.sleep(0.03)
-    #    stream_box.markdown(response, unsafe_allow_html=True)
-
 
     # 💾 Save to history
     st.session_state.history.append((display_input, response))
