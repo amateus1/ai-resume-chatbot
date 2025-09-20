@@ -1,20 +1,30 @@
-# Ignore Python cache/compiled files
+# Python cache / bytecode
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 
-# Ignore backup files
-app-BKUP-*.py
-app-SAV.py
-me_chatbot-SAV.py
-backup_before_recovery/
-
-# Ignore virtual environments
+# Virtual environments
 .venv/
-venv/
 env/
+venv/
 
-# Ignore environment files and logs
+# Streamlit secrets
+.streamlit/secrets.toml
+
+# Environment files
 .env
-*.log
+*.env
+
+# Backup or temp scripts
+backup_before_recovery/
+backups/
+*.bak
+*.swp
+*~
+
+# OS / Editor junk
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
