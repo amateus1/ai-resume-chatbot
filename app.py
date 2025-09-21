@@ -110,7 +110,7 @@ language_options_map = {
 
 # Initialize selected language
 if 'selected_lang' not in st.session_state:
-    st.session_state.selected_lang = "🇺🇸 English"
+    st.session_state.selected_lang = "English"
 
 # Display compact dropdown
 selected_option = st.selectbox(
@@ -123,11 +123,6 @@ selected_option = st.selectbox(
 # Map back to actual language key
 selected_lang = language_options_map[selected_option]
 st.session_state.selected_lang = selected_lang
-ui = language_options[selected_lang]
-
-# Update session state
-st.session_state.selected_lang = language_mapping[selected_flag]
-selected_lang = st.session_state.selected_lang
 ui = language_options[selected_lang]
 
 # 🧠 Session state
