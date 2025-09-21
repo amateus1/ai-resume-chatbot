@@ -41,10 +41,10 @@ st.markdown("""
     }
     .user-bubble {
         background-color: #f0f8ff;
-        padding: 12px 16px;
+        padding: 8px 12px;
         border-radius: 16px;
         font-size: 16px;
-        line-height: 1.6;
+        line-height: 1.4;
         max-width: 85%;
         text-align: right;
         word-break: break-word;
