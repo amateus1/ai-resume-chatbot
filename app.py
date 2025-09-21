@@ -123,25 +123,78 @@ me = Me()
 st.markdown(f"## {ui['title']}")
 st.markdown(ui["desc"])
 
-# 💬 History rendering
-for user, bot in st.session_state.history:
-    with st.chat_message("user", avatar="🧑"):
-        st.markdown(
-            f"""
-            <div class="message-container">
-                <div class="user-bubble">
-                    {user}
+# === Hybrid Layout: Desktop (2-col) vs Mobile (bottom nav) ===
+col_chat, col_nav = st.columns([3, 1])
+
+with col_chat:
+    # 💬 History rendering
+    for user, bot in st.session_state.history:
+        with st.chat_message("user", avatar="🧑"):
+            st.markdown(
+                f"""
+                <div class="message-container">
+                    <div class="user-bubble">
+                        {user}
+                    </div>
                 </div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-    with st.chat_message("assistant", avatar="🤖"):
-        st.markdown(bot, unsafe_allow_html=True)
+                """,
+                unsafe_allow_html=True
+            )
+        with st.chat_message("assistant", avatar="🤖"):
+            st.markdown(bot, unsafe_allow_html=True)
 
-# 🧾 Input box
-user_input = st.chat_input(ui["input_placeholder"])
+    # 🧾 Input box
+    user_input = st.chat_input(ui["input_placeholder"])
 
+with col_nav:
+    st.markdown("### 📂 Menu")
+    if st.button("📊 Projects"):
+        st.session_state.user_input = "Show me projects"
+    if st.button("💼 Experience"):
+        st.session_state.user_input = "Show me experience"
+    if st.button("🛠 Skills"):
+        st.session_state.user_input = "Show me skills"
+    if st.button("🎓 Certifications"):
+        st.session_state.user_input = "Show me certifications"
+
+# Sticky (desktop) + bottom nav (mobile) styles
+st.markdown("""
+    <style>
+    /* Right column sticky on desktop */
+    [data-testid="column"]:last-of-type {
+        position: sticky;
+        top: 1rem;
+        align-self: flex-start;
+    }
+    /* Add breathing room so nav doesn't overlap chat input */
+    .stChatInput {
+        margin-bottom: 3.5rem;
+    }
+    /* Bottom nav bar on mobile */
+    @media (max-width: 768px) {
+        [data-testid="column"]:last-of-type {
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            width: 100%;
+            background: white;
+            padding: 0.5rem 1rem;
+            border-top: 1px solid #ddd;
+            display: flex;
+            justify-content: space-around;
+            z-index: 1000;
+        }
+        [data-testid="column"]:last-of-type button {
+            flex: 1;
+            margin: 0 0.25rem;
+            font-size: 0.8rem;
+            padding: 0.5rem;
+        }
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# === Continue original chat logic ===
 if st.session_state.user_input:
     user_input = st.session_state.user_input
     st.session_state.user_input = ""
