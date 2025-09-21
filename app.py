@@ -110,6 +110,16 @@ language_options = {
     }
 }
 
+# ✅ Initialize session_state variables safely
+if "history" not in st.session_state:
+    st.session_state.history = []
+if "user_input" not in st.session_state:
+    st.session_state.user_input = ""
+if "prompt_count" not in st.session_state:
+    st.session_state.prompt_count = 0
+if "email" not in st.session_state:
+    st.session_state.email = None
+
 # 🌐 Language select
 selected_lang = st.radio(
     "",
@@ -128,12 +138,29 @@ with col_intro:
     st.markdown(f"## {ui['title']}")
     st.markdown(ui["desc"])
 
+# ✅ Render nav only if desktop (>=769px) by injecting a JS width check
+is_mobile = st.session_state.get("is_mobile", None)
+if is_mobile is None:
+    st.markdown(
+        """
+        <script>
+        const width = window.innerWidth;
+        const isMobile = width <= 768;
+        window.parent.postMessage({isMobile: isMobile}, "*");
+        </script>
+        """,
+        unsafe_allow_html=True
+    )
+    st.session_state.is_mobile = False  # fallback default
 
-with col_nav:
-    st.markdown("### 📂 Menu")
-    for idx, item in enumerate(ui["menu"]):
-        if st.button(item, key=f"menu_{idx}"):
-            st.session_state.user_input = f"Show me {item}"
+# Only render nav if not mobile
+if not st.session_state.get("is_mobile", False):
+    with col_nav:
+        st.markdown("### 📂 Menu")
+        for idx, item in enumerate(ui["menu"]):
+            if st.button(item, key=f"menu_{idx}"):
+                st.session_state.user_input = f"Show me {item}"
+
 
 # 💬 History
 for user, bot in st.session_state.history:
