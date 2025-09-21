@@ -49,23 +49,15 @@ st.markdown("""
         text-align: right;
         word-break: break-word;
     }
-    /* COMPACT RADIO BUTTONS */
-    .stRadio > div {
-        flex-direction: row;
-        gap: 0.5rem;
-    }
-    .stRadio > div[role="radiogroup"] > label {
-        min-height: 1.5rem;
-        padding: 0.2rem 0.5rem;
-        margin: 0;
-        font-size: 0.9rem;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        background: #f0f0f0;
-    }
-    .stRadio > div[role="radiogroup"] > label[data-baseweb="radio"] {
-        margin-bottom: 0;
-    }
+/* COMPACT DROPDOWN */
+.stSelectbox > div > div {
+    padding: 0.2rem 0.5rem;
+    min-height: 1.8rem;
+    font-size: 0.9rem;
+}
+.stSelectbox > label {
+    display: none;
+}
     </style>
 """, unsafe_allow_html=True)
 
@@ -109,25 +101,29 @@ language_options = {
         "menu": ["📊 Proyectos", "💼 Experiencia", "🛠 Habilidades", "🎓 Certificaciones"]
     }
 }
-# 🌐 Language select with flags - fixed radio approach
-language_mapping = {
-    "🇺🇸 EN": "English",
-    "🇨🇳 CN": "中文 (Chinese)", 
-    "🇪🇸 ES": "Español"
+# 🌐 Simple Language select - dropdown approach
+language_options_map = {
+    "🇺🇸 English": "English",
+    "🇨🇳 中文": "中文 (Chinese)", 
+    "🇪🇸 Español": "Español"
 }
 
 # Initialize selected language
 if 'selected_lang' not in st.session_state:
-    st.session_state.selected_lang = "🇺🇸 EN"
+    st.session_state.selected_lang = "🇺🇸 English"
 
-# Display compact radio buttons
-selected_flag = st.radio(
+# Display compact dropdown
+selected_option = st.selectbox(
     "",
-    options=list(language_mapping.keys()),
-    horizontal=True,
+    options=list(language_options_map.keys()),
     label_visibility="collapsed",
-    key="lang_radio"
+    key="lang_select"
 )
+
+# Map back to actual language key
+selected_lang = language_options_map[selected_option]
+st.session_state.selected_lang = selected_lang
+ui = language_options[selected_lang]
 
 # Update session state
 st.session_state.selected_lang = language_mapping[selected_flag]
