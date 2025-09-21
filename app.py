@@ -131,36 +131,25 @@ ui = language_options[selected_lang]
 # 🤖 Load bot
 me = Me()
 
-# 🧢 Intro + Nav (render nav only on desktop)
-col_intro, col_nav = st.columns([4, 1])
+# 🧢 Intro + Nav (skip nav on mobile)
 
-with col_intro:
+# Mobile: only intro
+if st.runtime.scriptrunner.get_script_run_ctx().session_data.browser.user_info["width"] <= 768:
     st.markdown(f"## {ui['title']}")
     st.markdown(ui["desc"])
+# Desktop: intro + nav
+else:
+    col_intro, col_nav = st.columns([4, 1])
 
-# ✅ Render nav only if desktop (>=769px) by injecting a JS width check
-is_mobile = st.session_state.get("is_mobile", None)
-if is_mobile is None:
-    st.markdown(
-        """
-        <script>
-        const width = window.innerWidth;
-        const isMobile = width <= 768;
-        window.parent.postMessage({isMobile: isMobile}, "*");
-        </script>
-        """,
-        unsafe_allow_html=True
-    )
-    st.session_state.is_mobile = False  # fallback default
+    with col_intro:
+        st.markdown(f"## {ui['title']}")
+        st.markdown(ui["desc"])
 
-# Only render nav if not mobile
-if not st.session_state.get("is_mobile", False):
     with col_nav:
         st.markdown("### 📂 Menu")
         for idx, item in enumerate(ui["menu"]):
             if st.button(item, key=f"menu_{idx}"):
                 st.session_state.user_input = f"Show me {item}"
-
 
 # 💬 History
 for user, bot in st.session_state.history:
