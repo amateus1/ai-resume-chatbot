@@ -109,42 +109,20 @@ if "user_input" not in st.session_state:
 if "prompt_count" not in st.session_state:
     st.session_state.prompt_count = 0
 
-# >>> START CHANGE 1: add flags for email tracking <<<
 if "email" not in st.session_state:
     st.session_state.email = None
 if "email_prompt_shown" not in st.session_state:
     st.session_state.email_prompt_shown = False
-# >>> END CHANGE 1 <<<
 
 # 🤖 Load bot
 me = Me()
 
-# 🧢 Header
-st.markdown(f"## {ui['title']}")
-st.markdown(ui["desc"])
+# 🧢 Intro + Nav side by side
+col_intro, col_nav = st.columns([3, 1])
 
-# === Hybrid Layout: Desktop (2-col) vs Mobile (bottom nav) ===
-col_chat, col_nav = st.columns([3, 1])
-
-with col_chat:
-    # 💬 History rendering
-    for user, bot in st.session_state.history:
-        with st.chat_message("user", avatar="🧑"):
-            st.markdown(
-                f"""
-                <div class="message-container">
-                    <div class="user-bubble">
-                        {user}
-                    </div>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-        with st.chat_message("assistant", avatar="🤖"):
-            st.markdown(bot, unsafe_allow_html=True)
-
-    # 🧾 Input box
-    user_input = st.chat_input(ui["input_placeholder"])
+with col_intro:
+    st.markdown(f"## {ui['title']}")
+    st.markdown(ui["desc"])
 
 with col_nav:
     st.markdown("### 📂 Menu")
@@ -157,31 +135,56 @@ with col_nav:
     if st.button("🎓 Certifications"):
         st.session_state.user_input = "Show me certifications"
 
-# Sticky (desktop) + bottom nav (mobile) styles
+# 💬 History
+for user, bot in st.session_state.history:
+    with st.chat_message("user", avatar="🧑"):
+        st.markdown(
+            f"""
+            <div class="message-container">
+                <div class="user-bubble">
+                    {user}
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+    with st.chat_message("assistant", avatar="🤖"):
+        st.markdown(bot, unsafe_allow_html=True)
+
+# 🧾 Input
+user_input = st.chat_input(ui["input_placeholder"])
+
+# === Styles for sticky nav + mobile bar ===
 st.markdown("""
     <style>
-    /* Right column sticky on desktop */
+    /* Desktop: right nav sticky beside intro */
     [data-testid="column"]:last-of-type {
         position: sticky;
-        top: 1rem;
+        top: 6rem;
         align-self: flex-start;
     }
-    /* Add breathing room so nav doesn't overlap chat input */
-    .stChatInput {
-        margin-bottom: 3.5rem;
-    }
-    /* Bottom nav bar on mobile */
+    /* Mobile: fix input + nav together */
     @media (max-width: 768px) {
+        .stChatInput {
+            position: fixed;
+            bottom: 3.5rem;
+            left: 0;
+            width: 100%;
+            z-index: 1001;
+            background: white;
+            padding: 0.5rem;
+            border-top: 1px solid #ddd;
+        }
         [data-testid="column"]:last-of-type {
             position: fixed;
             bottom: 0;
-            right: 0;
+            left: 0;
             width: 100%;
             background: white;
-            padding: 0.5rem 1rem;
             border-top: 1px solid #ddd;
             display: flex;
             justify-content: space-around;
+            padding: 0.5rem 0;
             z-index: 1000;
         }
         [data-testid="column"]:last-of-type button {
@@ -194,7 +197,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# === Continue original chat logic ===
+# === Chat logic continues ===
 if st.session_state.user_input:
     user_input = st.session_state.user_input
     st.session_state.user_input = ""
@@ -205,7 +208,6 @@ if user_input:
 
     contact_keywords = ["contact", "reach", "connect", "talk", "email", "get in touch"]
 
-    # 📧 Capture email typed directly in chat
     email_match = re.search(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}", user_input)
     if email_match and not st.session_state.get("email"):
         from me_chatbot import send_email_alert
@@ -217,13 +219,11 @@ if user_input:
         except Exception as e:
             st.error(f"❌ Failed to send email: {e}")
 
-    # ---- multilingual transform after we’ve done any email capture ----
     if selected_lang == "中文 (Chinese)":
         user_input = f"请用中文回答：{user_input}"
     elif selected_lang == "Español":
         user_input = f"Por favor responde en español: {user_input}"
 
-    # ---- show email input ONCE if conditions match and we don't have an email yet ----
     should_suggest_email = (
         (st.session_state.prompt_count >= 3 or any(
             kw in display_input.lower() for kw in contact_keywords
@@ -234,10 +234,9 @@ if user_input:
 
     if should_suggest_email:
         st.markdown(ui["consult_prompt"])
-        st.session_state.email_prompt_shown = True  # ✅ only show once
+        st.session_state.email_prompt_shown = True
             
 
-    # ✅ Right-aligned user bubble
     with st.chat_message("user", avatar="🧑"):
         st.markdown(
             f"""
@@ -250,18 +249,15 @@ if user_input:
             unsafe_allow_html=True
         )
 
-    # 🧠 Generate assistant response
     response = me.chat(user_input, [])
 
-    # 📡 Stream assistant response
     with st.chat_message("assistant", avatar="🤖"):
         stream_box = st.empty()
         full_response = ""
         for char in response:
             full_response += char
-            stream_box.markdown(full_response + "▌")   # ✅ no unsafe_allow_html
+            stream_box.markdown(full_response + "▌")
             time.sleep(0.01)
-        stream_box.markdown(response)  # ✅ final clean render with Markdown
+        stream_box.markdown(response)
 
-    # 💾 Save to history
     st.session_state.history.append((display_input, response))
