@@ -94,9 +94,7 @@ language_options = {
 }
 # 🌐 Language select
 selected_lang = st.radio(
-    "🌐",
-    list(language_options.keys()), 
-    horizontal=True
+    "🌐", list(language_options.keys()), horizontal=True
 )
 ui = language_options[selected_lang]
 
