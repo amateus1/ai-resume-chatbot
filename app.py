@@ -135,15 +135,6 @@ with col_nav:
 
 # (rest of script unchanged: history, chat_input, logic, DeepSeek routing, etc.)
 
-
-# 🌐 Language select (radio instead of dropdown)
-selected_lang = st.radio(
-    "🌐 Choose Language / 选择语言 / Elegir idioma",
-    list(language_options.keys()),
-    horizontal=True
-)
-ui = language_options[selected_lang]
-
 # 🧠 Session state
 if "lang_prev" not in st.session_state:
     st.session_state.lang_prev = selected_lang
