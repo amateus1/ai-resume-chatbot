@@ -3,6 +3,15 @@ import streamlit as st
 import time
 from me_chatbot import Me
 
+# --- handle nav clicks via query param (do not move existing code) ---
+params = st.experimental_get_query_params()
+if "nav" in params and params["nav"]:
+    raw = params["nav"][0]
+    # optional decode "Lang::Label" -> "Label"
+    _clicked = raw.split("::", 1)[1] if "::" in raw else raw
+    st.session_state["user_input"] = f"Show me {_clicked}"
+    st.experimental_set_query_params()
+
 # 🌐 Layout
 st.set_page_config(
     page_title="Meet Hernan 'Al' Mateus — AI Resume Agent",
@@ -128,34 +137,60 @@ me = Me()
 st.markdown(f"## {ui['title']}")
 st.markdown(ui["desc"])
 
-# 📂 Menu under intro
+# 📂 Menu (under the intro) — responsive grid links (no Streamlit buttons)
 st.markdown("### 📂 Menu", unsafe_allow_html=True)
 
-# Inject responsive CSS for buttons
 st.markdown("""
-    <style>
-    div.stButton > button {
-        width: 100%;
-        height: 40px;  /* smaller height */
-        font-size: 0.9rem;
-        font-weight: 500;
-        text-align: center;
-    }
-    .menu-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-        gap: 0.5rem;
-        margin-bottom: 1rem;
-    }
-    </style>
+<style>
+/* Grid container */
+.menu-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(140px,1fr));
+  gap:8px;
+  margin: 4px 0 12px 0;
+}
+
+/* Tile-style link that looks like a compact button */
+.menu-tile{
+  display:block;
+  text-decoration:none !important;
+  background:#fff;
+  border:1px solid rgba(0,0,0,0.15);
+  border-radius:8px;
+  padding:8px 10px;
+  text-align:center;
+  font-size:0.9rem;
+  font-weight:500;
+  color:inherit;
+}
+
+/* Reduce height / keep compact */
+.menu-tile span{
+  display:inline-block;
+  line-height:1.2;
+  vertical-align:middle;
+}
+
+/* Hover */
+.menu-tile:hover{
+  background:#f5f6f8;
+  border-color:rgba(0,0,0,0.25);
+}
+</style>
 """, unsafe_allow_html=True)
 
-# Render buttons directly in grid container
+# render as links so they can sit in a responsive grid
 st.markdown('<div class="menu-grid">', unsafe_allow_html=True)
-for idx, item in enumerate(ui["menu"]):
-    if st.button(item, key=f"menu_{idx}"):
-        st.session_state.user_input = f"Show me {item}"
+for item in ui["menu"]:
+    # item already contains the emoji + label (e.g., "📊 Projects")
+    # clicking the tile reloads with ?nav=<item>, caught by the small handler above
+    st.markdown(
+        f'<a class="menu-tile" href="?nav={st.session_state.get("selected_lang", selected_lang)}::{item}">'
+        f'<span>{item}</span></a>',
+        unsafe_allow_html=True
+    )
 st.markdown('</div>', unsafe_allow_html=True)
+
 
 
 # 💬 History
