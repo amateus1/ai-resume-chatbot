@@ -57,10 +57,9 @@ language_options = {
     "English": {
         "title": "🤖 Meet 'Al' Mateus Agent",
         "desc": (
-            "👋 Welcome! I’m Al’s digital twin — part strategist, part engineer, and a little bit of Star Wars geek.  \n\n"
-            "I’ve been trained on his journey as a **Global AI/MLOps Architect**, **LLM Engineering leader**, and **Scrum 2.0 pioneer**. "
-            "I can walk you through how he builds multi-agent AI systems, scales MLOps pipelines, or even how he’s shaping the next era of work with **Agentic AI teams managed by Agile Product Management tools**.  \n\n"
-            "Curious where to start? Ask me about his certifications, engineering projects, leadership style, or how to create an Agentic workforce that blends humans and AI 🚀"            
+            "👋 I'm Al's AI agent — a **Global AI/MLOps Architect**, **LLM Engineering leader**, and **Scrum 2.0 pioneer**. "
+            "Ask me about building AI systems, scaling MLOps pipelines, or creating **Agentic AI teams** with Agile tools.  \n\n"
+            "💡 Explore his certifications, projects, leadership style, or building human-AI workforce blends. 🚀"
         ),
         "input_placeholder": "Ask something about Al's career...",
         "consult_prompt": "💡 If you'd like a consultation with Al, feel free to share your email below. The chat will continue regardless.",
