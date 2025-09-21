@@ -58,7 +58,8 @@ language_options = {
         "input_placeholder": "Ask something about Al's career...",
         "consult_prompt": "💡 If you'd like a consultation with Al, feel free to share your email below. The chat will continue regardless.",
         "consult_input": "📧 Your email (optional)",
-        "consult_success": "✅ Thanks! Al has been notified and will reach out to you soon."        
+        "consult_success": "✅ Thanks! Al has been notified and will reach out to you soon.",
+        "menu": ["📊 Projects", "💼 Experience", "🛠 Skills", "🎓 Certifications"]        
     },
     "中文 (Chinese)": {
         "title": "🤖 认识 'Al' Mateus —— AI 简历助手",
@@ -72,7 +73,8 @@ language_options = {
         "input_placeholder": "请输入你想了解 Al 的内容...",
         "consult_prompt": "💡 如果您希望与 Al 进行咨询，请在下方留下您的邮箱。聊天将继续进行。",
         "consult_input": "📧 您的邮箱（可选）",
-        "consult_success": "✅ 感谢！Al 已经收到通知，很快会与您联系。"
+        "consult_success": "✅ 感谢！Al 已经收到通知，很快会与您联系。",
+        "menu": ["📊 项目", "💼 经历", "🛠 技能", "🎓 认证"]"
     },
     "Español": {
         "title": "🤖 Conoce a 'Al' Mateus — Asistente AI",
@@ -86,12 +88,12 @@ language_options = {
         "input_placeholder": "Haz una pregunta sobre Al...",
         "consult_prompt": "💡 Si deseas una consulta con Al, puedes dejar tu correo abajo. El chat seguirá normalmente.",
         "consult_input": "📧 Tu correo electrónico (opcional)",
-        "consult_success": "✅ ¡Gracias! Al ha sido notificado y se pondrá en contacto contigo pronto."
+        "consult_success": "✅ ¡Gracias! Al ha sido notificado y se pondrá en contacto contigo pronto.",
+        "menu": ["📊 Proyectos", "💼 Experiencia", "🛠 Habilidades", "🎓 Certificaciones"]
     }
 }
 # 🌐 Language select
 selected_lang = st.radio(
-    "🌐 Language", 
     list(language_options.keys()), 
     horizontal=True
 )
@@ -128,7 +130,7 @@ st.markdown(f"## {ui['title']}")
 st.markdown(ui["desc"])
 
 # 📂 Simple Menu Buttons (under intro)
-menu_items = ["📊 Projects", "💼 Experience", "🛠 Skills", "🎓 Certifications"]
+menu_items = ui["menu"]  # comes from the selected language
 
 cols = st.columns(len(menu_items))
 for idx, item in enumerate(menu_items):
