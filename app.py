@@ -49,12 +49,22 @@ st.markdown("""
         text-align: right;
         word-break: break-word;
     }
-    /* COMPACT LANGUAGE BUTTONS */
-    .stButton > button {
+    /* COMPACT RADIO BUTTONS */
+    .stRadio > div {
+        flex-direction: row;
+        gap: 0.5rem;
+    }
+    .stRadio > div[role="radiogroup"] > label {
         min-height: 1.5rem;
         padding: 0.2rem 0.5rem;
         margin: 0;
         font-size: 0.9rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background: #f0f0f0;
+    }
+    .stRadio > div[role="radiogroup"] > label[data-baseweb="radio"] {
+        margin-bottom: 0;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -99,29 +109,28 @@ language_options = {
         "menu": ["📊 Proyectos", "💼 Experiencia", "🛠 Habilidades", "🎓 Certificaciones"]
     }
 }
-# 🌐 Compact Language select with flags - using buttons instead of radio
-# Initialize selected_lang if not set
+# 🌐 Language select with flags - fixed radio approach
+language_mapping = {
+    "🇺🇸 EN": "English",
+    "🇨🇳 CN": "中文 (Chinese)", 
+    "🇪🇸 ES": "Español"
+}
+
+# Initialize selected language
 if 'selected_lang' not in st.session_state:
-    st.session_state.selected_lang = "English"
+    st.session_state.selected_lang = "🇺🇸 EN"
 
-# Display the language buttons
-col1, col2, col3 = st.columns(3)
-with col1:
-    en_clicked = st.button("🇺🇸 EN", use_container_width=True, key="lang_en")
-with col2:
-    cn_clicked = st.button("🇨🇳 CN", use_container_width=True, key="lang_cn")
-with col3:
-    es_clicked = st.button("🇪🇸 ES", use_container_width=True, key="lang_es")
+# Display compact radio buttons
+selected_flag = st.radio(
+    "",
+    options=list(language_mapping.keys()),
+    horizontal=True,
+    label_visibility="collapsed",
+    key="lang_radio"
+)
 
-# Update session state when buttons are clicked
-if en_clicked:
-    st.session_state.selected_lang = "English"
-if cn_clicked:
-    st.session_state.selected_lang = "中文 (Chinese)"
-if es_clicked:
-    st.session_state.selected_lang = "Español"
-
-# Use session state for selected language
+# Update session state
+st.session_state.selected_lang = language_mapping[selected_flag]
 selected_lang = st.session_state.selected_lang
 ui = language_options[selected_lang]
 
