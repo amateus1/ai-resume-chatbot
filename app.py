@@ -49,18 +49,12 @@ st.markdown("""
         text-align: right;
         word-break: break-word;
     }
-    /* ADD THIS SECTION FOR COMPACT LANGUAGE SELECTOR */
-    .stRadio > div {
-        flex-direction: row;
-        gap: 0.5rem;
-    }
-    .stRadio > div[role="radiogroup"] {
-        gap: 0.5rem;
-    }
-    .stRadio > label {
+    /* COMPACT LANGUAGE BUTTONS */
+    .stButton > button {
         min-height: 1.5rem;
         padding: 0.2rem 0.5rem;
         margin: 0;
+        font-size: 0.9rem;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -105,24 +99,18 @@ language_options = {
         "menu": ["📊 Proyectos", "💼 Experiencia", "🛠 Habilidades", "🎓 Certificaciones"]
     }
 }
-# 🌐 Language select with flags and compact codes
-language_mapping = {
-    "🇺🇸 EN": "English",
-    "🇨🇳 CN": "中文 (Chinese)", 
-    "🇪🇸 ES": "Español"
-}
+# 🌐 Compact Language select with flags - using buttons instead of radio
+col1, col2, col3 = st.columns(3)
+with col1:
+    if st.button("🇺🇸 EN", use_container_width=True, key="lang_en"):
+        selected_lang = "English"
+with col2:
+    if st.button("🇨🇳 CN", use_container_width=True, key="lang_cn"):
+        selected_lang = "中文 (Chinese)"
+with col3:
+    if st.button("🇪🇸 ES", use_container_width=True, key="lang_es"):
+        selected_lang = "Español"
 
-# Get the compact keys for display
-compact_keys = list(language_mapping.keys())
-selected_compact = st.radio(
-    "",
-    compact_keys,
-    horizontal=True,
-    label_visibility="collapsed"
-)
-
-# Map back to the original language key
-selected_lang = language_mapping[selected_compact]
 ui = language_options[selected_lang]
 
 # 🧠 Session state
