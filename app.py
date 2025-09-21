@@ -128,14 +128,12 @@ with col_intro:
     st.markdown(f"## {ui['title']}")
     st.markdown(ui["desc"])
 
-# render nav only if desktop
-if st._is_running_with_streamlit:  # always true inside app, safe placeholder
-    if st.get_option("client.displayMode") != "mobile":  # simple guard
-        with col_nav:
-            st.markdown("### 📂 Menu")
-            for idx, item in enumerate(ui["menu"]):
-                if st.button(item, key=f"menu_{idx}"):
-                    st.session_state.user_input = f"Show me {item}"
+
+with col_nav:
+    st.markdown("### 📂 Menu")
+    for idx, item in enumerate(ui["menu"]):
+        if st.button(item, key=f"menu_{idx}"):
+            st.session_state.user_input = f"Show me {item}"
 
 # 💬 History
 for user, bot in st.session_state.history:
