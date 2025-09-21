@@ -14,7 +14,7 @@ st.markdown("""
     <style>
     .main .block-container {
         max-width: 1000px;
-        padding-top: 1.5rem;
+        padding-top: 0.5rem;  /* pushed higher */
         padding-bottom: 2rem;
         margin: auto;
     }
@@ -45,9 +45,7 @@ st.markdown("""
     /* Desktop: nav scrolls with page */
     @media (min-width: 769px) {
         [data-testid="column"]:last-of-type {
-            position: sticky;
-            top: 6rem;
-            align-self: flex-start;
+            max-width: 180px !important; /* narrower column */
         }
     }
 
@@ -55,6 +53,8 @@ st.markdown("""
     @media (max-width: 768px) {
         [data-testid="column"]:last-of-type {
             display: none !important;
+            visibility: hidden !important;
+            width: 0 !important;
         }
     }
     </style>
@@ -71,6 +71,7 @@ language_options = {
             "Curious where to start? Ask me about his certifications, engineering projects, leadership style, or how to create an Agentic workforce that blends humans and AI.  \n\n"
             "And if you just want the fun stuff — yes, I’ll happily tell you about Thai food, Teslas, or why GPT-5 and DeepSeek are basically the Millennium Falcon of LLMs. 🚀"
         ),
+        "menu": ["📊 Projects", "💼 Experience", "🛠 Skills", "🎓 Certifications"],
         "input_placeholder": "Ask something about Al's career...",
         "consult_prompt": "💡 If you'd like a consultation with Al, feel free to share your email below. The chat will continue regardless.",
         "consult_input": "📧 Your email (optional)",
@@ -85,6 +86,7 @@ language_options = {
             "想知道从哪里开始吗？可以问我他的认证、工程项目、领导风格，或者如何打造一个融合人类与 AI 的 Agentic 团队。  \n\n"
             "当然，如果你只是想聊轻松点的 —— 我也可以分享他对泰国美食、特斯拉赛道体验的热爱，或者为什么 DeepSeek 就像 LLM 世界里的千年隼号。 🚀"
         ),
+        "menu": ["📊 项目", "💼 经历", "🛠 技能", "🎓 认证"],
         "input_placeholder": "请输入你想了解 Al 的内容...",
         "consult_prompt": "💡 如果您希望与 Al 进行咨询，请在下方留下您的邮箱。聊天将继续进行。",
         "consult_input": "📧 您的邮箱（可选）",
@@ -99,12 +101,40 @@ language_options = {
             "¿Con qué quieres empezar? Pregúntame sobre sus certificaciones, proyectos de ingeniería, estilo de liderazgo o cómo crear una fuerza laboral agéntica que combine humanos y AI.  \n\n"
             "Y si prefieres lo divertido — claro, puedo contarte sobre su pasión por la comida tailandesa, las carreras con Tesla o por qué GPT-5 and DeepSeek son básicamente el Halcón Milenario de los LLMs. 🚀"
         ),
+        "menu": ["📊 Proyectos", "💼 Experiencia", "🛠 Habilidades", "🎓 Certificaciones"],
         "input_placeholder": "Haz una pregunta sobre Al...",
         "consult_prompt": "💡 Si deseas una consulta con Al, puedes dejar tu correo abajo. El chat seguirá normalmente.",
         "consult_input": "📧 Tu correo electrónico (opcional)",
         "consult_success": "✅ ¡Gracias! Al ha sido notificado y se pondrá en contacto contigo pronto."
     }
 }
+
+# 🌐 Language select (compact radio)
+selected_lang = st.radio(
+    "",
+    list(language_options.keys()),
+    horizontal=True
+)
+ui = language_options[selected_lang]
+
+# 🤖 Load bot
+me = Me()
+
+# 🧢 Intro + Nav side by side (narrower nav col)
+col_intro, col_nav = st.columns([4, 1])
+
+with col_intro:
+    st.markdown(f"## {ui['title']}")
+    st.markdown(ui["desc"])
+
+with col_nav:
+    st.markdown("### 📂 Menu")
+    for item in ui["menu"]:
+        if st.button(item):
+            st.session_state.user_input = f"Show me {item}"
+
+# (rest of script unchanged: history, chat_input, logic, DeepSeek routing, etc.)
+
 
 # 🌐 Language select (radio instead of dropdown)
 selected_lang = st.radio(
