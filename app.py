@@ -9,12 +9,12 @@ st.set_page_config(
     layout="wide"
 )
 
-# 🎨 Style
+# 🎨 Base Style
 st.markdown("""
     <style>
     .main .block-container {
         max-width: 1000px;
-        padding-top: 0.5rem;  
+        padding-top: 0.5rem;
         padding-bottom: 2rem;
         margin: auto;
     }
@@ -41,21 +41,28 @@ st.markdown("""
         text-align: right;
         word-break: break-word;
     }
-
-    /* Desktop: nav column */
-    @media (min-width: 769px) {
-        [data-testid="column"]:last-of-type {
-            max-width: 180px !important;
-        }
+    /* Responsive grid for menu */
+    div.stButton > button {
+        width: 100%;
+        height: 60px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        text-align: center;
     }
-
-    /* Mobile: hide nav completely */
+    .menu-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    .menu-grid > div {
+        flex: 1 1 calc(25% - 0.5rem); /* 4 per row desktop */
+        max-width: calc(25% - 0.5rem);
+    }
     @media (max-width: 768px) {
-        [data-testid="column"]:last-of-type {
-            display: none !important;
-            visibility: hidden !important;
-            width: 0 !important;
-            overflow: hidden !important;
+        .menu-grid > div {
+            flex: 1 1 calc(50% - 0.5rem); /* 2 per row mobile */
+            max-width: calc(50% - 0.5rem);
         }
     }
     </style>
@@ -76,7 +83,7 @@ language_options = {
         "input_placeholder": "Ask something about Al's career...",
         "consult_prompt": "💡 If you'd like a consultation with Al, feel free to share your email below. The chat will continue regardless.",
         "consult_input": "📧 Your email (optional)",
-        "consult_success": "✅ Thanks! Al has been notified and will reach out to you soon."        
+        "consult_success": "✅ Thanks! Al has been notified and will reach out to you soon."
     },
     "中文 (Chinese)": {
         "title": "🤖 认识 'Al' Mateus —— AI 简历助手",
@@ -110,45 +117,32 @@ language_options = {
     }
 }
 
-# ✅ Initialize session_state variables safely
-if "history" not in st.session_state:
-    st.session_state.history = []
-if "user_input" not in st.session_state:
-    st.session_state.user_input = ""
-if "prompt_count" not in st.session_state:
-    st.session_state.prompt_count = 0
-if "email" not in st.session_state:
-    st.session_state.email = None
-
 # 🌐 Language select
-selected_lang = st.radio(
-    "",
-    list(language_options.keys()),
-    horizontal=True
-)
+selected_lang = st.radio("", list(language_options.keys()), horizontal=True)
 ui = language_options[selected_lang]
 
 # 🤖 Load bot
 me = Me()
 
-# 🧢 Intro with inline nav under it
+# 🧢 Intro
 st.markdown(f"## {ui['title']}")
 st.markdown(ui["desc"])
 
-# 📂 Menu under intro
+# 📂 Menu under intro (responsive grid)
 st.markdown("### 📂 Menu", unsafe_allow_html=True)
+st.markdown('<div class="menu-grid">', unsafe_allow_html=True)
 
-# Arrange buttons in 3 columns per row
 menu_cols = st.columns(4)
-
 for idx, item in enumerate(ui["menu"]):
     with menu_cols[idx % len(menu_cols)]:
         if st.button(item, key=f"menu_{idx}"):
             st.session_state.user_input = f"Show me {item}"
 
-
+st.markdown('</div>', unsafe_allow_html=True)
 
 # 💬 History
+if "history" not in st.session_state:
+    st.session_state.history = []
 for user, bot in st.session_state.history:
     with st.chat_message("user", avatar="🧑"):
         st.markdown(
@@ -167,16 +161,25 @@ for user, bot in st.session_state.history:
 # 🧾 Input
 user_input = st.chat_input(ui["input_placeholder"])
 
-# === Chat logic continues (unchanged) ===
+# === Chat logic (unchanged) ===
+if "user_input" not in st.session_state:
+    st.session_state.user_input = ""
 if st.session_state.user_input:
     user_input = st.session_state.user_input
     st.session_state.user_input = ""
 
 if user_input:
+    if "prompt_count" not in st.session_state:
+        st.session_state.prompt_count = 0
     st.session_state.prompt_count += 1
     display_input = user_input
 
     contact_keywords = ["contact", "reach", "connect", "talk", "email", "get in touch"]
+
+    if "email" not in st.session_state:
+        st.session_state.email = None
+    if "email_prompt_shown" not in st.session_state:
+        st.session_state.email_prompt_shown = False
 
     email_match = re.search(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}", user_input)
     if email_match and not st.session_state.get("email"):
@@ -205,7 +208,6 @@ if user_input:
     if should_suggest_email:
         st.markdown(ui["consult_prompt"])
         st.session_state.email_prompt_shown = True
-            
 
     with st.chat_message("user", avatar="🧑"):
         st.markdown(
