@@ -57,7 +57,7 @@ st.markdown("""
 }
 /* COMPACT MENU BUTTONS */
 div[data-testid="column"] .stButton > button {
-    min-height: 2rem;
+    min-height: 1.5rem;
     padding: 0.2rem 0.5rem;
     margin: 0;
     font-size: 0.9rem;
