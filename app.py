@@ -255,7 +255,7 @@ if user_input:
         for char in response:
             full_response += char
             stream_box.markdown(full_response + "▌")   # ✅ no unsafe_allow_html
-            time.sleep(0.01)
+            # time.sleep(0.01) # trying to speed things up
         stream_box.markdown(response)  # ✅ final clean render with Markdown
 
     # 💾 Save to history
