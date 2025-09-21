@@ -78,7 +78,7 @@ language_options = {
         "consult_prompt": "💡 If you'd like a consultation with Al, feel free to share your email below. The chat will continue regardless.",
         "consult_input": "📧 Your email (optional)",
         "consult_success": "✅ Thanks! Al has been notified and will reach out to you soon.",
-        "menu": ["📊 Projects", "💼 Experience", "🛠 Skills", "🎓 Certifications"]        
+        "menu": ["📊 Projects", "💼 Experience", "🛠 Skills"] #, "🎓 Certifications"]        
     },
     "中文 (Chinese)": {
         "title": "🤖 认识 'Al' Mateus —— AI 简历助手",
