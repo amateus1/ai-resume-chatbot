@@ -8,6 +8,14 @@ st.set_page_config(
     page_title="Meet Hernan 'Al' Mateus — AI Resume Agent",
     layout="wide"
 )
+# tighten top padding
+st.markdown("""
+<style>
+.block-container {
+    padding-top: 0.5rem;   /* default is ~6rem */
+}
+</style>
+""", unsafe_allow_html=True)
 
 # 🎨 Style
 st.markdown("""
