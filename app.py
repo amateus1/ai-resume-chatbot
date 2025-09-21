@@ -128,17 +128,35 @@ me = Me()
 st.markdown(f"## {ui['title']}")
 st.markdown(ui["desc"])
 
-# 📂 Menu under intro (responsive grid)
+# 📂 Menu under intro
 st.markdown("### 📂 Menu", unsafe_allow_html=True)
+
+# Inject responsive CSS for buttons
+st.markdown("""
+    <style>
+    div.stButton > button {
+        width: 100%;
+        height: 40px;  /* smaller height */
+        font-size: 0.9rem;
+        font-weight: 500;
+        text-align: center;
+    }
+    .menu-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# Render buttons directly in grid container
 st.markdown('<div class="menu-grid">', unsafe_allow_html=True)
-
-menu_cols = st.columns(4)
 for idx, item in enumerate(ui["menu"]):
-    with menu_cols[idx % len(menu_cols)]:
-        if st.button(item, key=f"menu_{idx}"):
-            st.session_state.user_input = f"Show me {item}"
-
+    if st.button(item, key=f"menu_{idx}"):
+        st.session_state.user_input = f"Show me {item}"
 st.markdown('</div>', unsafe_allow_html=True)
+
 
 # 💬 History
 if "history" not in st.session_state:
