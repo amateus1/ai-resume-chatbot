@@ -152,7 +152,7 @@ if "email_prompt_shown" not in st.session_state:
 me = Me()
 
 # 🧢 Header
-st.markdown(f"## {ui['title']}")
+#st.markdown(f"## {ui['title']}")
 st.markdown(ui["desc"])
 
 # 📂 Simple Menu Buttons (under intro)
