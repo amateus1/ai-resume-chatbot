@@ -57,9 +57,8 @@ language_options = {
     "English": {
         "title": "🤖 Meet 'Al' Mateus Agent",
         "desc": (
-            "👋 I'm Al's AI agent — a **Global AI/MLOps Architect**, **LLM Engineering leader**, and **Scrum 2.0 pioneer**. "
-            "Ask me about building AI systems, scaling MLOps pipelines, or creating **Agentic AI teams** with Agile tools.  \n\n"
-            "💡 Explore his certifications, projects, leadership style, or building human-AI workforce blends. 🚀"
+            "👋 AI/MLOps Architect & LLM Engineering leader. Ask about AI systems, MLOps pipelines, or Agentic AI teams with Agile tools. "
+            "Explore certifications, projects, or human-AI workforce. 🚀"
         ),
         "input_placeholder": "Ask something about Al's career...",
         "consult_prompt": "💡 If you'd like a consultation with Al, feel free to share your email below. The chat will continue regardless.",
