@@ -100,17 +100,23 @@ language_options = {
     }
 }
 # 🌐 Compact Language select with flags - using buttons instead of radio
+# Initialize selected_lang if not set
+if 'selected_lang' not in st.session_state:
+    st.session_state.selected_lang = "English"
+
 col1, col2, col3 = st.columns(3)
 with col1:
     if st.button("🇺🇸 EN", use_container_width=True, key="lang_en"):
-        selected_lang = "English"
+        st.session_state.selected_lang = "English"
 with col2:
     if st.button("🇨🇳 CN", use_container_width=True, key="lang_cn"):
-        selected_lang = "中文 (Chinese)"
+        st.session_state.selected_lang = "中文 (Chinese)"
 with col3:
     if st.button("🇪🇸 ES", use_container_width=True, key="lang_es"):
-        selected_lang = "Español"
+        st.session_state.selected_lang = "Español"
 
+# Use session state for selected language
+selected_lang = st.session_state.selected_lang
 ui = language_options[selected_lang]
 
 # 🧠 Session state
