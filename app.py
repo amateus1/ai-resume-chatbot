@@ -168,24 +168,6 @@ if "email_prompt_shown" not in st.session_state:
 # 🤖 Load bot
 me = Me()
 
-# 🧢 Intro + Nav side by side
-col_intro, col_nav = st.columns([3, 1])
-
-with col_intro:
-    st.markdown(f"## {ui['title']}")
-    st.markdown(ui["desc"])
-
-with col_nav:
-    st.markdown("### 📂 Menu")
-    if st.button("📊 Projects"):
-        st.session_state.user_input = "Show me projects"
-    if st.button("💼 Experience"):
-        st.session_state.user_input = "Show me experience"
-    if st.button("🛠 Skills"):
-        st.session_state.user_input = "Show me skills"
-    if st.button("🎓 Certifications"):
-        st.session_state.user_input = "Show me certifications"
-
 # 💬 History
 for user, bot in st.session_state.history:
     with st.chat_message("user", avatar="🧑"):
