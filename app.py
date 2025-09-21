@@ -90,7 +90,11 @@ language_options = {
     }
 }
 # 🌐 Language select
-selected_lang = st.selectbox("🌐 Language / 语言 / Idioma", list(language_options.keys()))
+selected_lang = st.radio(
+    "🌐 Language", 
+    list(language_options.keys()), 
+    horizontal=True
+)
 ui = language_options[selected_lang]
 
 # 🧠 Session state
