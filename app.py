@@ -131,21 +131,21 @@ ui = language_options[selected_lang]
 # 🤖 Load bot
 me = Me()
 
-# 🧢 Intro + Nav (CSS hides nav on mobile, but buttons not rendered)
-col_intro, col_nav = st.columns([4, 1])
+# 🧢 Intro with inline nav under it
+st.markdown(f"## {ui['title']}")
+st.markdown(ui["desc"])
 
-with col_intro:
-    st.markdown(f"## {ui['title']}")
-    st.markdown(ui["desc"])
+# 📂 Menu under intro
+st.markdown("### 📂 Menu", unsafe_allow_html=True)
 
-# ✅ Only render nav buttons if wide layout (desktop)
-# Streamlit doesn't expose width, so we approximate using st.columns ratio
-if st.get_option("client.toolbarMode") == "auto":  # always true, but keeps unique scope
-    with col_nav:
-        st.markdown("### 📂 Menu")
-        for idx, item in enumerate(ui["menu"]):
-            if st.button(item, key=f"menu_{idx}"):
-                st.session_state.user_input = f"Show me {item}"
+# Arrange buttons in 3 columns per row
+menu_cols = st.columns(3)
+
+for idx, item in enumerate(ui["menu"]):
+    with menu_cols[idx % len(menu_cols)]:
+        if st.button(item, key=f"menu_{idx}"):
+            st.session_state.user_input = f"Show me {item}"
+
 
 
 # 💬 History
