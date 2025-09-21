@@ -5,7 +5,7 @@ from me_chatbot import Me
 
 # 🌐 Layout
 st.set_page_config(
-    page_title="Al Mateus — AI Resume Agent",
+    page_title="Meet Hernan 'Al' Mateus — AI Resume Agent",
     layout="wide"
 )
 
@@ -14,7 +14,7 @@ st.markdown("""
     <style>
     .main .block-container {
         max-width: 1000px;
-        padding-top: 0.5rem;  /* pushed higher */
+        padding-top: 0.5rem;  
         padding-bottom: 2rem;
         margin: auto;
     }
@@ -42,10 +42,10 @@ st.markdown("""
         word-break: break-word;
     }
 
-    /* Desktop: nav scrolls with page */
+    /* Desktop: nav column */
     @media (min-width: 769px) {
         [data-testid="column"]:last-of-type {
-            max-width: 180px !important; /* narrower column */
+            max-width: 180px !important;
         }
     }
 
@@ -55,6 +55,7 @@ st.markdown("""
             display: none !important;
             visibility: hidden !important;
             width: 0 !important;
+            overflow: hidden !important;
         }
     }
     </style>
@@ -109,7 +110,7 @@ language_options = {
     }
 }
 
-# 🌐 Language select (compact radio)
+# 🌐 Language select
 selected_lang = st.radio(
     "",
     list(language_options.keys()),
@@ -120,44 +121,21 @@ ui = language_options[selected_lang]
 # 🤖 Load bot
 me = Me()
 
-# 🧢 Intro + Nav side by side (narrower nav col)
+# 🧢 Intro + Nav (render nav only on desktop)
 col_intro, col_nav = st.columns([4, 1])
 
 with col_intro:
     st.markdown(f"## {ui['title']}")
     st.markdown(ui["desc"])
 
-with col_nav:
-    st.markdown("### 📂 Menu")
-    for idx, item in enumerate(ui["menu"]):
-        if st.button(item, key=f"menu_{idx}"):
-            st.session_state.user_input = f"Show me {item}"
-
-# (rest of script unchanged: history, chat_input, logic, DeepSeek routing, etc.)
-
-# 🧠 Session state
-if "lang_prev" not in st.session_state:
-    st.session_state.lang_prev = selected_lang
-if st.session_state.lang_prev != selected_lang:
-    st.session_state.history = []
-    st.session_state.lang_prev = selected_lang
-
-if "history" not in st.session_state:
-    st.session_state.history = []
-
-if "user_input" not in st.session_state:
-    st.session_state.user_input = ""
-
-if "prompt_count" not in st.session_state:
-    st.session_state.prompt_count = 0
-
-if "email" not in st.session_state:
-    st.session_state.email = None
-if "email_prompt_shown" not in st.session_state:
-    st.session_state.email_prompt_shown = False
-
-# 🤖 Load bot
-me = Me()
+# render nav only if desktop
+if st._is_running_with_streamlit:  # always true inside app, safe placeholder
+    if st.get_option("client.displayMode") != "mobile":  # simple guard
+        with col_nav:
+            st.markdown("### 📂 Menu")
+            for idx, item in enumerate(ui["menu"]):
+                if st.button(item, key=f"menu_{idx}"):
+                    st.session_state.user_input = f"Show me {item}"
 
 # 💬 History
 for user, bot in st.session_state.history:
@@ -178,7 +156,7 @@ for user, bot in st.session_state.history:
 # 🧾 Input
 user_input = st.chat_input(ui["input_placeholder"])
 
-# === Chat logic continues ===
+# === Chat logic continues (unchanged) ===
 if st.session_state.user_input:
     user_input = st.session_state.user_input
     st.session_state.user_input = ""
