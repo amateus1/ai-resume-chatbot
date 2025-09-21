@@ -12,7 +12,7 @@ st.set_page_config(
 st.markdown("""
 <style>
 .block-container {
-    padding-top: 0.5rem;   /* default is ~6rem */
+    padding-top: 0rem;   /* default is ~6rem */
 }
 </style>
 """, unsafe_allow_html=True)
