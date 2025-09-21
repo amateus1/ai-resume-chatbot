@@ -3,27 +3,18 @@ import streamlit as st
 import time
 from me_chatbot import Me
 
-# --- handle nav clicks via query param (do not move existing code) ---
-params = st.experimental_get_query_params()
-if "nav" in params and params["nav"]:
-    raw = params["nav"][0]
-    # optional decode "Lang::Label" -> "Label"
-    _clicked = raw.split("::", 1)[1] if "::" in raw else raw
-    st.session_state["user_input"] = f"Show me {_clicked}"
-    st.experimental_set_query_params()
-
 # 🌐 Layout
 st.set_page_config(
     page_title="Meet Hernan 'Al' Mateus — AI Resume Agent",
     layout="wide"
 )
 
-# 🎨 Base Style
+# 🎨 Style
 st.markdown("""
     <style>
     .main .block-container {
         max-width: 1000px;
-        padding-top: 0.5rem;
+        padding-top: 1.5rem;
         padding-bottom: 2rem;
         margin: auto;
     }
@@ -50,30 +41,6 @@ st.markdown("""
         text-align: right;
         word-break: break-word;
     }
-    /* Responsive grid for menu */
-    div.stButton > button {
-        width: 100%;
-        height: 60px;
-        font-size: 0.9rem;
-        font-weight: 500;
-        text-align: center;
-    }
-    .menu-grid {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        margin-bottom: 1rem;
-    }
-    .menu-grid > div {
-        flex: 1 1 calc(25% - 0.5rem); /* 4 per row desktop */
-        max-width: calc(25% - 0.5rem);
-    }
-    @media (max-width: 768px) {
-        .menu-grid > div {
-            flex: 1 1 calc(50% - 0.5rem); /* 2 per row mobile */
-            max-width: calc(50% - 0.5rem);
-        }
-    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -88,11 +55,10 @@ language_options = {
             "Curious where to start? Ask me about his certifications, engineering projects, leadership style, or how to create an Agentic workforce that blends humans and AI.  \n\n"
             "And if you just want the fun stuff — yes, I’ll happily tell you about Thai food, Teslas, or why GPT-5 and DeepSeek are basically the Millennium Falcon of LLMs. 🚀"
         ),
-        "menu": ["📊 Projects", "💼 Experience", "🛠 Skills", "🎓 Certifications"],
         "input_placeholder": "Ask something about Al's career...",
         "consult_prompt": "💡 If you'd like a consultation with Al, feel free to share your email below. The chat will continue regardless.",
         "consult_input": "📧 Your email (optional)",
-        "consult_success": "✅ Thanks! Al has been notified and will reach out to you soon."
+        "consult_success": "✅ Thanks! Al has been notified and will reach out to you soon."        
     },
     "中文 (Chinese)": {
         "title": "🤖 认识 'Al' Mateus —— AI 简历助手",
@@ -103,7 +69,6 @@ language_options = {
             "想知道从哪里开始吗？可以问我他的认证、工程项目、领导风格，或者如何打造一个融合人类与 AI 的 Agentic 团队。  \n\n"
             "当然，如果你只是想聊轻松点的 —— 我也可以分享他对泰国美食、特斯拉赛道体验的热爱，或者为什么 DeepSeek 就像 LLM 世界里的千年隼号。 🚀"
         ),
-        "menu": ["📊 项目", "💼 经历", "🛠 技能", "🎓 认证"],
         "input_placeholder": "请输入你想了解 Al 的内容...",
         "consult_prompt": "💡 如果您希望与 Al 进行咨询，请在下方留下您的邮箱。聊天将继续进行。",
         "consult_input": "📧 您的邮箱（可选）",
@@ -118,84 +83,56 @@ language_options = {
             "¿Con qué quieres empezar? Pregúntame sobre sus certificaciones, proyectos de ingeniería, estilo de liderazgo o cómo crear una fuerza laboral agéntica que combine humanos y AI.  \n\n"
             "Y si prefieres lo divertido — claro, puedo contarte sobre su pasión por la comida tailandesa, las carreras con Tesla o por qué GPT-5 and DeepSeek son básicamente el Halcón Milenario de los LLMs. 🚀"
         ),
-        "menu": ["📊 Proyectos", "💼 Experiencia", "🛠 Habilidades", "🎓 Certificaciones"],
         "input_placeholder": "Haz una pregunta sobre Al...",
         "consult_prompt": "💡 Si deseas una consulta con Al, puedes dejar tu correo abajo. El chat seguirá normalmente.",
         "consult_input": "📧 Tu correo electrónico (opcional)",
         "consult_success": "✅ ¡Gracias! Al ha sido notificado y se pondrá en contacto contigo pronto."
     }
 }
-
 # 🌐 Language select
-selected_lang = st.radio("", list(language_options.keys()), horizontal=True)
+selected_lang = st.selectbox("🌐 Language / 语言 / Idioma", list(language_options.keys()))
 ui = language_options[selected_lang]
+
+# 🧠 Session state
+if "lang_prev" not in st.session_state:
+    st.session_state.lang_prev = selected_lang
+if st.session_state.lang_prev != selected_lang:
+    st.session_state.history = []
+    st.session_state.lang_prev = selected_lang
+
+if "history" not in st.session_state:
+    st.session_state.history = []
+
+if "user_input" not in st.session_state:
+    st.session_state.user_input = ""
+
+if "prompt_count" not in st.session_state:
+    st.session_state.prompt_count = 0
+
+# >>> START CHANGE 1: add flags for email tracking <<<
+if "email" not in st.session_state:
+    st.session_state.email = None
+if "email_prompt_shown" not in st.session_state:
+    st.session_state.email_prompt_shown = False
+# >>> END CHANGE 1 <<<
 
 # 🤖 Load bot
 me = Me()
 
-# 🧢 Intro
+# 🧢 Header
 st.markdown(f"## {ui['title']}")
 st.markdown(ui["desc"])
 
-# 📂 Menu (under the intro) — responsive grid links (no Streamlit buttons)
-st.markdown("### 📂 Menu", unsafe_allow_html=True)
+# 📂 Simple Menu Buttons (under intro)
+menu_items = ["📊 Projects", "💼 Experience", "🛠 Skills", "🎓 Certifications"]
 
-st.markdown("""
-<style>
-/* Grid container */
-.menu-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit, minmax(140px,1fr));
-  gap:8px;
-  margin: 4px 0 12px 0;
-}
+cols = st.columns(len(menu_items))
+for idx, item in enumerate(menu_items):
+    with cols[idx]:
+        if st.button(item, key=f"menu_{idx}"):
+            st.session_state.user_input = f"Show me {item}"
 
-/* Tile-style link that looks like a compact button */
-.menu-tile{
-  display:block;
-  text-decoration:none !important;
-  background:#fff;
-  border:1px solid rgba(0,0,0,0.15);
-  border-radius:8px;
-  padding:8px 10px;
-  text-align:center;
-  font-size:0.9rem;
-  font-weight:500;
-  color:inherit;
-}
-
-/* Reduce height / keep compact */
-.menu-tile span{
-  display:inline-block;
-  line-height:1.2;
-  vertical-align:middle;
-}
-
-/* Hover */
-.menu-tile:hover{
-  background:#f5f6f8;
-  border-color:rgba(0,0,0,0.25);
-}
-</style>
-""", unsafe_allow_html=True)
-
-# render as links so they can sit in a responsive grid
-st.markdown('<div class="menu-grid">', unsafe_allow_html=True)
-for item in ui["menu"]:
-    # item already contains the emoji + label (e.g., "📊 Projects")
-    # clicking the tile reloads with ?nav=<item>, caught by the small handler above
-    st.markdown(
-        f'<a class="menu-tile" href="?nav={st.session_state.get("selected_lang", selected_lang)}::{item}">'
-        f'<span>{item}</span></a>',
-        unsafe_allow_html=True
-    )
-st.markdown('</div>', unsafe_allow_html=True)
-
-
-
-# 💬 History
-if "history" not in st.session_state:
-    st.session_state.history = []
+# 💬 History rendering
 for user, bot in st.session_state.history:
     with st.chat_message("user", avatar="🧑"):
         st.markdown(
@@ -211,29 +148,20 @@ for user, bot in st.session_state.history:
     with st.chat_message("assistant", avatar="🤖"):
         st.markdown(bot, unsafe_allow_html=True)
 
-# 🧾 Input
+# 🧾 Input box
 user_input = st.chat_input(ui["input_placeholder"])
 
-# === Chat logic (unchanged) ===
-if "user_input" not in st.session_state:
-    st.session_state.user_input = ""
 if st.session_state.user_input:
     user_input = st.session_state.user_input
     st.session_state.user_input = ""
 
 if user_input:
-    if "prompt_count" not in st.session_state:
-        st.session_state.prompt_count = 0
     st.session_state.prompt_count += 1
     display_input = user_input
 
     contact_keywords = ["contact", "reach", "connect", "talk", "email", "get in touch"]
 
-    if "email" not in st.session_state:
-        st.session_state.email = None
-    if "email_prompt_shown" not in st.session_state:
-        st.session_state.email_prompt_shown = False
-
+    # 📧 Capture email typed directly in chat
     email_match = re.search(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}", user_input)
     if email_match and not st.session_state.get("email"):
         from me_chatbot import send_email_alert
@@ -245,11 +173,13 @@ if user_input:
         except Exception as e:
             st.error(f"❌ Failed to send email: {e}")
 
+    # ---- multilingual transform after we’ve done any email capture ----
     if selected_lang == "中文 (Chinese)":
         user_input = f"请用中文回答：{user_input}"
     elif selected_lang == "Español":
         user_input = f"Por favor responde en español: {user_input}"
 
+    # ---- show email input ONCE if conditions match and we don't have an email yet ----
     should_suggest_email = (
         (st.session_state.prompt_count >= 3 or any(
             kw in display_input.lower() for kw in contact_keywords
@@ -260,8 +190,10 @@ if user_input:
 
     if should_suggest_email:
         st.markdown(ui["consult_prompt"])
-        st.session_state.email_prompt_shown = True
+        st.session_state.email_prompt_shown = True  # ✅ only show once
+            
 
+    # ✅ Right-aligned user bubble
     with st.chat_message("user", avatar="🧑"):
         st.markdown(
             f"""
@@ -274,15 +206,18 @@ if user_input:
             unsafe_allow_html=True
         )
 
+    # 🧠 Generate assistant response
     response = me.chat(user_input, [])
 
+    # 📡 Stream assistant response
     with st.chat_message("assistant", avatar="🤖"):
         stream_box = st.empty()
         full_response = ""
         for char in response:
             full_response += char
-            stream_box.markdown(full_response + "▌")
+            stream_box.markdown(full_response + "▌")   # ✅ no unsafe_allow_html
             time.sleep(0.01)
-        stream_box.markdown(response)
+        stream_box.markdown(response)  # ✅ final clean render with Markdown
 
+    # 💾 Save to history
     st.session_state.history.append((display_input, response))
