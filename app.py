@@ -64,7 +64,7 @@ st.markdown("""
 # 🌍 Language options
 language_options = {
     "English": {
-        "title": "🤖 Al Mateus Career Agent",
+        # "title": "🤖 Al Mateus Career Agent",
         "desc": "👋 Agentic AI & LLM Engineering leader. Explore his certifications, projects, or human-AI workforce experience. 🚀",
         "input_placeholder": "Ask something about Al's career...",
         "consult_prompt": "💡 If you'd like a consultation with Al, feel free to share your email below. The chat will continue regardless.",
