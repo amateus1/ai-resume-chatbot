@@ -12,65 +12,33 @@ st.set_page_config(
 # 🎨 Style
 st.markdown("""
     <style>
-    .main .block-container {
-        max-width: 1000px;
-        padding-top: 1.5rem;
-        padding-bottom: 2rem;
-        margin: auto;
-    }
-    h1, h2, h3, h4 {
-        font-size: 1.2rem !important;
-    }
-    p, li {
-        font-size: 0.95rem !important;
-        line-height: 1.6;
-    }
-    .message-container {
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    .user-bubble {
-        background-color: #f0f8ff;
-        padding: 12px 16px;
-        border-radius: 16px;
-        font-size: 16px;
-        line-height: 1.6;
-        max-width: 85%;
-        text-align: right;
-        word-break: break-word;
+    /* Desktop: make nav sticky beside intro */
+    [data-testid="column"]:last-of-type {
+        position: sticky;
+        top: 6rem;   /* aligned with intro */
+        align-self: flex-start;
     }
 
-    /* Desktop: sticky right nav */
-    @media (min-width: 769px) {
-        div[data-testid="column"]:last-of-type > div {
-            position: sticky;
-            top: 4rem;   /* nav stays pinned below header */
-            align-self: flex-start;
-        }
-    }
-
-    /* Mobile: hide nav completely */
+    /* Mobile: revert to normal flow (no fixed positioning) */
     @media (max-width: 768px) {
-        div[data-testid="column"]:last-of-type {
-            display: none !important;
+        .stChatInput {
+            position: relative;
+            margin-top: 1rem;
         }
-    }
-
-    /* Ensure chat input always sticky at bottom */
-    .stChatInput {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        background: white;
-        padding: 0.5rem;
-        border-top: 1px solid #ddd;
-        z-index: 100;
+        [data-testid="column"]:last-of-type {
+            position: relative;
+            width: 100%;
+            display: block;
+        }
+        [data-testid="column"]:last-of-type button {
+            width: 100%;
+            margin: 0.25rem 0;
+            font-size: 1rem;
+        }
     }
     </style>
 """, unsafe_allow_html=True)
+
 
 # 🌍 Language options
 language_options = {
@@ -117,7 +85,6 @@ language_options = {
         "consult_success": "✅ ¡Gracias! Al ha sido notificado y se pondrá en contacto contigo pronto."
     }
 }
-
 # 🌐 Language select
 selected_lang = st.selectbox("🌐 Language / 语言 / Idioma", list(language_options.keys()))
 ui = language_options[selected_lang]
@@ -146,32 +113,12 @@ if "email_prompt_shown" not in st.session_state:
 # 🤖 Load bot
 me = Me()
 
-# === Permanent 2-column layout ===
-col_chat, col_nav = st.columns([3, 1])
+# 🧢 Intro + Nav side by side
+col_intro, col_nav = st.columns([3, 1])
 
-with col_chat:
-    # 🧢 Intro
+with col_intro:
     st.markdown(f"## {ui['title']}")
     st.markdown(ui["desc"])
-
-    # 💬 History
-    for user, bot in st.session_state.history:
-        with st.chat_message("user", avatar="🧑"):
-            st.markdown(
-                f"""
-                <div class="message-container">
-                    <div class="user-bubble">
-                        {user}
-                    </div>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-        with st.chat_message("assistant", avatar="🤖"):
-            st.markdown(bot, unsafe_allow_html=True)
-
-    # 🧾 Input
-    user_input = st.chat_input(ui["input_placeholder"])
 
 with col_nav:
     st.markdown("### 📂 Menu")
@@ -183,6 +130,68 @@ with col_nav:
         st.session_state.user_input = "Show me skills"
     if st.button("🎓 Certifications"):
         st.session_state.user_input = "Show me certifications"
+
+# 💬 History
+for user, bot in st.session_state.history:
+    with st.chat_message("user", avatar="🧑"):
+        st.markdown(
+            f"""
+            <div class="message-container">
+                <div class="user-bubble">
+                    {user}
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+    with st.chat_message("assistant", avatar="🤖"):
+        st.markdown(bot, unsafe_allow_html=True)
+
+# 🧾 Input
+user_input = st.chat_input(ui["input_placeholder"])
+
+# === Styles for sticky nav + mobile bar ===
+st.markdown("""
+    <style>
+    /* Desktop: right nav sticky beside intro */
+    [data-testid="column"]:last-of-type {
+        position: sticky;
+        top: 6rem;
+        align-self: flex-start;
+    }
+    /* Mobile: fix input + nav together */
+    @media (max-width: 768px) {
+        .stChatInput {
+            position: fixed;
+            bottom: 3.5rem;
+            left: 0;
+            width: 100%;
+            z-index: 1001;
+            background: white;
+            padding: 0.5rem;
+            border-top: 1px solid #ddd;
+        }
+        [data-testid="column"]:last-of-type {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: white;
+            border-top: 1px solid #ddd;
+            display: flex;
+            justify-content: space-around;
+            padding: 0.5rem 0;
+            z-index: 1000;
+        }
+        [data-testid="column"]:last-of-type button {
+            flex: 1;
+            margin: 0 0.25rem;
+            font-size: 0.8rem;
+            padding: 0.5rem;
+        }
+    }
+    </style>
+""", unsafe_allow_html=True)
 
 # === Chat logic continues ===
 if st.session_state.user_input:
