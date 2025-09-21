@@ -5,7 +5,7 @@ from me_chatbot import Me
 
 # 🌐 Layout
 st.set_page_config(
-    page_title="Meet Hernan 'Al' Mateus — AI Resume Agent",
+    page_title="Al Mateus — AI Resume Agent",
     layout="wide"
 )
 
@@ -129,8 +129,8 @@ with col_intro:
 
 with col_nav:
     st.markdown("### 📂 Menu")
-    for item in ui["menu"]:
-        if st.button(item):
+    for idx, item in enumerate(ui["menu"]):
+        if st.button(item, key=f"menu_{idx}"):
             st.session_state.user_input = f"Show me {item}"
 
 # (rest of script unchanged: history, chat_input, logic, DeepSeek routing, etc.)
