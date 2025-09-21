@@ -42,21 +42,32 @@ st.markdown("""
         word-break: break-word;
     }
 
-    /* Desktop: permanent 2-column layout with sticky nav */
+    /* Desktop: sticky right nav */
     @media (min-width: 769px) {
-        [data-testid="column"]:last-of-type {
+        div[data-testid="column"]:last-of-type > div {
             position: sticky;
-            top: 4rem;
+            top: 4rem;   /* nav stays pinned below header */
             align-self: flex-start;
-            height: 100vh;
         }
     }
 
     /* Mobile: hide nav completely */
     @media (max-width: 768px) {
-        [data-testid="column"]:last-of-type {
+        div[data-testid="column"]:last-of-type {
             display: none !important;
         }
+    }
+
+    /* Ensure chat input always sticky at bottom */
+    .stChatInput {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: white;
+        padding: 0.5rem;
+        border-top: 1px solid #ddd;
+        z-index: 100;
     }
     </style>
 """, unsafe_allow_html=True)
