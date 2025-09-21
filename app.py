@@ -104,16 +104,22 @@ language_options = {
 if 'selected_lang' not in st.session_state:
     st.session_state.selected_lang = "English"
 
+# Display the language buttons
 col1, col2, col3 = st.columns(3)
 with col1:
-    if st.button("🇺🇸 EN", use_container_width=True, key="lang_en"):
-        st.session_state.selected_lang = "English"
+    en_clicked = st.button("🇺🇸 EN", use_container_width=True, key="lang_en")
 with col2:
-    if st.button("🇨🇳 CN", use_container_width=True, key="lang_cn"):
-        st.session_state.selected_lang = "中文 (Chinese)"
+    cn_clicked = st.button("🇨🇳 CN", use_container_width=True, key="lang_cn")
 with col3:
-    if st.button("🇪🇸 ES", use_container_width=True, key="lang_es"):
-        st.session_state.selected_lang = "Español"
+    es_clicked = st.button("🇪🇸 ES", use_container_width=True, key="lang_es")
+
+# Update session state when buttons are clicked
+if en_clicked:
+    st.session_state.selected_lang = "English"
+if cn_clicked:
+    st.session_state.selected_lang = "中文 (Chinese)"
+if es_clicked:
+    st.session_state.selected_lang = "Español"
 
 # Use session state for selected language
 selected_lang = st.session_state.selected_lang
