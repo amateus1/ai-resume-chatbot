@@ -12,37 +12,33 @@ st.set_page_config(
 # 🎨 Style
 st.markdown("""
     <style>
-    .main .block-container {
-        max-width: 1000px;
-        padding-top: 1.5rem;
-        padding-bottom: 2rem;
-        margin: auto;
+    /* Desktop: make nav sticky beside intro */
+    [data-testid="column"]:last-of-type {
+        position: sticky;
+        top: 6rem;   /* aligned with intro */
+        align-self: flex-start;
     }
-    h1, h2, h3, h4 {
-        font-size: 1.2rem !important;
-    }
-    p, li {
-        font-size: 0.95rem !important;
-        line-height: 1.6;
-    }
-    .message-container {
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    .user-bubble {
-        background-color: #f0f8ff;
-        padding: 12px 16px;
-        border-radius: 16px;
-        font-size: 16px;
-        line-height: 1.6;
-        max-width: 85%;
-        text-align: right;
-        word-break: break-word;
+
+    /* Mobile: revert to normal flow (no fixed positioning) */
+    @media (max-width: 768px) {
+        .stChatInput {
+            position: relative;
+            margin-top: 1rem;
+        }
+        [data-testid="column"]:last-of-type {
+            position: relative;
+            width: 100%;
+            display: block;
+        }
+        [data-testid="column"]:last-of-type button {
+            width: 100%;
+            margin: 0.25rem 0;
+            font-size: 1rem;
+        }
     }
     </style>
 """, unsafe_allow_html=True)
+
 
 # 🌍 Language options
 language_options = {
