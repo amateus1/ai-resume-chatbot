@@ -55,6 +55,14 @@ st.markdown("""
     min-height: 1.8rem;
     font-size: 0.9rem;
 }
+/* COMPACT MENU BUTTONS */
+div[data-testid="column"] .stButton > button {
+    min-height: 2rem;
+    padding: 0.2rem 0.5rem;
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.2;
+}
 .stSelectbox > label {
     display: none;
 }
