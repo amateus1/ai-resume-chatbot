@@ -139,7 +139,7 @@ st.markdown(ui["desc"])
 st.markdown("### 📂 Menu", unsafe_allow_html=True)
 
 # Arrange buttons in 3 columns per row
-menu_cols = st.columns(3)
+menu_cols = st.columns(4)
 
 for idx, item in enumerate(ui["menu"]):
     with menu_cols[idx % len(menu_cols)]:
