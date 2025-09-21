@@ -141,11 +141,18 @@ st.markdown(ui["desc"])
 # 📂 Simple Menu Buttons (under intro)
 menu_items = ui["menu"]  # comes from the selected language
 
-cols = st.columns(len(menu_items))
+# Create responsive columns - 4 on desktop, 2x2 on tablet, 1x4 on mobile
+cols = st.columns([1, 1, 1, 1])  # Equal width for all columns
+
 for idx, item in enumerate(menu_items):
     with cols[idx]:
-        if st.button(item, key=f"menu_{idx}"):
+        if st.button(item, key=f"menu_{idx}", use_container_width=True):
             st.session_state.user_input = f"Show me {item}"
+#cols = st.columns(len(menu_items))
+#for idx, item in enumerate(menu_items):
+#    with cols[idx]:
+#        if st.button(item, key=f"menu_{idx}"):
+#            st.session_state.user_input = f"Show me {item}"
 
 # 💬 History rendering
 for user, bot in st.session_state.history:
