@@ -77,41 +77,28 @@ div[data-testid="column"] {
 # 🌍 Language options
 language_options = {
     "English": {
-        # "title": "🤖 Al Mateus Career Agent",
-        "desc": "👋 Welcome to Al Mateus Agentic AI & LLM Engineering leadership world. Ask anything about my careeer journey. 🚀",
+        "desc": "👋 Welcome to **Al Mateus Agentic AI & LLM Engineering leadership** world. Ask anything about my career journey. 🚀",
         "input_placeholder": "Ask something about Al's career...",
         "consult_prompt": "💡 If you'd like a consultation with Al, feel free to share your email below. The chat will continue regardless.",
         "consult_input": "📧 Your email (optional)",
         "consult_success": "✅ Thanks! Al has been notified and will reach out to you soon.",
-        "menu": ["📊 Projects", "💼 Experience", "🛠 Skills"] #, "🎓 Certifications"]        
+        "menu": ["📊 Projects", "💼 Experience", "🛠 Skills"]
     },
     "中文 (Chinese)": {
-        "title": "🤖 认识 'Al' Mateus —— AI 简历助手",
-        "desc": (
-            "👋 欢迎！我是 Al 的数字分身 —— 既是战略家，也是工程师，还带点星球大战极客的味道。  \n\n"
-            "我基于他作为 **全球 AI/MLOps 架构师**、**LLM 工程领导者** 和 **Scrum 2.0 先行者** 的职业旅程而训练。 "
-            "我可以向你展示他如何构建多智能体 AI 系统、扩展 MLOps 流水线，甚至如何通过 **由敏捷产品管理工具驱动的 Agentic AI 团队** 来塑造工作的下一个时代。  \n\n"
-            "想知道从哪里开始吗？可以问我他的认证、工程项目、领导风格，或者如何打造一个融合人类与 AI 的 Agentic 团队  🚀。"            
-        ),
+        "desc": "👋 欢迎来到 **Al Mateus 的 Agentic AI 与 LLM 工程领导力**世界。探索他的认证、项目或人机协作团队经验。🚀",
         "input_placeholder": "请输入你想了解 Al 的内容...",
         "consult_prompt": "💡 如果您希望与 Al 进行咨询，请在下方留下您的邮箱。聊天将继续进行。",
         "consult_input": "📧 您的邮箱（可选）",
         "consult_success": "✅ 感谢！Al 已经收到通知，很快会与您联系。",
-        "menu": ["📊 项目", "💼 经历", "🛠 技能", "🎓 认证"]
+        "menu": ["📊 项目", "💼 经历", "🛠 技能"]
     },
     "Español": {
-        "title": "🤖 Conoce a 'Al' Mateus — Asistente AI",
-        "desc": (
-            "👋 ¡Bienvenido! Soy el gemelo digital de Al — parte estratega, parte ingeniero y con un toque de fanático de Star Wars.  \n\n"
-            "He sido entrenado en su trayectoria como **Arquitecto Global de AI/MLOps**, **líder en Ingeniería de LLMs** y **pionero de Scrum 2.0**. "
-            "Puedo mostrarte cómo construye sistemas de IA multi-agente, cómo escala pipelines de MLOps, o incluso cómo está dando forma a la próxima era del trabajo con **equipos Agentic AI gestionados por herramientas de Agile Product Management**.  \n\n"
-            "¿Con qué quieres empezar? Pregúntame sobre sus certificaciones, proyectos de ingeniería, estilo de liderazgo o cómo crear una fuerza laboral agéntica que combine humanos y AI 🚀."            
-        ),
+        "desc": "👋 Bienvenido al mundo de **Agentic AI & Liderazgo en Ingeniería LLM de Al Mateus**. Explora sus certificaciones, proyectos o experiencia en equipos humano-IA. 🚀",
         "input_placeholder": "Haz una pregunta sobre Al...",
         "consult_prompt": "💡 Si deseas una consulta con Al, puedes dejar tu correo abajo. El chat seguirá normalmente.",
         "consult_input": "📧 Tu correo electrónico (opcional)",
         "consult_success": "✅ ¡Gracias! Al ha sido notificado y se pondrá en contacto contigo pronto.",
-        "menu": ["📊 Proyectos", "💼 Experiencia", "🛠 Habilidades", "🎓 Certificaciones"]
+        "menu": ["📊 Proyectos", "💼 Experiencia", "🛠 Habilidades"]
     }
 }
 # 🌐 Simple Language select - dropdown approach
