@@ -4,13 +4,24 @@ import time
 import requests
 from me_chatbot import Me
 
-# 🚀 SIMPLE KEEP-AWAKE (No threading)
-def ping_app():
+# 🚀 SILENT KEEP-AWAKE (Hidden from users)
+if "ping_count" not in st.session_state:
+    st.session_state.ping_count = 0
+    st.session_state.last_ping = time.time()
+
+# Silent ping every 10th reload or every 30 minutes
+current_time = time.time()
+if (st.session_state.ping_count % 10 == 0 or 
+    (current_time - st.session_state.last_ping) > 1800):  # 30 minutes
+    
     try:
+        # Silent ping - no user feedback
         requests.get("https://almateus.me", timeout=5)
-        st.success("✅ App pinged successfully!")
-    except Exception as e:
-        st.error(f"❌ Ping failed: {e}")
+        st.session_state.last_ping = current_time
+    except:
+        pass  # Silent fail
+
+st.session_state.ping_count += 1
 
 
 # 🌐 Layout
