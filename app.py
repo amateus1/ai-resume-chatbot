@@ -1,22 +1,18 @@
 import re
 import streamlit as st
 import time
+import requests
 from me_chatbot import Me
 
-def keep_alive():
-    while True:
-        try:
-            # Ping your custom domain
-            requests.get("https://almateus.me", timeout=10)
-            time.sleep(300)  # 5 minutes
-        except:
-            time.sleep(60)
+# 🚀 SIMPLE KEEP-AWAKE (No threading)
+def ping_app():
+    try:
+        requests.get("https://almateus.me", timeout=5)
+        st.success("✅ App pinged successfully!")
+    except Exception as e:
+        st.error(f"❌ Ping failed: {e}")
 
-if not hasattr(st, '_keep_alive_started'):
-    thread = threading.Thread(target=keep_alive, daemon=True)
-    thread.start()
-    st._keep_alive_started = True
-    
+
 # 🌐 Layout
 st.set_page_config(
     page_title="Meet 'Al' Mateus — AI Resume Agent",
