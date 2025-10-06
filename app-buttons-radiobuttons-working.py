@@ -3,30 +3,16 @@ import streamlit as st
 import time
 from me_chatbot import Me
 
-def keep_alive():
-    while True:
-        try:
-            # Ping your custom domain
-            requests.get("https://almateus.me", timeout=10)
-            time.sleep(300)  # 5 minutes
-        except:
-            time.sleep(60)
-
-if not hasattr(st, '_keep_alive_started'):
-    thread = threading.Thread(target=keep_alive, daemon=True)
-    thread.start()
-    st._keep_alive_started = True
-    
 # 🌐 Layout
 st.set_page_config(
-    page_title="Meet 'Al' Mateus — AI Resume Agent",
+    page_title="Meet Hernan 'Al' Mateus — AI Resume Agent",
     layout="wide"
 )
 # tighten top padding
 st.markdown("""
 <style>
 .block-container {
-    padding-top: 1.7rem;   /* default is ~6rem */
+    padding-top: 0rem;   /* default is ~6rem */
 }
 </style>
 """, unsafe_allow_html=True)
@@ -55,88 +41,71 @@ st.markdown("""
     }
     .user-bubble {
         background-color: #f0f8ff;
-        padding: 8px 12px;
+        padding: 12px 16px;
         border-radius: 16px;
         font-size: 16px;
-        line-height: 1.4;
+        line-height: 1.6;
         max-width: 85%;
         text-align: right;
         word-break: break-word;
     }
-/* COMPACT DROPDOWN */
-.stSelectbox > div > div {
-    padding: 0.2rem 0.5rem;
-    min-height: 1.8rem;
-    font-size: 0.9rem;
-}
-/* COMPACT MENU BUTTONS */
-div[data-testid="column"] .stButton > button {
-    min-height: 1.2rem;
-    padding: 0.1rem 0.3rem;
-    margin: 0;
-    font-size: 0.9rem;
-    line-height: 1;
-}
-/* CENTERED MENU BUTTONS */
-div[data-testid="column"] {
-    display: flex;
-    justify-content: center;
-}
-.stSelectbox > label {
-    display: none;
-}
     </style>
 """, unsafe_allow_html=True)
 
 # 🌍 Language options
 language_options = {
     "English": {
-        "desc": "👋 Welcome to **Al Mateus Agentic AI & LLM Engineering leadership** world. Ask anything about my career journey. 🚀",
+        "title": "🤖 Meet 'Al' Mateus — AI Career Agent",
+        "desc": (
+            "👋 Welcome! I’m Al’s digital twin — part strategist, part engineer, and a little bit of Star Wars geek.  \n\n"
+            "I’ve been trained on his journey as a **Global AI/MLOps Architect**, **LLM Engineering leader**, and **Scrum 2.0 pioneer**. "
+            "I can walk you through how he builds multi-agent AI systems, scales MLOps pipelines, or even how he’s shaping the next era of work with **Agentic AI teams managed by Agile Product Management tools**.  \n\n"
+            "Curious where to start? Ask me about his certifications, engineering projects, leadership style, or how to create an Agentic workforce that blends humans and AI.  \n\n"
+            "And if you just want the fun stuff — yes, I’ll happily tell you about Thai food, Teslas, or why GPT-5 and DeepSeek are basically the Millennium Falcon of LLMs. 🚀"
+        ),
         "input_placeholder": "Ask something about Al's career...",
         "consult_prompt": "💡 If you'd like a consultation with Al, feel free to share your email below. The chat will continue regardless.",
         "consult_input": "📧 Your email (optional)",
         "consult_success": "✅ Thanks! Al has been notified and will reach out to you soon.",
-        "menu": ["📊 Projects", "💼 Experience", "🛠 Skills"]
+        "menu": ["📊 Projects", "💼 Experience", "🛠 Skills", "🎓 Certifications"]        
     },
     "中文 (Chinese)": {
-        "desc": "👋 欢迎来到 **Al Mateus 的 Agentic AI 与 LLM 工程领导力**世界。探索他的认证、项目或人机协作团队经验。🚀",
+        "title": "🤖 认识 'Al' Mateus —— AI 简历助手",
+        "desc": (
+            "👋 欢迎！我是 Al 的数字分身 —— 既是战略家，也是工程师，还带点星球大战极客的味道。  \n\n"
+            "我基于他作为 **全球 AI/MLOps 架构师**、**LLM 工程领导者** 和 **Scrum 2.0 先行者** 的职业旅程而训练。 "
+            "我可以向你展示他如何构建多智能体 AI 系统、扩展 MLOps 流水线，甚至如何通过 **由敏捷产品管理工具驱动的 Agentic AI 团队** 来塑造工作的下一个时代。  \n\n"
+            "想知道从哪里开始吗？可以问我他的认证、工程项目、领导风格，或者如何打造一个融合人类与 AI 的 Agentic 团队。  \n\n"
+            "当然，如果你只是想聊轻松点的 —— 我也可以分享他对泰国美食、特斯拉赛道体验的热爱，或者为什么 DeepSeek 就像 LLM 世界里的千年隼号。 🚀"
+        ),
         "input_placeholder": "请输入你想了解 Al 的内容...",
         "consult_prompt": "💡 如果您希望与 Al 进行咨询，请在下方留下您的邮箱。聊天将继续进行。",
         "consult_input": "📧 您的邮箱（可选）",
         "consult_success": "✅ 感谢！Al 已经收到通知，很快会与您联系。",
-        "menu": ["📊 项目", "💼 经历", "🛠 技能"]
+        "menu": ["📊 项目", "💼 经历", "🛠 技能", "🎓 认证"]
     },
     "Español": {
-        "desc": "👋 Bienvenido al mundo de **Agentic AI & Liderazgo en Ingeniería LLM de Al Mateus**. Explora sus certificaciones, proyectos o experiencia en equipos humano-IA. 🚀",
+        "title": "🤖 Conoce a 'Al' Mateus — Asistente AI",
+        "desc": (
+            "👋 ¡Bienvenido! Soy el gemelo digital de Al — parte estratega, parte ingeniero y con un toque de fanático de Star Wars.  \n\n"
+            "He sido entrenado en su trayectoria como **Arquitecto Global de AI/MLOps**, **líder en Ingeniería de LLMs** y **pionero de Scrum 2.0**. "
+            "Puedo mostrarte cómo construye sistemas de IA multi-agente, cómo escala pipelines de MLOps, o incluso cómo está dando forma a la próxima era del trabajo con **equipos Agentic AI gestionados por herramientas de Agile Product Management**.  \n\n"
+            "¿Con qué quieres empezar? Pregúntame sobre sus certificaciones, proyectos de ingeniería, estilo de liderazgo o cómo crear una fuerza laboral agéntica que combine humanos y AI.  \n\n"
+            "Y si prefieres lo divertido — claro, puedo contarte sobre su pasión por la comida tailandesa, las carreras con Tesla o por qué GPT-5 and DeepSeek son básicamente el Halcón Milenario de los LLMs. 🚀"
+        ),
         "input_placeholder": "Haz una pregunta sobre Al...",
         "consult_prompt": "💡 Si deseas una consulta con Al, puedes dejar tu correo abajo. El chat seguirá normalmente.",
         "consult_input": "📧 Tu correo electrónico (opcional)",
         "consult_success": "✅ ¡Gracias! Al ha sido notificado y se pondrá en contacto contigo pronto.",
-        "menu": ["📊 Proyectos", "💼 Experiencia", "🛠 Habilidades"]
+        "menu": ["📊 Proyectos", "💼 Experiencia", "🛠 Habilidades", "🎓 Certificaciones"]
     }
 }
-# 🌐 Simple Language select - dropdown approach
-language_options_map = {
-    "🇺🇸 English": "English",
-    "🇨🇳 中文": "中文 (Chinese)", 
-    "🇪🇸 Español": "Español"
-}
-
-# Initialize selected language
-if 'selected_lang' not in st.session_state:
-    st.session_state.selected_lang = "English"
-
-# Display compact dropdown
-selected_option = st.selectbox(
-    "",
-    options=list(language_options_map.keys()),
-    label_visibility="collapsed",
-    key="lang_select"
+# 🌐 Language select
+selected_lang = st.radio(
+    "", 
+    list(language_options.keys()), 
+    horizontal=True
 )
-
-# Map back to actual language key
-selected_lang = language_options_map[selected_option]
-st.session_state.selected_lang = selected_lang
 ui = language_options[selected_lang]
 
 # 🧠 Session state
@@ -166,24 +135,17 @@ if "email_prompt_shown" not in st.session_state:
 me = Me()
 
 # 🧢 Header
-#st.markdown(f"## {ui['title']}")
+st.markdown(f"## {ui['title']}")
 st.markdown(ui["desc"])
 
 # 📂 Simple Menu Buttons (under intro)
 menu_items = ui["menu"]  # comes from the selected language
 
-# Create responsive columns - 4 on desktop, 2x2 on tablet, 1x4 on mobile
-cols = st.columns([1, 1, 1, 1])  # Equal width for all columns
-
+cols = st.columns(len(menu_items))
 for idx, item in enumerate(menu_items):
     with cols[idx]:
-        if st.button(item, key=f"menu_{idx}", use_container_width=True):
+        if st.button(item, key=f"menu_{idx}"):
             st.session_state.user_input = f"Show me {item}"
-#cols = st.columns(len(menu_items))
-#for idx, item in enumerate(menu_items):
-#    with cols[idx]:
-#        if st.button(item, key=f"menu_{idx}"):
-#            st.session_state.user_input = f"Show me {item}"
 
 # 💬 History rendering
 for user, bot in st.session_state.history:
@@ -269,7 +231,7 @@ if user_input:
         for char in response:
             full_response += char
             stream_box.markdown(full_response + "▌")   # ✅ no unsafe_allow_html
-            # time.sleep(0.01) # trying to speed things up
+            time.sleep(0.01)
         stream_box.markdown(response)  # ✅ final clean render with Markdown
 
     # 💾 Save to history
