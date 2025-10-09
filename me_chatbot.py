@@ -265,32 +265,32 @@ def send_email_alert(user_email: str):
         print("❌ Resend send_email_alert failed:", e)
         return None
 
-    def save_chat_to_s3(history, session_id=None):
-    """Save chat history to S3 as JSON"""
-    try:
-        if not session_id:
-            session_id = str(uuid.uuid4())
-            
-        s3 = _get_s3_client()
-        bucket = os.getenv("S3_BUCKET")
+def save_chat_to_s3(history, session_id=None):
+"""Save chat history to S3 as JSON"""
+try:
+    if not session_id:
+        session_id = str(uuid.uuid4())
         
-        chat_data = {
-            "session_id": session_id,
-            "timestamp": datetime.now().isoformat(),
-            "history": history
-        }
-        
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        key = f"chats/{timestamp}_{session_id}.json"
-        
-        s3.put_object(
-            Bucket=bucket,
-            Key=key,
-            Body=json.dumps(chat_data, indent=2),
-            ContentType='application/json'
-        )
-        print(f"✅ Chat saved to S3: {key}")
-        return session_id
-    except Exception as e:
-        print(f"❌ Failed to save chat: {e}")
-        return None    
+    s3 = _get_s3_client()
+    bucket = os.getenv("S3_BUCKET")
+    
+    chat_data = {
+        "session_id": session_id,
+        "timestamp": datetime.now().isoformat(),
+        "history": history
+    }
+    
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    key = f"chats/{timestamp}_{session_id}.json"
+    
+    s3.put_object(
+        Bucket=bucket,
+        Key=key,
+        Body=json.dumps(chat_data, indent=2),
+        ContentType='application/json'
+    )
+    print(f"✅ Chat saved to S3: {key}")
+    return session_id
+except Exception as e:
+    print(f"❌ Failed to save chat: {e}")
+    return None    
