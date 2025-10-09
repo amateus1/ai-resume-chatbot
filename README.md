@@ -1,4 +1,4 @@
-
+markdown
 
 # 🤖 AI Resume Chatbot
 
@@ -11,12 +11,20 @@
 
 ## 🧠 Features
 
-- 🌍 **AI Resume Agent**: Chat with Al Mateus' professional experience via LLM.
-- 🔁 **Smart LLM Switching**: Uses OpenAI outside China, DeepSeek inside.
-- 🔒 **Secure Resume Files**: Loaded privately from AWS S3 (not public).
-- 📬 **Notifications**: Resend for email, Pushover for mobile alerts.
-- 🔐 **Secrets Managed**: Streamlit Secrets Manager handles all credentials.
-- ⚙️ **CI/CD with GitHub Actions**: Linting, secret scanning, LLM API testing.
+- 🌍 **AI Resume Agent**: Chat with Al Mateus' professional experience via LLM
+- 🔁 **Smart LLM Switching**: Uses OpenAI outside China, DeepSeek inside
+- 🔒 **Secure Resume Files**: Loaded privately from AWS S3 (not public)
+- 📬 **Notifications**: Resend for email, Pushover for mobile alerts
+- 🔐 **Secrets Managed**: Streamlit Secrets Manager handles all credentials
+- ⚙️ **CI/CD with GitHub Actions**: Linting, secret scanning, LLM API testing
+- 🗣️ **Multi-language Support**: English, Chinese, and Spanish interfaces
+- 💬 **Real-time Streaming**: Live typing responses for natural conversation
+- 🧠 **Conversation Memory**: Remembers context and user details within session
+- 💾 **Persistent Chat Storage**: All conversations saved to S3 as JSON files
+- 📧 **Smart Email Capture**: Automatic email detection in chat + optional prompts
+- 🎨 **Custom UI Styling**: Optimized chat bubbles and responsive design
+- 🔄 **Session Management**: Unique session IDs for tracking conversations
+- 🌐 **Auto Keep-alive**: Silent ping system to maintain app responsiveness
 
 ---
 
@@ -30,6 +38,8 @@
 | File Storage     | AWS S3 (private)             |
 | Notifications    | Resend, Pushover             |
 | CI/CD            | GitHub Actions               |
+| Data Persistence | JSON files in S3 bucket      |
+| Session Management| UUID-based tracking          |
 
 ---
 
@@ -41,12 +51,14 @@ git clone https://github.com/yourusername/ai-resume-chatbot.git
 cd ai-resume-chatbot
 
 2. Install Requirements
+bash
 
 pip install -r requirements.txt
 
 3. Set Up Environment Variables
 
 Add your credentials via environment variables or in Streamlit Cloud Secrets:
+env
 
 OPENAI_API_KEY = "sk-..."
 DEEPSEEK_API_KEY = "..."
@@ -54,26 +66,67 @@ AWS_ACCESS_KEY_ID = "..."
 AWS_SECRET_ACCESS_KEY = "..."
 AWS_REGION = "us-east-1"
 S3_BUCKET = "your-bucket-name"
-SUMMARY_KEY = "me/summary.txt"
-LINKEDIN_KEY = "me/linkedin.pdf"
+LINKEDIN_KEY = "me/linkedin.md"
 RESEND_API_KEY = "..."
 PUSHOVER_TOKEN = "..."
 PUSHOVER_USER = "..."
 
 4. Run Locally
+bash
 
 streamlit run app.py
 
 📄 Project Structure
+text
 
-├── app.py                 # Streamlit frontend
-├── me_chatbot.py          # Chat logic & API switching
+├── app.py                 # Streamlit frontend with chat interface
+├── me_chatbot.py          # Chat logic, API switching & S3 storage
 ├── requirements.txt       # Python dependencies
+├── chats/                 # Local chat storage (development)
 ├── tests/
 │   ├── test_openai.py
 │   └── test_deepseek.py
 └── .github/workflows/
     └── ci.yml             # GitHub Actions CI/CD pipeline
+
+🔄 Key Capabilities
+💬 Smart Chat Features
+
+    Real-time Streaming: Responses appear as they're generated
+
+    Conversation Memory: AI remembers context within the same session
+
+    Multi-language UI: Switch between English, Chinese, and Spanish
+
+    Contextual Prompts: Menu buttons for quick access to projects, experience, skills
+
+💾 Data Management
+
+    S3 Chat Storage: All conversations saved to ai-resume-chatbot/chats/ as JSON
+
+    Session Tracking: Unique UUIDs for each chat session
+
+    Structured Data: JSON format includes timestamps, language, and full history
+
+🎨 User Experience
+
+    Custom Styling: Optimized chat bubbles and responsive design
+
+    Email Intelligence: Automatic detection + smart prompting after 3 messages
+
+    Keep-alive System: Silent background pinging to prevent cold starts
+
+    Error Resilience: Graceful fallbacks for API failures
+
+🔒 Security & Performance
+
+    Location-aware LLMs: Automatic China routing to DeepSeek
+
+    Secure Credentials: All secrets managed through environment variables
+
+    Cached Resources: Resume data cached for performance
+
+    Error Handling: Robust exception handling throughout
 
 🧪 CI/CD (GitHub Actions)
 
@@ -85,13 +138,10 @@ This repo uses GitHub Actions to:
 
     ✅ Test OpenAI and DeepSeek API access
 
-View CI results: CI Dashboard
+View CI results: [CI Dashboard]
 🌐 Live Demo
 
-Try the app live: yourname.me
-
-    (or Streamlit URL: https://almateus.me)
-
+Try the app live: almateus.me
 📜 License
 
 MIT License — use, modify, and share freely.
@@ -100,9 +150,3 @@ MIT License — use, modify, and share freely.
 Built by Al Mateus
 ✉️ al@optimops.ai
 🌐 LinkedIn
-
-
----
-
-
-
