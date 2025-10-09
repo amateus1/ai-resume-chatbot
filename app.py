@@ -294,11 +294,8 @@ if user_input:
         
         # ✅ USE STREAMING INSTEAD OF REGULAR CHAT
         try:
-            # Convert history to the format me_chatbot expects
-            chat_history = []
-            for user_msg, bot_msg in st.session_state.history:
-                chat_history.append({"role": "user", "content": user_msg})
-                chat_history.append({"role": "assistant", "content": bot_msg})
+            # Just pass the history as-is (list of tuples)
+            chat_history = st.session_state.history
             
             st.caption(f"📝 Chat history: {len(chat_history)} messages")
             
