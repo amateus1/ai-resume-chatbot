@@ -296,7 +296,15 @@ if user_input:
         try:
             # DEBUG: Check what format me.chat_stream expects
             print(f"DEBUG: Calling chat_stream with history length: {len(st.session_state.history)}")
-            stream_generator = me.chat_stream(user_input, [])
+            # stream_generator = me.chat_stream(user_input, [])
+            # Test if passing history breaks streaming - minimal risk
+            try:
+                # Try passing simple history format
+                test_history = [{"role": "user", "content": "My name is selena"}] if st.session_state.history else []
+                stream_generator = me.chat_stream(user_input, test_history)
+            except:
+                # Fallback to empty if it breaks
+                stream_generator = me.chat_stream(user_input, [])
             for chunk, current_full in stream_generator:
                 full_response = current_full
                 stream_box.markdown(full_response + "▌")
