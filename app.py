@@ -105,7 +105,7 @@ st.markdown("""
         display: flex;
         justify-content: center;
     }
-    .stSelectbox > label {
+    .stSelectbox > label:not([for="lang_select"])  {
         display: none;
     }
 </style>
