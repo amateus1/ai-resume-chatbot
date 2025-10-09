@@ -67,7 +67,7 @@ def call_deepseek(messages):
 class Me:
     def __init__(self):
         self.name = "Al Mateus"
-        self.linkedin, self.summary = self._load_resume()
+        self.resume_data = self._load_resume_data()
 
     @st.cache_resource(ttl=3600)
     def _get_s3_client(_self):
@@ -81,32 +81,26 @@ class Me:
         )
 
     @st.cache_data(ttl=7200)
-    def _load_resume(_self):
-        """Load resume data with Streamlit Cloud caching - only text files"""
-        linkedin = ""
-        summary = ""
-
+    def _load_resume_data(_self):
+        """Load only linkedin.md data with Streamlit Cloud caching"""
         if os.getenv("S3_BUCKET"):
             s3 = _self._get_s3_client()
             bucket = os.getenv("S3_BUCKET")
-            summary_key = os.getenv("SUMMARY_KEY")
-            linkedin_key = os.getenv("LINKEDIN_KEY")
-
-            # Load summary
-            summary = s3.get_object(Bucket=bucket, Key=summary_key)["Body"].read().decode("utf-8")
             
-            # Load linkedin - only text/markdown files
-            linkedin = s3.get_object(Bucket=bucket, Key=linkedin_key)["Body"].read().decode("utf-8")
+            # Only use LINKEDIN_KEY since SUMMARY_KEY is commented out
+            linkedin_key = os.getenv("LINKEDIN_KEY", "linkedin.md")
+
+            # Validate that linkedin_key is not None
+            if not linkedin_key:
+                raise ValueError("LINKEDIN_KEY environment variable is not set")
+
+            # Load only linkedin.md from S3
+            linkedin_data = s3.get_object(Bucket=bucket, Key=linkedin_key)["Body"].read().decode("utf-8")
+            return linkedin_data
         else:
-            # Local files - only text/markdown
-            with open("me/summary.txt", "r", encoding="utf-8") as f:
-                summary = f.read()
-            
-            # Load linkedin.md
+            # Load only linkedin.md locally
             with open("me/linkedin.md", "r", encoding="utf-8") as f:
-                linkedin = f.read()
-
-        return linkedin, summary
+                return f.read()
 
     def system_prompt(self):
         return f"""
@@ -123,13 +117,13 @@ Your mission is to explain Hernan's work, philosophy, and career as if *he* were
 - Never mention an "email box below" or suggest another input method. 
 - When user asks how to contact Al, provide official links:
   LinkedIn: https://www.linkedin.com/in/al-mateus/
-  GitHub: https://github.com/amateus1  
-  Portfolio: https://almateus.me
+  Portfolio: https://github.com/amateus1  
+  AI Agent: https://almateus.me
 - Then politely offer: "Or if you'd like Al to reach out, type your email directly here in chat and he'll be notified."
 - Never mention an 'email box below'. Capture happens automatically.
 
 
-📌 Hernan's fun facts:
+📌 Al Mateus's fun facts:
 - Lives with 5 cats and 2 dogs
 - Loves Tesla racing, Thai food, and diving at night
 - Star Wars geek, speaks English, Mandarin, some Spanish
@@ -167,11 +161,8 @@ Your mission is to explain Hernan's work, philosophy, and career as if *he* were
 
 Use this format on every answer — make it skimmable and useful.
 
-## Summary
-{self.summary}
-
-## LinkedIn Profile
-{self.linkedin}
+## Resume Data
+{self.resume_data}
 """
 
     def chat(self, message, history):
