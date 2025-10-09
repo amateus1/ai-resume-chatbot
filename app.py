@@ -33,18 +33,21 @@ st.set_page_config(
 st.markdown("""
 <style>
     /* === HIDE STREAMLIT BANNERS === */
-    /* === HIDE ALL STREAMLIT BANNERS === */
-    #MainMenu {visibility: hidden !important;}
-    footer {visibility: hidden !important;}
-    header {visibility: hidden !important;}
-    .stDeployButton {display: none !important;}
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    .stDeployButton {display: none;}
 
-    /* AGGRESSIVE FOOTER REMOVAL */
-    footer {display: none !important;}
-    .stApp footer {display: none !important;}
-    [data-testid="stFooter"] {display: none !important;}
-    section[data-testid="stFooter"] {display: none !important;}
-    div[data-testid="stFooter"] {display: none !important;}
+    /* ADD THESE LINES FOR BOTTOM BANNER */
+    footer[data-testid="stFooter"] {
+        display: none !important;
+    }
+    .stApp > footer {
+        display: none !important;
+    }
+    section[data-testid="stFooter"] {
+        display: none !important;
+    }
     
     /* === MAIN LAYOUT === */
     .block-container {
@@ -107,7 +110,6 @@ st.markdown("""
     }
 </style>
 """, unsafe_allow_html=True)
-
 
 # 🌍 Language options
 @st.cache_data(ttl=3600)  # ✅ ADD CACHING
