@@ -38,10 +38,15 @@ st.markdown("""
     header {visibility: hidden;}
     .stDeployButton {display: none;}
 
-    /* ADD THIS LINE FOR BOTTOM BANNER */
+    /* ADD THESE LINES FOR BOTTOM BANNER */
+    footer[data-testid="stFooter"] {
+        display: none !important;
+    }
     .stApp > footer {
-        visibility: hidden;
-        height: 0 !important;
+        display: none !important;
+    }
+    section[data-testid="stFooter"] {
+        display: none !important;
     }
     
     /* === MAIN LAYOUT === */
