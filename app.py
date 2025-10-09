@@ -39,26 +39,7 @@ st.markdown("""
     .stDeployButton {display: none;}
 
     
-    /* === FORCE FLAGS DISPLAY === */
-    [data-testid="stSelectbox"] span {
-        font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif !important;
-    }
-
-    # 🌐 Horizontal Language buttons
-    cols = st.columns(3)
-    with cols[0]:
-        if st.button("🇺🇸 English", use_container_width=True, key="lang_en"):
-            st.session_state.selected_lang = "English"
-    with cols[1]:
-        if st.button("🇨🇳 中文", use_container_width=True, key="lang_cn"): 
-            st.session_state.selected_lang = "中文 (Chinese)"
-    with cols[2]:
-        if st.button("🇪🇸 Español", use_container_width=True, key="lang_es"):
-            st.session_state.selected_lang = "Español"
-
-    # Direct language access
-    selected_lang = st.session_state.selected_lang
-    ui = language_options[selected_lang]   
+   
     /* === MAIN LAYOUT === */
     .block-container {
         padding-top: 1rem;   /* Tight top padding */
@@ -153,28 +134,26 @@ def get_language_options():
 
 language_options = get_language_options()  # ✅ USE CACHED FUNCTION
 
-# 🌐 Simple Language select - dropdown approach
-language_options_map = {
-    "🇺🇸 English": "English",
-    "🇨🇳 中文": "中文 (Chinese)", 
-    "🇪🇸 Español": "Español"
-}
+
 
 # Initialize selected language
 if 'selected_lang' not in st.session_state:
     st.session_state.selected_lang = "English"
 
-# Display compact dropdown
-selected_option = st.selectbox(
-    "",
-    options=list(language_options_map.keys()),
-    label_visibility="collapsed",
-    key="lang_select"
-)
+# 🌐 Horizontal Language buttons
+cols = st.columns(3)
+with cols[0]:
+    if st.button("🇺🇸 English", use_container_width=True, key="lang_en"):
+        st.session_state.selected_lang = "English"
+with cols[1]:
+    if st.button("🇨🇳 中文", use_container_width=True, key="lang_cn"): 
+        st.session_state.selected_lang = "中文 (Chinese)"
+with cols[2]:
+    if st.button("🇪🇸 Español", use_container_width=True, key="lang_es"):
+        st.session_state.selected_lang = "Español"
 
-# Map back to actual language key
-selected_lang = language_options_map[selected_option]
-st.session_state.selected_lang = selected_lang
+# Direct language access
+selected_lang = st.session_state.selected_lang
 ui = language_options[selected_lang]
 
 # 🧠 Session state
