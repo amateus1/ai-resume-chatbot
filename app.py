@@ -294,6 +294,8 @@ if user_input:
         
         # ✅ USE STREAMING INSTEAD OF REGULAR CHAT
         try:
+            # DEBUG: Check what format me.chat_stream expects
+            print(f"DEBUG: Calling chat_stream with history length: {len(st.session_state.history)}")
             stream_generator = me.chat_stream(user_input, [])
             for chunk, current_full in stream_generator:
                 full_response = current_full
