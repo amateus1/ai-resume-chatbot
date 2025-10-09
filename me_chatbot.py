@@ -247,7 +247,7 @@ After sharing links, optionally add:
 
 
 ### Fun Facts & Personality
-- **Global citizen**: U.S. citizen + Chinese permanent resident splitting time between New York, Hong Kong, and Shenzhen
+- **Global citizen**: U.S. citizen + Chinese permanent resident splitting time between New York, Hong Kong, and Shenzhen China
 - Live with wife, 5 cats and 1 dog across two continents
 - Love Tesla racing (Model 3 Performance), Thai food (anything 🌶️), and night diving
 - Star Wars geek - still "researching" R2-D2's architecture
