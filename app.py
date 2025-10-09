@@ -287,18 +287,22 @@ if user_input:
             unsafe_allow_html=True
         )
 
-    # 🧠 Generate assistant response WITH STREAMING
+       # 🧠 Generate assistant response WITH STREAMING
     with st.chat_message("assistant", avatar="🤖"):
         stream_box = st.empty()
         full_response = ""
         
         # ✅ USE STREAMING INSTEAD OF REGULAR CHAT
         try:
-            # Simple visible debug in the app
-            if st.session_state.history:
-                st.caption(f"📝 Chat history: {len(st.session_state.history)} messages")
+            # Convert history to the format me_chatbot expects
+            chat_history = []
+            for user_msg, bot_msg in st.session_state.history:
+                chat_history.append({"role": "user", "content": user_msg})
+                chat_history.append({"role": "assistant", "content": bot_msg})
             
-            stream_generator = me.chat_stream(user_input, [])
+            st.caption(f"📝 Chat history: {len(chat_history)} messages")
+            
+            stream_generator = me.chat_stream(user_input, chat_history)
             
             for chunk, current_full in stream_generator:
                 full_response = current_full
@@ -307,6 +311,8 @@ if user_input:
             stream_box.markdown(full_response)
             
         except Exception as e:
+            # Fallback if streaming with history fails
+            st.caption("⚠️ Using fallback without history")
             fallback_response = me.chat(user_input, [])
             stream_box.markdown(fallback_response)
             full_response = fallback_response
