@@ -95,9 +95,9 @@ st.markdown("""
         display: flex;
         justify-content: center;
     }
-    .stSelectbox > label {
+    /* .stSelectbox > label {
         display: none;
-    }
+    } */
     /* === ADD THE FLAGS FIX HERE === */
     /* Ensure flags display in all browsers */
     select[data-testid="stSelectbox"] option {
