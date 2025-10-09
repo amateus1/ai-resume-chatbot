@@ -38,17 +38,7 @@ st.markdown("""
     header {visibility: hidden;}
     .stDeployButton {display: none;}
 
-    /* ADD THESE LINES FOR BOTTOM BANNER */
-    footer[data-testid="stFooter"] {
-        display: none !important;
-    }
-    .stApp > footer {
-        display: none !important;
-    }
-    section[data-testid="stFooter"] {
-        display: none !important;
-    }
-    
+       
     /* === MAIN LAYOUT === */
     .block-container {
         padding-top: 1rem;   /* Tight top padding */
@@ -105,8 +95,18 @@ st.markdown("""
         display: flex;
         justify-content: center;
     }
-    .stSelectbox > label:not([data-testid="stSelectboxLabel"])  {
+    .stSelectbox > label {
         display: none;
+    }
+    /* === ADD THE FLAGS FIX HERE === */
+    /* Ensure flags display in all browsers */
+    select[data-testid="stSelectbox"] option {
+        font-family: "Segoe UI Emoji", "Apple Color Emoji", sans-serif !important;
+    }
+    
+    /* Force emoji rendering */
+    .stSelectbox [data-testid="stMarkdownContainer"] {
+        font-family: "Segoe UI Emoji", "Apple Color Emoji", sans-serif !important;
     }
 </style>
 """, unsafe_allow_html=True)
