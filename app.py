@@ -290,5 +290,4 @@ if user_input:
     # 💾 Save to history - FIX: use full_response instead of response
     st.session_state.history.append((display_input, full_response))
 
-    # 💾 Save to history
-    st.session_state.history.append((display_input, full_response))
+
