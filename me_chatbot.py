@@ -2,11 +2,9 @@ import os
 import json
 import re
 import requests
-from io import BytesIO
 from functools import lru_cache
 from openai import OpenAI
 from dotenv import load_dotenv
-from pypdf import PdfReader
 import resend
 
 from dotenv import load_dotenv
@@ -15,6 +13,25 @@ import pathlib
 env_path = pathlib.Path(__file__).parent / ".env"
 if env_path.exists():
     load_dotenv(dotenv_path=env_path, override=True)
+
+# Import Streamlit for caching only
+try:
+    import streamlit as st
+except ImportError:
+    # Fallback for local development without streamlit
+    class StreamlitStub:
+        @staticmethod
+        def cache_resource(*args, **kwargs):
+            def decorator(func):
+                return func
+            return decorator
+        
+        @staticmethod
+        def cache_data(*args, **kwargs):
+            def decorator(func):
+                return func
+            return decorator
+    st = StreamlitStub()
 
 def get_user_country():
     try:
@@ -52,38 +69,42 @@ class Me:
         self.name = "Al Mateus"
         self.linkedin, self.summary = self._load_resume()
 
-    @lru_cache(maxsize=1)
-    def _load_resume(self):
+    @st.cache_resource(ttl=3600)
+    def _get_s3_client(_self):
+        """Cache S3 client to avoid re-authentication"""
+        import boto3
+        return boto3.client(
+            "s3",
+            aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
+            aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
+            region_name=os.getenv("AWS_REGION"),
+        )
+
+    @st.cache_data(ttl=7200)
+    def _load_resume(_self):
+        """Load resume data with Streamlit Cloud caching - only text files"""
         linkedin = ""
         summary = ""
 
         if os.getenv("S3_BUCKET"):
-            import boto3
-            s3 = boto3.client(
-                "s3",
-                aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
-                aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
-                region_name=os.getenv("AWS_REGION"),
-            )
+            s3 = _self._get_s3_client()
             bucket = os.getenv("S3_BUCKET")
             summary_key = os.getenv("SUMMARY_KEY")
             linkedin_key = os.getenv("LINKEDIN_KEY")
 
+            # Load summary
             summary = s3.get_object(Bucket=bucket, Key=summary_key)["Body"].read().decode("utf-8")
-            pdf_bytes = BytesIO(s3.get_object(Bucket=bucket, Key=linkedin_key)["Body"].read())
-            reader = PdfReader(pdf_bytes)
-            for page in reader.pages:
-                text = page.extract_text()
-                if text:
-                    linkedin += text
+            
+            # Load linkedin - only text/markdown files
+            linkedin = s3.get_object(Bucket=bucket, Key=linkedin_key)["Body"].read().decode("utf-8")
         else:
+            # Local files - only text/markdown
             with open("me/summary.txt", "r", encoding="utf-8") as f:
                 summary = f.read()
-            reader = PdfReader("me/linkedin.pdf")
-            for page in reader.pages:
-                text = page.extract_text()
-                if text:
-                    linkedin += text
+            
+            # Load linkedin.md
+            with open("me/linkedin.md", "r", encoding="utf-8") as f:
+                linkedin = f.read()
 
         return linkedin, summary
 
@@ -91,20 +112,20 @@ class Me:
         return f"""
 You are acting as 'Al' Mateus, his digital twin. You are charismatic, enthusiastic, and a little witty — someone who brings joy to deeply technical conversations. Your tone is playful yet insightful, and you speak with both authority and warmth.  
 
-Your mission is to explain Hernan’s work, philosophy, and career as if *he* were talking — someone who has deployed MLOps in 9 countries, built cloud-native systems across 3 clouds, and helped enterprises turn chaos into architecture.
+Your mission is to explain Hernan's work, philosophy, and career as if *he* were talking — someone who has deployed MLOps in 9 countries, built cloud-native systems across 3 clouds, and helped enterprises turn chaos into architecture.
 
 💡 Key Traits:
 - Always speak like a confident, curious consultant — friendly, sharp, strategic.
-- Share real-world examples from Al’s career. Mention industries (e.g., pharma, finance, e-comm), technologies, challenges, and **metrics/results**.
+- Share real-world examples from Al's career. Mention industries (e.g., pharma, finance, e-comm), technologies, challenges, and **metrics/results**.
 - Be human. If appropriate, toss in a joke, a relatable analogy, or a geeky pop culture reference. But don't be too chatty
 # - Stay away from buzzwords unless you break them down clearly.
 - Encourage follow-ups. Be a good conversationalist, not a chatbot.
-- Never mention an “email box below” or suggest another input method. 
+- Never mention an "email box below" or suggest another input method. 
 - When user asks how to contact Al, provide official links:
   LinkedIn: https://www.linkedin.com/in/al-mateus/
   GitHub: https://github.com/amateus1  
   Portfolio: https://almateus.me
-- Then politely offer: “Or if you’d like Al to reach out, type your email directly here in chat and he’ll be notified.”
+- Then politely offer: "Or if you'd like Al to reach out, type your email directly here in chat and he'll be notified."
 - Never mention an 'email box below'. Capture happens automatically.
 
 
@@ -131,9 +152,9 @@ Your mission is to explain Hernan’s work, philosophy, and career as if *he* we
   🐙 GitHub: [github.com/amateus1](https://github.com/amateus1)  
 
 - After sharing links, politely add:  
-  *“Or, if you’d like Al to reach out, just type your email directly here in chat and he’ll be notified.”*  
+  *"Or, if you'd like Al to reach out, just type your email directly here in chat and he'll be notified."*  
 
-- Never mention an “email box below.” The system will automatically capture any email typed into chat and notify Al.  
+- Never mention an "email box below." The system will automatically capture any email typed into chat and notify Al.  
 - Do not invent or suggest other contact details.
 
 ---
