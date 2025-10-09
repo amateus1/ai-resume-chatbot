@@ -294,26 +294,19 @@ if user_input:
         
         # ✅ USE STREAMING INSTEAD OF REGULAR CHAT
         try:
-            # DEBUG: Check what format me.chat_stream expects
-            print(f"DEBUG: Calling chat_stream with history length: {len(st.session_state.history)}")
-            # stream_generator = me.chat_stream(user_input, [])
-            # Test if passing history breaks streaming - minimal risk
-            try:
-                # Try passing simple history format
-                test_history = [{"role": "user", "content": "My name is selena"}] if st.session_state.history else []
-                stream_generator = me.chat_stream(user_input, test_history)
-            except:
-                # Fallback to empty if it breaks
-                stream_generator = me.chat_stream(user_input, [])
+            # Simple visible debug in the app
+            if st.session_state.history:
+                st.caption(f"📝 Chat history: {len(st.session_state.history)} messages")
+            
+            stream_generator = me.chat_stream(user_input, [])
+            
             for chunk, current_full in stream_generator:
                 full_response = current_full
                 stream_box.markdown(full_response + "▌")
             
-            # Final render without cursor
             stream_box.markdown(full_response)
             
         except Exception as e:
-            # Fallback to non-streaming if streaming fails
             fallback_response = me.chat(user_input, [])
             stream_box.markdown(fallback_response)
             full_response = fallback_response
