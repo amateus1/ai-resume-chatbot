@@ -29,24 +29,28 @@ st.set_page_config(
     page_title="Meet 'Al' Mateus — AI Resume Agent",
     layout="wide"
 )
-# tighten top padding
+# 🎨 ALL STYLING IN ONE PLACE (replaces both st.markdown sections)
 st.markdown("""
 <style>
-.block-container {
-    padding-top: 1.7rem;   /* default is ~6rem */
-}
-</style>
-""", unsafe_allow_html=True)
-
-# 🎨 Style
-st.markdown("""
-    <style>
+    /* === HIDE STREAMLIT BANNERS === */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    .stDeployButton {display: none;}
+    
+    /* === MAIN LAYOUT === */
+    .block-container {
+        padding-top: 1rem;   /* Tight top padding */
+        padding-bottom: 1rem;
+    }
     .main .block-container {
         max-width: 1000px;
         padding-top: 1.5rem;
         padding-bottom: 2rem;
         margin: auto;
     }
+    
+    /* === TYPOGRAPHY === */
     h1, h2, h3, h4 {
         font-size: 1.2rem !important;
     }
@@ -54,6 +58,8 @@ st.markdown("""
         font-size: 0.95rem !important;
         line-height: 1.6;
     }
+    
+    /* === CHAT BUBBLES === */
     .message-container {
         display: flex;
         justify-content: flex-end;
@@ -70,29 +76,28 @@ st.markdown("""
         text-align: right;
         word-break: break-word;
     }
-/* COMPACT DROPDOWN */
-.stSelectbox > div > div {
-    padding: 0.2rem 0.5rem;
-    min-height: 1.8rem;
-    font-size: 0.9rem;
-}
-/* COMPACT MENU BUTTONS */
-div[data-testid="column"] .stButton > button {
-    min-height: 1.2rem;
-    padding: 0.1rem 0.3rem;
-    margin: 0;
-    font-size: 0.9rem;
-    line-height: 1;
-}
-/* CENTERED MENU BUTTONS */
-div[data-testid="column"] {
-    display: flex;
-    justify-content: center;
-}
-.stSelectbox > label {
-    display: none;
-}
-    </style>
+    
+    /* === COMPACT UI ELEMENTS === */
+    .stSelectbox > div > div {
+        padding: 0.2rem 0.5rem;
+        min-height: 1.8rem;
+        font-size: 0.9rem;
+    }
+    div[data-testid="column"] .stButton > button {
+        min-height: 1.2rem;
+        padding: 0.1rem 0.3rem;
+        margin: 0;
+        font-size: 0.9rem;
+        line-height: 1;
+    }
+    div[data-testid="column"] {
+        display: flex;
+        justify-content: center;
+    }
+    .stSelectbox > label {
+        display: none;
+    }
+</style>
 """, unsafe_allow_html=True)
 
 # 🌍 Language options
