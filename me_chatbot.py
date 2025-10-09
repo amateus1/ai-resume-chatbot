@@ -265,18 +265,27 @@ def send_email_alert(user_email: str):
         print("❌ Resend send_email_alert failed:", e)
         return None
 
-def save_chat_to_s3(history, session_id=None):
+def save_chat_to_s3(history, session_id=None, language="English"):
     """Save chat history to S3 as JSON"""
     try:
         if not session_id:
             session_id = str(uuid.uuid4())
             
-        s3 = _get_s3_client()
+        # ✅ FIX: Create S3 client directly instead of using class method
+        import boto3
+        s3 = boto3.client(
+            "s3",
+            aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
+            aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
+            region_name=os.getenv("AWS_REGION"),
+        )
+        
         bucket = os.getenv("S3_BUCKET")
         
         chat_data = {
             "session_id": session_id,
             "timestamp": datetime.now().isoformat(),
+            "language": language,  # ✅ Include language
             "history": history
         }
         
@@ -293,4 +302,4 @@ def save_chat_to_s3(history, session_id=None):
         return session_id
     except Exception as e:
         print(f"❌ Failed to save chat: {e}")
-        return None    
+        return None
