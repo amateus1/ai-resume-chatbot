@@ -140,20 +140,24 @@ language_options = get_language_options()  # ✅ USE CACHED FUNCTION
 if 'selected_lang' not in st.session_state:
     st.session_state.selected_lang = "English"
 
-# 🌐 Horizontal Language buttons
-cols = st.columns(3)
-with cols[0]:
-    if st.button("🇺🇸 English", use_container_width=True, key="lang_en"):
-        st.session_state.selected_lang = "English"
-with cols[1]:
-    if st.button("🇨🇳 中文", use_container_width=True, key="lang_cn"): 
-        st.session_state.selected_lang = "中文 (Chinese)"
-with cols[2]:
-    if st.button("🇪🇸 Español", use_container_width=True, key="lang_es"):
-        st.session_state.selected_lang = "Español"
+# 🌐 Horizontal Language radio buttons
+lang_options = ["🇺🇸 English", "🇨🇳 中文", "🇪🇸 Español"]
+lang_mapping = {
+    "🇺🇸 English": "English",
+    "🇨🇳 中文": "中文 (Chinese)",
+    "🇪🇸 Español": "Español"
+}
+selected_lang_option = st.radio(
+    "Language",
+    options=lang_options,
+    horizontal=True,
+    label_visibility="collapsed",
+    key="lang_radio"
+)
 
 # Direct language access
-selected_lang = st.session_state.selected_lang
+selected_lang = lang_mapping[selected_lang_option]
+st.session_state.selected_lang = selected_lang
 ui = language_options[selected_lang]
 
 # 🧠 Session state
