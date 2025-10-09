@@ -37,6 +37,12 @@ st.markdown("""
     footer {visibility: hidden;}
     header {visibility: hidden;}
     .stDeployButton {display: none;}
+
+    /* ADD THIS LINE FOR BOTTOM BANNER */
+    .stApp > footer {
+        visibility: hidden;
+        height: 0 !important;
+    }
     
     /* === MAIN LAYOUT === */
     .block-container {
