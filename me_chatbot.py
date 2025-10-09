@@ -233,6 +233,12 @@ Use this format on every answer — make it skimmable and useful.
     def chat_stream(self, message, history):
         """Streaming version of chat - returns generator"""
         messages = [{"role": "system", "content": self.system_prompt()}]
+        
+        # ✅ ADD HISTORY TO MESSAGES
+        for user_msg, bot_msg in history:
+            messages.append({"role": "user", "content": user_msg})
+            messages.append({"role": "assistant", "content": bot_msg})
+        
         messages.append({"role": "user", "content": message})
 
         user_country = get_user_country()
