@@ -5,6 +5,10 @@ import uuid
 import requests
 from me_chatbot import Me
 
+# TEMPORARY DEBUG - Check if function exists
+from me_chatbot import save_chat_to_s3
+print(f"DEBUG: save_chat_to_s3 function: {save_chat_to_s3}")
+
 # 🚀 SILENT KEEP-AWAKE (Hidden from users)
 if "ping_count" not in st.session_state:
     st.session_state.ping_count = 0
@@ -307,15 +311,22 @@ if user_input:
     # 💾 Save to history
     st.session_state.history.append((display_input, full_response))
 
-    # ✅ CORRECT LOCATION: Save to S3 AFTER each message
+    # ✅ CORRECT LOCATION: Save to S3 AFTER each message - WITH DEBUGGING
     from me_chatbot import save_chat_to_s3
     try:
-        # Ensure we're passing the correct parameters
-        save_chat_to_s3(
+        print(f"DEBUG: Attempting to save chat to S3 - Session: {st.session_state.session_id}")
+        print(f"DEBUG: History length: {len(st.session_state.history)}")
+        print(f"DEBUG: Language: {st.session_state.selected_lang}")
+        
+        result = save_chat_to_s3(
             history=st.session_state.history, 
             session_id=st.session_state.session_id,
-            language=st.session_state.selected_lang  # Add language context
+            language=st.session_state.selected_lang  # Keep language context
         )
+        
+        print(f"DEBUG: S3 save function completed - Result: {result}")
+        
     except Exception as e:
+        print(f"DEBUG: S3 save failed with error: {str(e)}")
         # Silent fail - don't break the chat experience
         pass
