@@ -2,11 +2,9 @@ import os
 import json
 import re
 import requests
-from io import BytesIO
 from functools import lru_cache
 from openai import OpenAI
 from dotenv import load_dotenv
-from pypdf import PdfReader
 import resend
 
 from dotenv import load_dotenv
@@ -15,6 +13,25 @@ import pathlib
 env_path = pathlib.Path(__file__).parent / ".env"
 if env_path.exists():
     load_dotenv(dotenv_path=env_path, override=True)
+
+# Import Streamlit for caching only
+try:
+    import streamlit as st
+except ImportError:
+    # Fallback for local development without streamlit
+    class StreamlitStub:
+        @staticmethod
+        def cache_resource(*args, **kwargs):
+            def decorator(func):
+                return func
+            return decorator
+        
+        @staticmethod
+        def cache_data(*args, **kwargs):
+            def decorator(func):
+                return func
+            return decorator
+    st = StreamlitStub()
 
 def get_user_country():
     try:
@@ -47,7 +64,7 @@ def call_deepseek(messages):
     res.raise_for_status()
     return res.json()["choices"][0]["message"]["content"]
 
-# ✅ ADD MISSING STREAMING FUNCTIONS
+# ✅ STREAMING FUNCTIONS
 def call_openai_stream(messages):
     """Streaming version for OpenAI"""
     client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
@@ -55,7 +72,7 @@ def call_openai_stream(messages):
         model="gpt-4o",
         messages=messages,
         temperature=0.85,
-        stream=True  # Enable streaming
+        stream=True
     )
     
     full_response = ""
@@ -76,7 +93,7 @@ def call_deepseek_stream(messages):
         "model": "deepseek-chat",
         "messages": messages,
         "temperature": 0.85,
-        "stream": True  # Enable streaming
+        "stream": True
     }
     
     response = requests.post(url, headers=headers, json=payload, stream=True, timeout=30)
@@ -87,7 +104,7 @@ def call_deepseek_stream(messages):
         if line:
             line = line.decode('utf-8')
             if line.startswith('data: '):
-                data = line[6:]  # Remove 'data: ' prefix
+                data = line[6:]
                 if data != '[DONE]':
                     try:
                         chunk = json.loads(data)
@@ -103,61 +120,57 @@ def call_deepseek_stream(messages):
 class Me:
     def __init__(self):
         self.name = "Al Mateus"
-        self.linkedin, self.summary = self._load_resume()
+        self.resume_data = self._load_resume_data()
 
-    @lru_cache(maxsize=1)
-    def _load_resume(self):
-        linkedin = ""
-        summary = ""
+    @st.cache_resource(ttl=3600)
+    def _get_s3_client(_self):
+        """Cache S3 client to avoid re-authentication"""
+        import boto3
+        return boto3.client(
+            "s3",
+            aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
+            aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
+            region_name=os.getenv("AWS_REGION"),
+        )
 
+    @st.cache_data(ttl=7200)
+    def _load_resume_data(_self):
+        """Load only linkedin.md data with Streamlit Cloud caching"""
         if os.getenv("S3_BUCKET"):
-            import boto3
-            s3 = boto3.client(
-                "s3",
-                aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
-                aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
-                region_name=os.getenv("AWS_REGION"),
-            )
+            s3 = _self._get_s3_client()
             bucket = os.getenv("S3_BUCKET")
-            summary_key = os.getenv("SUMMARY_KEY")
-            linkedin_key = os.getenv("LINKEDIN_KEY")
+            
+            # ✅ ONLY USE LINKEDIN_KEY (summary is commented out)
+            linkedin_key = os.getenv("LINKEDIN_KEY", "linkedin.md")
 
-            summary = s3.get_object(Bucket=bucket, Key=summary_key)["Body"].read().decode("utf-8")
-            pdf_bytes = BytesIO(s3.get_object(Bucket=bucket, Key=linkedin_key)["Body"].read())
-            reader = PdfReader(pdf_bytes)
-            for page in reader.pages:
-                text = page.extract_text()
-                if text:
-                    linkedin += text
+            if not linkedin_key:
+                raise ValueError("LINKEDIN_KEY environment variable is not set")
+
+            # ✅ Load only linkedin.md from S3 (no PDF, no summary)
+            return s3.get_object(Bucket=bucket, Key=linkedin_key)["Body"].read().decode("utf-8")
         else:
-            with open("me/summary.txt", "r", encoding="utf-8") as f:
-                summary = f.read()
-            reader = PdfReader("me/linkedin.pdf")
-            for page in reader.pages:
-                text = page.extract_text()
-                if text:
-                    linkedin += text
-
-        return linkedin, summary
+            # ✅ Load only linkedin.md locally
+            with open("me/linkedin.md", "r", encoding="utf-8") as f:
+                return f.read()
 
     def system_prompt(self):
         return f"""
 You are acting as 'Al' Mateus, his digital twin. You are charismatic, enthusiastic, and a little witty — someone who brings joy to deeply technical conversations. Your tone is playful yet insightful, and you speak with both authority and warmth.  
 
-Your mission is to explain Hernan’s work, philosophy, and career as if *he* were talking — someone who has deployed MLOps in 9 countries, built cloud-native systems across 3 clouds, and helped enterprises turn chaos into architecture.
+Your mission is to explain Hernan's work, philosophy, and career as if *he* were talking — someone who has deployed MLOps in 9 countries, built cloud-native systems across 3 clouds, and helped enterprises turn chaos into architecture.
 
 💡 Key Traits:
 - Always speak like a confident, curious consultant — friendly, sharp, strategic.
-- Share real-world examples from Al’s career. Mention industries (e.g., pharma, finance, e-comm), technologies, challenges, and **metrics/results**.
+- Share real-world examples from Al's career. Mention industries (e.g., pharma, finance, e-comm), technologies, challenges, and **metrics/results**.
 - Be human. If appropriate, toss in a joke, a relatable analogy, or a geeky pop culture reference. But don't be too chatty
 # - Stay away from buzzwords unless you break them down clearly.
 - Encourage follow-ups. Be a good conversationalist, not a chatbot.
-- Never mention an “email box below” or suggest another input method. 
+- Never mention an "email box below" or suggest another input method. 
 - When user asks how to contact Al, provide official links:
   LinkedIn: https://www.linkedin.com/in/al-mateus/
   GitHub: https://github.com/amateus1  
   Portfolio: https://almateus.me
-- Then politely offer: “Or if you’d like Al to reach out, type your email directly here in chat and he’ll be notified.”
+- Then politely offer: "Or if you'd like Al to reach out, type your email directly here in chat and he'll be notified."
 - Never mention an 'email box below'. Capture happens automatically.
 
 
@@ -184,9 +197,9 @@ Your mission is to explain Hernan’s work, philosophy, and career as if *he* we
   🐙 GitHub: [github.com/amateus1](https://github.com/amateus1)  
 
 - After sharing links, politely add:  
-  *“Or, if you’d like Al to reach out, just type your email directly here in chat and he’ll be notified.”*  
+  *"Or, if you'd like Al to reach out, just type your email directly here in chat and he'll be notified."*  
 
-- Never mention an “email box below.” The system will automatically capture any email typed into chat and notify Al.  
+- Never mention an "email box below." The system will automatically capture any email typed into chat and notify Al.  
 - Do not invent or suggest other contact details.
 
 ---
@@ -199,11 +212,8 @@ Your mission is to explain Hernan’s work, philosophy, and career as if *he* we
 
 Use this format on every answer — make it skimmable and useful.
 
-## Summary
-{self.summary}
-
-## LinkedIn Profile
-{self.linkedin}
+## Resume Data
+{self.resume_data}
 """
 
     def chat(self, message, history):
@@ -215,6 +225,18 @@ Use this format on every answer — make it skimmable and useful.
             return call_deepseek(messages)
         else:
             return call_openai(messages)
+
+    # ✅ ADD STREAMING METHOD
+    def chat_stream(self, message, history):
+        """Streaming version of chat - returns generator"""
+        messages = [{"role": "system", "content": self.system_prompt()}]
+        messages.append({"role": "user", "content": message})
+
+        user_country = get_user_country()
+        if user_country == "cn" or not os.getenv("OPENAI_API_KEY"):
+            return call_deepseek_stream(messages)
+        else:
+            return call_openai_stream(messages)
 
 def send_email_alert(user_email: str):
     try:

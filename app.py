@@ -96,32 +96,37 @@ div[data-testid="column"] {
 """, unsafe_allow_html=True)
 
 # 🌍 Language options
-language_options = {
-    "English": {
-        "desc": "👋 Welcome to **Al Mateus Agentic AI & LLM Engineering leadership** world. Ask anything about my career journey. 🚀",
-        "input_placeholder": "Ask something about Al's career...",
-        "consult_prompt": "💡 If you'd like a consultation with Al, feel free to share your email below. The chat will continue regardless.",
-        "consult_input": "📧 Your email (optional)",
-        "consult_success": "✅ Thanks! Al has been notified and will reach out to you soon.",
-        "menu": ["📊 Projects", "💼 Experience", "🛠 Skills"]
-    },
-    "中文 (Chinese)": {
-        "desc": "👋 欢迎来到 **Al Mateus 的 Agentic AI 与 LLM 工程领导力**世界。探索他的认证、项目或人机协作团队经验。🚀",
-        "input_placeholder": "请输入你想了解 Al 的内容...",
-        "consult_prompt": "💡 如果您希望与 Al 进行咨询，请在下方留下您的邮箱。聊天将继续进行。",
-        "consult_input": "📧 您的邮箱（可选）",
-        "consult_success": "✅ 感谢！Al 已经收到通知，很快会与您联系。",
-        "menu": ["📊 项目", "💼 经历", "🛠 技能"]
-    },
-    "Español": {
-        "desc": "👋 Bienvenido al mundo de **Agentic AI & Liderazgo en Ingeniería LLM de Al Mateus**. Explora sus certificaciones, proyectos o experiencia en equipos humano-IA. 🚀",
-        "input_placeholder": "Haz una pregunta sobre Al...",
-        "consult_prompt": "💡 Si deseas una consulta con Al, puedes dejar tu correo abajo. El chat seguirá normalmente.",
-        "consult_input": "📧 Tu correo electrónico (opcional)",
-        "consult_success": "✅ ¡Gracias! Al ha sido notificado y se pondrá en contacto contigo pronto.",
-        "menu": ["📊 Proyectos", "💼 Experiencia", "🛠 Habilidades"]
+@st.cache_data(ttl=3600)  # ✅ ADD CACHING
+def get_language_options():
+    return {
+        "English": {
+            "desc": "👋 Welcome to **Al Mateus Agentic AI & LLM Engineering leadership** world. Ask anything about my career journey. 🚀",
+            "input_placeholder": "Ask something about Al's career...",
+            "consult_prompt": "💡 If you'd like a consultation with Al, feel free to share your email below. The chat will continue regardless.",
+            "consult_input": "📧 Your email (optional)",
+            "consult_success": "✅ Thanks! Al has been notified and will reach out to you soon.",
+            "menu": ["📊 Projects", "💼 Experience", "🛠 Skills"]
+        },
+        "中文 (Chinese)": {
+            "desc": "👋 欢迎来到 **Al Mateus 的 Agentic AI 与 LLM 工程领导力**世界。探索他的认证、项目或人机协作团队经验。🚀",
+            "input_placeholder": "请输入你想了解 Al 的内容...",
+            "consult_prompt": "💡 如果您希望与 Al 进行咨询，请在下方留下您的邮箱。聊天将继续进行。",
+            "consult_input": "📧 您的邮箱（可选）",
+            "consult_success": "✅ 感谢！Al 已经收到通知，很快会与您联系。",
+            "menu": ["📊 项目", "💼 经历", "🛠 技能"]
+        },
+        "Español": {
+            "desc": "👋 Bienvenido al mundo de **Agentic AI & Liderazgo en Ingeniería LLM de Al Mateus**. Explora sus certificaciones, proyectos o experiencia en equipos humano-IA. 🚀",
+            "input_placeholder": "Haz una pregunta sobre Al...",
+            "consult_prompt": "💡 Si deseas una consulta con Al, puedes dejar tu correo abajo. El chat seguirá normalmente.",
+            "consult_input": "📧 Tu correo electrónico (opcional)",
+            "consult_success": "✅ ¡Gracias! Al ha sido notificado y se pondrá en contacto contigo pronto.",
+            "menu": ["📊 Proyectos", "💼 Experiencia", "🛠 Habilidades"]
+        }
     }
-}
+
+language_options = get_language_options()  # ✅ USE CACHED FUNCTION
+
 # 🌐 Simple Language select - dropdown approach
 language_options_map = {
     "🇺🇸 English": "English",
@@ -186,11 +191,6 @@ for idx, item in enumerate(menu_items):
     with cols[idx]:
         if st.button(item, key=f"menu_{idx}", use_container_width=True):
             st.session_state.user_input = f"Show me {item}"
-#cols = st.columns(len(menu_items))
-#for idx, item in enumerate(menu_items):
-#    with cols[idx]:
-#        if st.button(item, key=f"menu_{idx}"):
-#            st.session_state.user_input = f"Show me {item}"
 
 # 💬 History rendering
 for user, bot in st.session_state.history:
@@ -233,7 +233,7 @@ if user_input:
         except Exception as e:
             st.error(f"❌ Failed to send email: {e}")
 
-    # ---- multilingual transform after we’ve done any email capture ----
+    # ---- multilingual transform after we've done any email capture ----
     if selected_lang == "中文 (Chinese)":
         user_input = f"请用中文回答：{user_input}"
     elif selected_lang == "Español":
@@ -266,7 +266,7 @@ if user_input:
             unsafe_allow_html=True
         )
 
-    # 🧠 Generate assistant response
+    # 🧠 Generate assistant response WITH STREAMING
     with st.chat_message("assistant", avatar="🤖"):
         stream_box = st.empty()
         full_response = ""
@@ -287,7 +287,5 @@ if user_input:
             stream_box.markdown(fallback_response)
             full_response = fallback_response
 
-    # 💾 Save to history - FIX: use full_response instead of response
+    # 💾 Save to history
     st.session_state.history.append((display_input, full_response))
-
-
