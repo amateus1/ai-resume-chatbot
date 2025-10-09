@@ -1,6 +1,7 @@
 import re
 import streamlit as st
 import time
+import uuid
 import requests
 from me_chatbot import Me
 
@@ -174,8 +175,14 @@ if st.session_state.lang_prev != selected_lang:
 if "history" not in st.session_state:
     st.session_state.history = []
 
+if "session_id" not in st.session_state:
+    st.session_state.session_id = str(uuid.uuid4())
+
 if "user_input" not in st.session_state:
     st.session_state.user_input = ""
+    # 💾 Save to S3 after each message
+    from me_chatbot import save_chat_to_s3
+    save_chat_to_s3(st.session_state.history, st.session_state.session_id)
 
 if "prompt_count" not in st.session_state:
     st.session_state.prompt_count = 0
