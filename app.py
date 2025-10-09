@@ -38,7 +38,16 @@ st.markdown("""
     header {visibility: hidden;}
     .stDeployButton {display: none;}
 
-    
+    /* === CHAT INPUT STYLINGs === */
+    .stChatInput > div > div {
+        background-color: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 12px;
+    }
+    .stChatInput > div > div:focus-within {
+        border-color: #007bff;
+        box-shadow: 0 0 0 2px rgba(0,123,255,.25);
+    }
    
     /* === MAIN LAYOUT === */
     .block-container {
