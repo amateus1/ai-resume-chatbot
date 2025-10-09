@@ -98,16 +98,6 @@ st.markdown("""
     /* .stSelectbox > label {
         display: none;
     } */
-    /* === ADD THE FLAGS FIX HERE === */
-    /* Ensure flags display in all browsers */
-    select[data-testid="stSelectbox"] option {
-        font-family: "Segoe UI Emoji", "Apple Color Emoji", sans-serif !important;
-    }
-    
-    /* Force emoji rendering */
-    .stSelectbox [data-testid="stMarkdownContainer"] {
-        font-family: "Segoe UI Emoji", "Apple Color Emoji", sans-serif !important;
-    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -156,9 +146,9 @@ if 'selected_lang' not in st.session_state:
 
 # Display compact dropdown
 selected_option = st.selectbox(
-    "",
+    "Language",
     options=list(language_options_map.keys()),
-    label_visibility="collapsed",
+    label_visibility="visible",
     key="lang_select"
 )
 
