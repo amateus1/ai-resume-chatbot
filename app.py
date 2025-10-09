@@ -309,4 +309,13 @@ if user_input:
 
     # ✅ CORRECT LOCATION: Save to S3 AFTER each message
     from me_chatbot import save_chat_to_s3
-    save_chat_to_s3(st.session_state.history, st.session_state.session_id)
+    try:
+        # Ensure we're passing the correct parameters
+        save_chat_to_s3(
+            history=st.session_state.history, 
+            session_id=st.session_state.session_id,
+            language=st.session_state.selected_lang  # Add language context
+        )
+    except Exception as e:
+        # Silent fail - don't break the chat experience
+        pass
