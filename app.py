@@ -38,6 +38,10 @@ st.markdown("""
     /* header {visibility: hidden;} */
     /* .stDeployButton {display: none;} */
 
+    /* === TEMPORARILY RESTORE HEADER FOR EMOJI TEST === */
+    header { 
+        visibility: visible !important;
+    }
     /* === FORCE FLAGS DISPLAY === */
     [data-testid="stSelectbox"] span {
         font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif !important;
