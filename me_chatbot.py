@@ -137,34 +137,34 @@ class Me:
 
     @st.cache_data(ttl=7200)
     def _load_resume_data(_self):
-    """Load both linkedin.md and stories.md from S3"""
-    if os.getenv("S3_BUCKET"):
-        s3 = _self._get_s3_client()
-        bucket = os.getenv("S3_BUCKET")
-        resume_content = ""
-        
-        # ✅ Load linkedin.md
-        linkedin_key = os.getenv("LINKEDIN_KEY", "linkedin.md")
-        if linkedin_key:
-            try:
-                linkedin_data = s3.get_object(Bucket=bucket, Key=linkedin_key)["Body"].read().decode("utf-8")
-                resume_content += linkedin_data + "\n\n"
-            except Exception as e:
-                print(f"❌ Failed to load linkedin.md: {e}")
-        
-        # ✅ Load stories.md (if it exists)
-        stories_key = "stories.md"
-        try:
-            stories_data = s3.get_object(Bucket=bucket, Key=stories_key)["Body"].read().decode("utf-8")
-            resume_content += "## Career Stories & Impact Narratives\n\n" + stories_data
-        except Exception as e:
-            print(f"⚠️ stories.md not found yet, using only linkedin.md")
+        """Load both linkedin.md and stories.md from S3"""
+        if os.getenv("S3_BUCKET"):
+            s3 = _self._get_s3_client()
+            bucket = os.getenv("S3_BUCKET")
+            resume_content = ""
             
-        return resume_content
-    else:
-        # Local loading fallback
-        with open("me/linkedin.md", "r", encoding="utf-8") as f:
-            return f.read()
+            # ✅ Load linkedin.md
+            linkedin_key = os.getenv("LINKEDIN_KEY", "linkedin.md")
+            if linkedin_key:
+                try:
+                    linkedin_data = s3.get_object(Bucket=bucket, Key=linkedin_key)["Body"].read().decode("utf-8")
+                    resume_content += linkedin_data + "\n\n"
+                except Exception as e:
+                    print(f"❌ Failed to load linkedin.md: {e}")
+            
+            # ✅ Load stories.md (if it exists)
+            stories_key = "stories.md"
+            try:
+                stories_data = s3.get_object(Bucket=bucket, Key=stories_key)["Body"].read().decode("utf-8")
+                resume_content += "## Career Stories & Impact Narratives\n\n" + stories_data
+            except Exception as e:
+                print(f"⚠️ stories.md not found yet, using only linkedin.md")
+                
+            return resume_content
+        else:
+            # Local loading fallback
+            with open("me/linkedin.md", "r", encoding="utf-8") as f:
+                return f.read()
 
     def system_prompt(self):
         return f"""
