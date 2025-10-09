@@ -39,8 +39,8 @@ st.markdown("""
     .stDeployButton {display: none;}
 
     /* === CHAT INPUT STYLING === */
-    .stChatInput > div > div {
-        background-color: #e6f3ff;
+    div[data-testid="stChatInput"] > div > div {
+        background-color: #e6f3ff !important;
         border-radius: 12px;
     }
    
