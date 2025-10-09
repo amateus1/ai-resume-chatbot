@@ -111,6 +111,15 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# ✅ ADD THIS SPECIFIC FOOTER HIDING CODE
+hide_streamlit_style = """
+<style>
+[data-testid="stToolbar"] {visibility: hidden !important;}
+footer {visibility: hidden !important;}
+</style>
+"""
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
 # 🌍 Language options
 @st.cache_data(ttl=3600)  # ✅ ADD CACHING
 def get_language_options():
