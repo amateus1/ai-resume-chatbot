@@ -20,7 +20,7 @@ if env_path.exists():
 try:
     import streamlit as st
 except ImportError:
-    # Fallback for local development without streamlit
+    # Fallbacks for local development without streamlit
     class StreamlitStub:
         @staticmethod
         def cache_resource(*args, **kwargs):
