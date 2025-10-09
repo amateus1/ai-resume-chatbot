@@ -175,6 +175,18 @@ Use this format on every answer — make it skimmable and useful.
         else:
             return call_openai(messages)
 
+    # ✅ ADD STREAMING METHOD
+    def chat_stream(self, message, history):
+        """Streaming version of chat - returns generator"""
+        messages = [{"role": "system", "content": self.system_prompt()}]
+        messages.append({"role": "user", "content": message})
+
+        user_country = get_user_country()
+        if user_country == "cn" or not os.getenv("OPENAI_API_KEY"):
+            return call_deepseek_stream(messages)
+        else:
+            return call_openai_stream(messages)
+
 def send_email_alert(user_email: str):
     try:
         resend.api_key = os.getenv("RESEND_API_KEY")

@@ -278,11 +278,22 @@ if user_input:
     with st.chat_message("assistant", avatar="🤖"):
         stream_box = st.empty()
         full_response = ""
-        for char in response:
-            full_response += char
-            stream_box.markdown(full_response + "▌")   # ✅ no unsafe_allow_html
-            # time.sleep(0.01) # trying to speed things up
-        stream_box.markdown(response)  # ✅ final clean render with Markdown
+        
+        # ✅ USE STREAMING INSTEAD OF REGULAR CHAT
+        try:
+            stream_generator = me.chat_stream(user_input, [])
+            for chunk, current_full in stream_generator:
+                full_response = current_full
+                stream_box.markdown(full_response + "▌")
+            
+            # Final render without cursor
+            stream_box.markdown(full_response)
+            
+        except Exception as e:
+            # Fallback to non-streaming if streaming fails
+            fallback_response = me.chat(user_input, [])
+            stream_box.markdown(fallback_response)
+            full_response = fallback_response
 
     # 💾 Save to history
     st.session_state.history.append((display_input, response))
