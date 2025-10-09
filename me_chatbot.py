@@ -6,7 +6,6 @@ from functools import lru_cache
 from openai import OpenAI
 from dotenv import load_dotenv
 import resend
-import json
 import uuid
 from datetime import datetime
 
@@ -251,9 +250,7 @@ def send_email_alert(user_email: str):
     try:
         resend.api_key = os.getenv("RESEND_API_KEY")
         to_address = os.getenv("ALERT_EMAIL")
-
-        print("DEBUG RESEND_API_KEY:", os.getenv("RESEND_API_KEY"))
-        print("DEBUG ALERT_EMAIL:", os.getenv("ALERT_EMAIL"))
+        
         if not to_address:
             print("❌ ALERT_EMAIL not set — email not sent")
             return None
