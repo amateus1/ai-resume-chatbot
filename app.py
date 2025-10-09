@@ -33,10 +33,10 @@ st.set_page_config(
 st.markdown("""
 <style>
     /* === HIDE STREAMLIT BANNERS === */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-    .stDeployButton {display: none;}
+    /* #MainMenu {visibility: hidden;} */
+    /* footer {visibility: hidden;} */
+    /* header {visibility: hidden;} */
+    /* .stDeployButton {display: none;} */
 
     /* === FORCE FLAGS DISPLAY === */
     [data-testid="stSelectbox"] span {
@@ -138,16 +138,10 @@ language_options = get_language_options()  # ✅ USE CACHED FUNCTION
 
 # 🌐 Simple Language select - dropdown approach
 language_options_map = {
-    "&#127482;&#127480; English": "English",
-    "&#127464;&#127475; 中文": "中文 (Chinese)", 
-    "&#127466;&#127480; Español": "Español"
+    "🇺🇸 English": "English",
+    "🇨🇳 中文": "中文 (Chinese)", 
+    "🇪🇸 Español": "Español"
 }
-
-#language_options_map = {
-#    "🇺🇸 English": "English",
-#    "🇨🇳 中文": "中文 (Chinese)", 
-#    "🇪🇸 Español": "Español"
-#}
 
 # Initialize selected language
 if 'selected_lang' not in st.session_state:
