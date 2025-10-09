@@ -38,7 +38,10 @@ st.markdown("""
     header {visibility: hidden;}
     .stDeployButton {display: none;}
 
-       
+    /* === FORCE FLAGS DISPLAY === */
+    [data-testid="stSelectbox"] span {
+        font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif !important;
+    }   
     /* === MAIN LAYOUT === */
     .block-container {
         padding-top: 1rem;   /* Tight top padding */
@@ -146,9 +149,9 @@ if 'selected_lang' not in st.session_state:
 
 # Display compact dropdown
 selected_option = st.selectbox(
-    "Language",
+    "",
     options=list(language_options_map.keys()),
-    label_visibility="visible",
+    label_visibility="collapsed",
     key="lang_select"
 )
 
