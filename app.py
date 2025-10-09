@@ -180,10 +180,7 @@ if "session_id" not in st.session_state:
 
 if "user_input" not in st.session_state:
     st.session_state.user_input = ""
-    # 💾 Save to S3 after each message
-    from me_chatbot import save_chat_to_s3
-    save_chat_to_s3(st.session_state.history, st.session_state.session_id)
-
+    
 if "prompt_count" not in st.session_state:
     st.session_state.prompt_count = 0
 
@@ -309,3 +306,7 @@ if user_input:
 
     # 💾 Save to history
     st.session_state.history.append((display_input, full_response))
+
+    # ✅ CORRECT LOCATION: Save to S3 AFTER each message
+    from me_chatbot import save_chat_to_s3
+    save_chat_to_s3(st.session_state.history, st.session_state.session_id)
