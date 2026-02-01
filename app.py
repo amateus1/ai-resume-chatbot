@@ -47,13 +47,13 @@ st.markdown("""
    
     /* === MAIN LAYOUT === */
     .block-container {
-        padding-top: 1rem;
-        padding-bottom: 6rem;  /* Space for footer */
+        padding-top: 1rem;   /* Tight top padding */
+        padding-bottom: 1rem;
     }
     .main .block-container {
         max-width: 1000px;
         padding-top: 1.5rem;
-        padding-bottom: 6rem;  /* Space for footer */
+        padding-bottom: 2rem;
         margin: auto;
     }
     
@@ -102,59 +102,53 @@ st.markdown("""
         justify-content: center;
     }
     
-    /* === FIXED FOOTER === */
-    .fixed-footer {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: white;
-        padding: 15px;
-        border-top: 1px solid #e0e0e0;
-        z-index: 1000;
-        box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+    /* === ELEVENLABS WIDGET POSITIONING === */
+    /* Position the widget container at bottom right */
+    elevenlabs-convai {
+        position: fixed !important;
+        bottom: 20px !important;
+        right: 20px !important;
+        z-index: 9999 !important;
     }
     
-    .footer-inner {
-        max-width: 1000px;
-        margin: 0 auto;
-        display: flex;
-        gap: 10px;
-        align-items: center;
-    }
-    
-    .chat-input-section {
-        flex-grow: 1;
-    }
-    
-    .voice-btn-section {
-        flex-shrink: 0;
-        width: 120px;
-    }
-    
-    /* Style for Streamlit button */
-    .voice-btn-section .stButton > button {
+    /* Ensure widget button is visible */
+    elevenlabs-convai button {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
         color: white !important;
-        border: none !important;
         border-radius: 50px !important;
-        padding: 12px 20px !important;
+        padding: 12px 24px !important;
         font-weight: 600 !important;
-        font-size: 14px !important;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        gap: 8px !important;
-        transition: all 0.3s ease !important;
-        height: 52px !important;
-        width: 100% !important;
-        white-space: nowrap !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+        border: none !important;
+        cursor: pointer !important;
     }
     
-    .voice-btn-section .stButton > button:hover {
-        transform: translateY(-2px) !important;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.3) !important;
+    /* Adjust Streamlit chat input to make room for widget */
+    div[data-testid="stChatInput"] {
+        margin-right: 120px !important; /* Make space for the voice button */
+    }
+    
+    /* Ensure chat history scrolls but input stays fixed */
+    .main {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+    }
+    
+    /* Chat message container - will scroll */
+    [data-testid="stVerticalBlock"] > [style*="flex-grow"] {
+        flex-grow: 1;
+        overflow-y: auto;
+        max-height: calc(100vh - 200px);
+    }
+    
+    /* Keep input at bottom */
+    [data-testid="stChatInput"] {
+        position: sticky !important;
+        bottom: 20px !important;
+        background: white !important;
+        padding-top: 10px !important;
+        z-index: 100 !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -243,15 +237,10 @@ if "email_prompt_shown" not in st.session_state:
     st.session_state.email_prompt_shown = False
 # >>> END CHANGE 1 <<<
 
-# >>> ADD VOICE BUTTON STATE <<<
-if "voice_clicked" not in st.session_state:
-    st.session_state.voice_clicked = False
-
 # 🤖 Load bot
 me = Me()
 
 # 🧢 Header
-#st.markdown(f"## {ui['title']}")
 st.markdown(ui["desc"])
 
 # 📂 Simple Menu Buttons (under intro)
@@ -281,43 +270,14 @@ for user, bot in st.session_state.history:
     with st.chat_message("assistant", avatar="🤖"):
         st.markdown(bot, unsafe_allow_html=True)
 
-# Add spacer so content doesn't hide behind fixed footer
-st.markdown("<div style='height: 80px;'></div>", unsafe_allow_html=True)
+# 🔽 ADD ELEVENLABS WIDGET SCRIPT (BEFORE CHAT INPUT)
+st.markdown("""
+<elevenlabs-convai agent-id="agent_2601kffvm9v2ebaa4a72hndgggcq"></elevenlabs-convai>
+<script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+""", unsafe_allow_html=True)
 
-# 🎤 FIXED FOOTER - RENDERED AT THE VERY END
-# We'll use a container trick to make it persistent
-
-# Create the footer HTML structure
-st.markdown('<div class="fixed-footer"><div class="footer-inner">', unsafe_allow_html=True)
-
-# Create two columns inside the footer
-footer_col1, footer_col2 = st.columns([5, 1])  # 5:1 ratio
-
-with footer_col1:
-    # Chat input
-    user_input = st.chat_input(ui["input_placeholder"])
-
-with footer_col2:
-    # Voice button - using session state to track clicks
-    if st.button("🎤 Voice AI", key="voice_ai_button", use_container_width=True):
-        st.session_state.voice_clicked = True
-
-st.markdown('</div></div>', unsafe_allow_html=True)
-
-# Handle voice button click AFTER the button is rendered
-if st.session_state.voice_clicked:
-    # Reset the state
-    st.session_state.voice_clicked = False
-    
-    # Open ElevenLabs in new window using JavaScript
-    st.markdown("""
-    <script>
-    window.open('https://elevenlabs.io/app/talk-to?agent_id=agent_2601kffvm9v2ebaa4a72hndgggcq', '_blank', 'width=400,height=600');
-    </script>
-    """, unsafe_allow_html=True)
-    
-    # Optional: Show a brief message
-    st.toast("Opening Voice AI Demo...", icon="🎤")
+# 🧾 Input box
+user_input = st.chat_input(ui["input_placeholder"])
 
 if st.session_state.user_input:
     user_input = st.session_state.user_input
