@@ -47,13 +47,13 @@ st.markdown("""
    
     /* === MAIN LAYOUT === */
     .block-container {
-        padding-top: 1rem;   /* Tight top padding */
-        padding-bottom: 6rem;  /* Increased for footer */
+        padding-top: 1rem;
+        padding-bottom: 6rem;  /* Space for footer */
     }
     .main .block-container {
         max-width: 1000px;
         padding-top: 1.5rem;
-        padding-bottom: 6rem;  /* Increased for footer */
+        padding-bottom: 6rem;  /* Space for footer */
         margin: auto;
     }
     
@@ -102,8 +102,8 @@ st.markdown("""
         justify-content: center;
     }
     
-    /* === CUSTOM CHAT FOOTER === */
-    .chat-footer-container {
+    /* === CUSTOM FOOTER LAYOUT === */
+    .custom-footer {
         position: fixed;
         bottom: 0;
         left: 0;
@@ -112,62 +112,52 @@ st.markdown("""
         padding: 15px;
         border-top: 1px solid #e0e0e0;
         z-index: 1000;
-        display: flex;
-        gap: 10px;
-        align-items: center;
         box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
     }
     
-    .chat-input-wrapper {
+    .footer-content {
+        max-width: 1000px;
+        margin: 0 auto;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+    
+    .chat-input-container {
         flex-grow: 1;
-        margin: 0;
     }
     
-    /* Override Streamlit's default chat input margin */
-    div[data-testid="stChatInput"] {
-        margin: 0 !important;
-        width: 100% !important;
-    }
-    
-    .voice-btn-wrapper {
+    .voice-btn-container {
         flex-shrink: 0;
     }
     
-    .voice-btn {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border: none;
-        border-radius: 50px;
-        padding: 12px 20px;
-        font-weight: 600;
-        font-size: 14px;
-        cursor: pointer;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        transition: all 0.3s ease;
-        white-space: nowrap;
-        height: 52px; /* Match chat input height */
+    /* Style the Streamlit button to match your design */
+    .stButton > button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 50px !important;
+        padding: 12px 20px !important;
+        font-weight: 600 !important;
+        font-size: 14px !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        transition: all 0.3s ease !important;
+        height: 52px !important;
+        white-space: nowrap !important;
     }
     
-    .voice-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    .stButton > button:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.3) !important;
     }
     
-    /* Make sure chat content doesn't hide behind footer */
-    @media (max-width: 768px) {
-        .block-container {
-            padding-bottom: 7rem;
-        }
-        .main .block-container {
-            padding-bottom: 7rem;
-        }
-        .voice-btn {
-            padding: 10px 15px;
-            font-size: 13px;
-        }
+    /* Remove Streamlit's default button border */
+    .stButton > button:focus {
+        border: none !important;
+        outline: none !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -293,24 +283,27 @@ for user, bot in st.session_state.history:
 # Add spacer so content doesn't hide behind fixed footer
 st.markdown("<div style='height: 80px;'></div>", unsafe_allow_html=True)
 
-# 🎤 CUSTOM FOOTER WITH INPUT + BUTTON
-st.markdown("""
-<div class="chat-footer-container">
-    <div class="chat-input-wrapper">
-""", unsafe_allow_html=True)
+# 🎤 CUSTOM FOOTER WITH STREAMLIT NATIVE BUTTON
+st.markdown('<div class="custom-footer"><div class="footer-content">', unsafe_allow_html=True)
 
-# The chat input will render here
-user_input = st.chat_input(ui["input_placeholder"])
+# Create two columns for the footer
+footer_col1, footer_col2 = st.columns([4, 1])  # 80% input, 20% button
 
-st.markdown("""
-    </div>
-    <div class="voice-btn-wrapper">
-        <button class="voice-btn" onclick="window.open('https://elevenlabs.io/app/talk-to?agent_id=agent_2601kffvm9v2ebaa4a72hndgggcq', '_blank', 'width=400,height=600,left=100,top=100')">
-            🎤 Voice AI
-        </button>
-    </div>
-</div>
-""", unsafe_allow_html=True)
+with footer_col1:
+    # The chat input will render here
+    user_input = st.chat_input(ui["input_placeholder"])
+
+with footer_col2:
+    # Streamlit native button that will be clickable
+    if st.button("🎤 Voice AI", key="voice_ai_btn", use_container_width=True):
+        # This JavaScript will execute when button is clicked
+        st.markdown("""
+        <script>
+        window.open('https://elevenlabs.io/app/talk-to?agent_id=agent_2601kffvm9v2ebaa4a72hndgggcq', '_blank', 'width=400,height=600,left=100,top=100');
+        </script>
+        """, unsafe_allow_html=True)
+
+st.markdown('</div></div>', unsafe_allow_html=True)
 
 if st.session_state.user_input:
     user_input = st.session_state.user_input
