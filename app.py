@@ -39,6 +39,12 @@ st.markdown("""
     header {visibility: hidden;}
     .stDeployButton {display: none;}
 
+    /* === CHAT INPUT STYLING === */
+    div[data-testid="stChatInput"] > div > div {
+        background-color: #e6f3ff !important;
+        border-radius: 12px;
+    }
+   
     /* === MAIN LAYOUT === */
     .block-container {
         padding-top: 1rem;   /* Tight top padding */
@@ -95,74 +101,46 @@ st.markdown("""
         display: flex;
         justify-content: center;
     }
+    /* .stSelectbox > label {
+        display: none;
+    } */
     
-    /* === CUSTOM INPUT AND WIDGET LAYOUT === */
-    /* Container for chat input + widget */
-    .chat-widget-container {
-        position: fixed;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 800px;
-        max-width: 90%;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        z-index: 9999;
-        background: white;
-        padding: 10px;
-        border-radius: 12px;
-        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
-    }
-    
-    /* Make Streamlit chat input narrower */
-    div[data-testid="stChatInput"] {
-        flex: 1;
-        min-width: 0; /* Allow shrinking */
-        margin-bottom: 0 !important;
-    }
-    
-    /* Style the chat input box */
-    div[data-testid="stChatInput"] > div > div {
-        background-color: #e6f3ff !important;
-        border-radius: 12px !important;
-        min-height: 56px !important;
-        display: flex !important;
-        align-items: center !important;
-    }
-    
-    /* ElevenLabs widget styling */
+    /* === ELEVENLABS WIDGET FIXED POSITION === */
     elevenlabs-convai {
-        flex-shrink: 0;
-        height: 56px !important;
-        display: flex !important;
-        align-items: center !important;
+        position: fixed !important;
+        bottom: 20px !important;
+        right: 20px !important;
+        z-index: 9999 !important;
     }
     
-    /* Ensure widget button looks good */
-    elevenlabs-convai button {
-        height: 56px !important;
-        border-radius: 12px !important;
-        padding: 0 24px !important;
-        font-weight: 600 !important;
-        white-space: nowrap !important;
+    /* === COLORED NAV BUTTONS === */
+    /* Projects button - blue gradient */
+    button[kind="secondary"][data-testid="baseButton-secondary"]:has(+ span[aria-label*="Projects"]) {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
         color: white !important;
         border: none !important;
-        cursor: pointer !important;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
     }
     
-    /* Make sure chat messages don't overlap with fixed container */
-    [data-testid="stVerticalBlock"] > [style*="flex-grow"] {
-        flex-grow: 1;
-        overflow-y: auto;
-        padding-bottom: 100px !important; /* Space for fixed input */
+    /* Experience button - green gradient */
+    button[kind="secondary"][data-testid="baseButton-secondary"]:has(+ span[aria-label*="Experience"]) {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
+        color: white !important;
+        border: none !important;
     }
     
-    /* Adjust main container to account for fixed input */
-    .main .block-container {
-        padding-bottom: 120px !important;
+    /* Skills button - orange gradient */
+    button[kind="secondary"][data-testid="baseButton-secondary"]:has(+ span[aria-label*="Skills"]) {
+        background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%) !important;
+        color: white !important;
+        border: none !important;
+    }
+    
+    /* Hover effects for all colored buttons */
+    button[kind="secondary"][data-testid="baseButton-secondary"]:hover {
+        opacity: 0.9 !important;
+        transform: translateY(-2px) !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -255,6 +233,7 @@ if "email_prompt_shown" not in st.session_state:
 me = Me()
 
 # 🧢 Header
+#st.markdown(f"## {ui['title']}")
 st.markdown(ui["desc"])
 
 # 📂 Simple Menu Buttons (under intro)
@@ -284,17 +263,10 @@ for user, bot in st.session_state.history:
     with st.chat_message("assistant", avatar="🤖"):
         st.markdown(bot, unsafe_allow_html=True)
 
-# 🔽 ADD ELEVENLABS WIDGET SCRIPT
+# 🔽 ADD ELEVENLABS WIDGET SCRIPT (BEFORE CHAT INPUT)
 st.markdown("""
 <elevenlabs-convai agent-id="agent_2601kffvm9v2ebaa4a72hndgggcq"></elevenlabs-convai>
 <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
-
-<!-- Custom container for chat input + widget -->
-<div class="chat-widget-container">
-    <!-- Streamlit chat input will be placed here by CSS -->
-    <div style="flex: 1;"></div>
-    <!-- ElevenLabs widget will appear here -->
-</div>
 """, unsafe_allow_html=True)
 
 # 🧾 Input box
