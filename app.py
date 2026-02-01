@@ -204,6 +204,16 @@ selected_lang = lang_mapping[selected_lang_option]
 st.session_state.selected_lang = selected_lang
 ui = language_options[selected_lang]
 
+# 🎤 ELEVENLABS WIDGET AT TOP - SIMPLE EMBED
+st.markdown("""
+<div style="text-align: center; margin: 20px 0; padding: 10px; background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); border-radius: 12px;">
+    <h4 style="margin: 0 0 10px 0;">🎤 Voice AI Demo</h4>
+    <p style="margin: 0 0 15px 0; font-size: 14px; color: #666;">Built with n8n & ElevenLabs</p>
+    <elevenlabs-convai agent-id="agent_2601kffvm9v2ebaa4a72hndgggcq"></elevenlabs-convai>
+    <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+</div>
+""", unsafe_allow_html=True)
+
 # 🧠 Session state
 if "lang_prev" not in st.session_state:
     st.session_state.lang_prev = selected_lang
