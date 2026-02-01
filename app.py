@@ -225,6 +225,12 @@ for user, bot in st.session_state.history:
     with st.chat_message("assistant", avatar="🤖"):
         st.markdown(bot, unsafe_allow_html=True)
 
+# 🎤 ELEVENLABS VOICE WIDGET - SIMPLE EMBED
+st.markdown("""
+<elevenlabs-convai agent-id="agent_2601kffvm9v2ebaa4a72hndgggcq"></elevenlabs-convai>
+<script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+""", unsafe_allow_html=True)
+
 # 🧾 Input box
 user_input = st.chat_input(ui["input_placeholder"])
 
