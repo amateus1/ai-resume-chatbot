@@ -3,7 +3,6 @@ import streamlit as st
 import time
 import uuid
 import requests
-import streamlit.components.v1 as components
 from me_chatbot import Me
 
 # 🚀 SILENT KEEP-AWAKE (Hidden from users)
@@ -102,35 +101,9 @@ st.markdown("""
         display: flex;
         justify-content: center;
     }
-    
-    /* === COLORED BUTTONS === */
-    /* Projects button */
-    button[kind="secondary"][data-testid="baseButton-secondary"][id*="menu_0"] {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-        color: white !important;
-        border: none !important;
-    }
-    
-    /* Experience button */
-    button[kind="secondary"][data-testid="baseButton-secondary"][id*="menu_1"] {
-        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
-        color: white !important;
-        border: none !important;
-    }
-    
-    /* Skills button */
-    button[kind="secondary"][data-testid="baseButton-secondary"][id*="menu_2"] {
-        background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%) !important;
-        color: white !important;
-        border: none !important;
-    }
-    
-    /* Button hover effects */
-    button[kind="secondary"][data-testid="baseButton-secondary"]:hover {
-        opacity: 0.9 !important;
-        transform: translateY(-2px) !important;
-        transition: all 0.3s ease !important;
-    }
+    /* .stSelectbox > label {
+        display: none;
+    } */
 </style>
 """, unsafe_allow_html=True)
 
@@ -222,6 +195,7 @@ if "email_prompt_shown" not in st.session_state:
 me = Me()
 
 # 🧢 Header
+#st.markdown(f"## {ui['title']}")
 st.markdown(ui["desc"])
 
 # 📂 Simple Menu Buttons (under intro)
@@ -349,82 +323,3 @@ if user_input:
     except Exception as e:
         # Silent fail - don't break the chat experience
         pass
-
-# 🔽 ELEVENLABS CONVERSATIONAL AI WIDGET
-# This is the working solution - use an iframe with proper permissions
-widget_html = """
-<!DOCTYPE html>
-<html>
-<head>
-    <style>
-        body { margin: 0; padding: 0; background: transparent; }
-        #widget-container {
-            position: fixed;
-            bottom: 80px;
-            right: 20px;
-            width: 180px;
-            height: 50px;
-            z-index: 9999;
-        }
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-        }
-    </style>
-</head>
-<body>
-    <div id="widget-container">
-        <!-- ElevenLabs widget will load here -->
-        <elevenlabs-convai agent-id="agent_2601kffvm9v2ebaa4a72hndgggcq"></elevenlabs-convai>
-    </div>
-    <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async></script>
-</body>
-</html>
-"""
-
-# Create a separate HTML file for the widget iframe
-widget_iframe_html = """
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Voice Chat</title>
-    <style>
-        body { margin: 0; padding: 0; }
-        elevenlabs-convai {
-            width: 100% !important;
-            height: 100% !important;
-        }
-    </style>
-</head>
-<body>
-    <elevenlabs-convai agent-id="agent_2601kffvm9v2ebaa4a72hndgggcq"></elevenlabs-convai>
-    <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async></script>
-</body>
-</html>
-"""
-
-# Use components.html to embed the widget
-components.html(widget_html, height=70, width=200, scrolling=False)
-
-# Also add JavaScript to ensure it loads
-st.markdown("""
-<script>
-// Fallback: If widget doesn't load, create a button that links to voice chat
-setTimeout(function() {
-    const widget = document.querySelector('elevenlabs-convai');
-    if (!widget || !widget.shadowRoot) {
-        console.log('Widget not loaded, creating fallback button');
-        const fallbackBtn = document.createElement('button');
-        fallbackBtn.innerHTML = '🎤 Voice Chat';
-        fallbackBtn.style.cssText = 'position:fixed;bottom:80px;right:20px;background:#667eea;color:white;border:none;padding:12px 24px;border-radius:12px;cursor:pointer;z-index:9999;';
-        fallbackBtn.onclick = function() {
-            alert('Voice chat requires ElevenLabs widget. Please check browser permissions.');
-        };
-        document.body.appendChild(fallbackBtn);
-    }
-}, 3000);
-</script>
-""", unsafe_allow_html=True)
