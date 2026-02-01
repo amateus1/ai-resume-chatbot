@@ -3,7 +3,6 @@ import streamlit as st
 import time
 import uuid
 import requests
-import streamlit.components.v1 as components
 from me_chatbot import Me
 
 # 🚀 SILENT KEEP-AWAKE (Hidden from users)
@@ -44,7 +43,6 @@ st.markdown("""
     div[data-testid="stChatInput"] > div > div {
         background-color: #e6f3ff !important;
         border-radius: 12px;
-        width: 100% !important;
     }
    
     /* === MAIN LAYOUT === */
@@ -55,7 +53,7 @@ st.markdown("""
     .main .block-container {
         max-width: 1000px;
         padding-top: 1.5rem;
-        padding-bottom: 100px; /* Extra space for fixed input */
+        padding-bottom: 2rem;
         margin: auto;
     }
     
@@ -133,36 +131,35 @@ st.markdown("""
         transition: all 0.3s ease !important;
     }
     
-    /* === INPUT CONTAINER STYLING === */
-    /* Create a container for both input and widget */
-    .input-widget-container {
-        position: fixed;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 800px;
-        max-width: 90%;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        z-index: 100;
-        background: white;
-        padding: 10px;
-        border-radius: 12px;
-        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    /* === WIDGET POSITIONING === */
+    /* Position the ElevenLabs widget */
+    elevenlabs-convai {
+        position: fixed !important;
+        bottom: 20px !important;
+        right: 20px !important;
+        z-index: 9999 !important;
+        width: 200px !important;
+        height: 60px !important;
     }
     
-    /* Adjust chat input width */
+    /* Adjust chat input to make space for widget */
     div[data-testid="stChatInput"] {
-        flex: 1;
-        margin-bottom: 0 !important;
+        margin-right: 220px !important; /* Space for widget */
+        transition: margin-right 0.3s ease;
     }
     
-    /* Make room for messages above the fixed input */
+    /* Make sure messages don't overlap with fixed elements */
     [data-testid="stVerticalBlock"] > [style*="flex-grow"] {
-        padding-bottom: 100px !important;
+        padding-bottom: 80px !important;
     }
 </style>
+
+<!-- ELEVENLABS WIDGET - INJECT DIRECTLY INTO HTML -->
+<elevenlabs-convai 
+    agent-id="agent_2601kffvm9v2ebaa4a72hndgggcq"
+    style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; width: 200px; height: 60px;"
+></elevenlabs-convai>
+<script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async></script>
 """, unsafe_allow_html=True)
 
 # 🌍 Language options
@@ -282,17 +279,6 @@ for user, bot in st.session_state.history:
     with st.chat_message("assistant", avatar="🤖"):
         st.markdown(bot, unsafe_allow_html=True)
 
-# 🔽 CREATE A CUSTOM CONTAINER FOR INPUT + WIDGET
-# Add container structure first
-st.markdown("""
-<div class="input-widget-container">
-    <!-- Chat input will go here -->
-    <div style="flex: 1;"></div>
-    <!-- Widget will be placed in this iframe -->
-    <div id="widget-holder" style="width: 200px; height: 60px; overflow: visible;"></div>
-</div>
-""", unsafe_allow_html=True)
-
 # 🧾 Input box
 user_input = st.chat_input(ui["input_placeholder"])
 
@@ -391,64 +377,3 @@ if user_input:
     except Exception as e:
         # Silent fail - don't break the chat experience
         pass
-
-# 🔽 EMBED ELEVENLABS WIDGET
-# Create HTML for the widget with proper sizing
-widget_html = """
-<!DOCTYPE html>
-<html>
-<head>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            background: transparent !important;
-            overflow: visible !important;
-        }
-        elevenlabs-convai {
-            display: block !important;
-            width: 100% !important;
-            height: 100% !important;
-            min-width: 180px !important;
-            min-height: 50px !important;
-        }
-        /* Force widget to be visible */
-        elevenlabs-convai * {
-            visibility: visible !important;
-            display: block !important;
-        }
-    </style>
-</head>
-<body>
-    <elevenlabs-convai agent-id="agent_2601kffvm9v2ebaa4a72hndgggcq"></elevenlabs-convai>
-    <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async></script>
-</body>
-</html>
-"""
-
-# Embed the widget in the widget-holder div
-components.html(f"""
-<script>
-// Inject widget directly into the widget-holder div
-document.addEventListener('DOMContentLoaded', function() {{
-    const widgetHTML = `{widget_html}`;
-    const holder = document.getElementById('widget-holder');
-    if (holder) {{
-        holder.innerHTML = widgetHTML;
-        // Force resize
-        setTimeout(() => {{
-            const convaiElement = holder.querySelector('elevenlabs-convai');
-            if (convaiElement) {{
-                convaiElement.style.width = '100%';
-                convaiElement.style.height = '100%';
-                convaiElement.style.minWidth = '180px';
-                convaiElement.style.minHeight = '50px';
-            }}
-        }}, 1000);
-    }}
-}});
-</script>
-""", height=0, width=0)
