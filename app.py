@@ -39,7 +39,7 @@ st.markdown("""
     header {visibility: hidden;}
     .stDeployButton {display: none;}
 
-    /* === CHAT INPUTS STYLING === */
+    /* === CHAT INPUT STYLING === */
     div[data-testid="stChatInput"] > div > div {
         background-color: #e6f3ff !important;
         border-radius: 12px;
@@ -102,46 +102,65 @@ st.markdown("""
         justify-content: center;
     }
     
-    /* === CUSTOM CHAT FOOTER === */
-    .custom-chat-footer {
+    /* === ELEVENLABS IFRAME POSITIONING === */
+    .elevenlabs-iframe-container {
         position: fixed;
+        bottom: 85px;
+        right: 20px;
+        z-index: 9999;
+        width: 60px;
+        height: 60px;
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+    
+    .elevenlabs-iframe-container.expanded {
+        width: 320px;
+        height: 520px;
+    }
+    
+    .elevenlabs-iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .elevenlabs-iframe-container.expanded .elevenlabs-iframe {
+        opacity: 1;
+    }
+    
+    .elevenlabs-toggle-btn {
+        position: absolute;
         bottom: 0;
-        left: 0;
         right: 0;
-        background: white;
-        padding: 10px 20px;
-        border-top: 1px solid #e0e0e0;
-        z-index: 1000;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 12px 20px;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        z-index: 10000;
+        transition: all 0.3s ease;
     }
     
-    /* Force chat input to be inline */
-    .stChatInputContainer {
-        display: inline-block !important;
-        width: 75% !important;
-        margin-right: 10px !important;
+    .elevenlabs-toggle-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.3);
     }
     
-    /* ElevenLabs widget container */
-    .elevenlabs-widget-inline {
-        display: inline-block !important;
-        vertical-align: bottom !important;
-        width: 23% !important;
-        height: 52px !important;
-    }
-    
-    /* Hide default Streamlit spacing */
-    .stChatInput {
-        margin-bottom: 0 !important;
-    }
-    
-    /* Adjust for mobile */
-    @media (max-width: 768px) {
-        .stChatInputContainer {
-            width: 65% !important;
-        }
-        .elevenlabs-widget-inline {
-            width: 33% !important;
-        }
+    /* Make space for the widget */
+    div[data-testid="stChatInput"] {
+        margin-right: 80px !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -204,16 +223,6 @@ selected_lang = lang_mapping[selected_lang_option]
 st.session_state.selected_lang = selected_lang
 ui = language_options[selected_lang]
 
-# 🎤 ELEVENLABS WIDGET AT TOP - SIMPLE EMBED
-st.markdown("""
-<div style="text-align: center; margin: 20px 0; padding: 10px; background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); border-radius: 12px;">
-    <h4 style="margin: 0 0 10px 0;">🎤 Voice AI Demo</h4>
-    <p style="margin: 0 0 15px 0; font-size: 14px; color: #666;">Built with n8n & ElevenLabs</p>
-    <elevenlabs-convai agent-id="agent_2601kffvm9v2ebaa4a72hndgggcq"></elevenlabs-convai>
-    <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
-</div>
-""", unsafe_allow_html=True)
-
 # 🧠 Session state
 if "lang_prev" not in st.session_state:
     st.session_state.lang_prev = selected_lang
@@ -274,26 +283,51 @@ for user, bot in st.session_state.history:
     with st.chat_message("assistant", avatar="🤖"):
         st.markdown(bot, unsafe_allow_html=True)
 
-# Add some spacing before the custom footer
-st.markdown("<div style='height: 80px;'></div>", unsafe_allow_html=True)
-
-# 🎤 CUSTOM FOOTER WITH CHAT INPUT + ELEVENLABS WIDGET
+# 🎤 ELEVENLABS WIDGET - IFRAME APPROACH
 st.markdown("""
-<div class="custom-chat-footer">
-    <div class="stChatInputContainer">
-""", unsafe_allow_html=True)
-
-# 🧾 Chat input in the left column
-user_input = st.chat_input(ui["input_placeholder"])
-
-st.markdown("""
-    </div>
-    <div class="elevenlabs-widget-inline">
-        <elevenlabs-convai agent-id="agent_2601kffvm9v2ebaa4a72hndgggcq"></elevenlabs-convai>
-        <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
-    </div>
+<div class="elevenlabs-iframe-container" id="voiceWidget">
+    <iframe 
+        class="elevenlabs-iframe"
+        src="https://elevenlabs.io/app/talk-to?agent_id=agent_2601kffvm9v2ebaa4a72hndgggcq"
+        title="Voice AI Demo"
+        loading="lazy"
+    ></iframe>
+    <button class="elevenlabs-toggle-btn" onclick="toggleVoiceWidget()" id="voiceToggleBtn">
+        🎤 Voice AI
+    </button>
 </div>
+
+<script>
+function toggleVoiceWidget() {
+    const container = document.getElementById('voiceWidget');
+    const btn = document.getElementById('voiceToggleBtn');
+    
+    if (container.classList.contains('expanded')) {
+        container.classList.remove('expanded');
+        btn.innerHTML = '🎤 Voice AI';
+    } else {
+        container.classList.add('expanded');
+        btn.innerHTML = '✕ Close';
+    }
+}
+
+// Close iframe when clicking outside (optional)
+document.addEventListener('click', function(event) {
+    const container = document.getElementById('voiceWidget');
+    const btn = document.getElementById('voiceToggleBtn');
+    
+    if (container.classList.contains('expanded') && 
+        !container.contains(event.target) && 
+        event.target !== btn) {
+        container.classList.remove('expanded');
+        btn.innerHTML = '🎤 Voice AI';
+    }
+});
+</script>
 """, unsafe_allow_html=True)
+
+# 🧾 Input box
+user_input = st.chat_input(ui["input_placeholder"])
 
 if st.session_state.user_input:
     user_input = st.session_state.user_input
