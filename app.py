@@ -132,10 +132,9 @@ st.markdown("""
     }
     
     /* === ELEVENLABS WIDGET STYLING === */
-    /* This will style the injected widget */
     elevenlabs-convai {
         position: fixed !important;
-        bottom: 80px !important;  /* Position above chat input */
+        bottom: 80px !important;
         right: 20px !important;
         z-index: 9999 !important;
         width: 200px !important;
@@ -143,12 +142,6 @@ st.markdown("""
         background: white !important;
         border-radius: 12px !important;
         box-shadow: 0 4px 20px rgba(0,0,0,0.15) !important;
-    }
-    
-    /* Adjust chat input position */
-    div[data-testid="stChatInput"] {
-        position: relative !important;
-        z-index: 100 !important;
     }
     
     /* Make room for chat messages */
@@ -275,82 +268,36 @@ for user, bot in st.session_state.history:
     with st.chat_message("assistant", avatar="🤖"):
         st.markdown(bot, unsafe_allow_html=True)
 
-# 🔽 INJECT ELEVENLABS WIDGET USING JAVASCRIPT
-# This injects the widget directly into the DOM with proper positioning
+# 🔽 SIMPLIFIED WIDGET INJECTION
+# Use a cleaner approach with proper JavaScript escaping
 st.markdown("""
 <div id="elevenlabs-widget-container"></div>
 <script>
-// Function to inject and style the ElevenLabs widget
-function injectElevenLabsWidget() {
-    // Create container for the widget
-    const container = document.getElementById('elevenlabs-widget-container');
-    if (!container) return;
+(function() {
+    // Create container for widget
+    const container = document.createElement('div');
+    container.style.position = 'fixed';
+    container.style.bottom = '80px';
+    container.style.right = '20px';
+    container.style.zIndex = '9999';
+    container.style.width = '200px';
+    container.style.height = '60px';
     
-    // Clear any existing content
-    container.innerHTML = '';
+    // Create the ElevenLabs widget
+    const widget = document.createElement('elevenlabs-convai');
+    widget.setAttribute('agent-id', 'agent_2601kffvm9v2ebaa4a72hndgggcq');
+    widget.style.width = '100%';
+    widget.style.height = '100%';
     
-    // Create the convai element
-    const convaiElement = document.createElement('elevenlabs-convai');
-    convaiElement.setAttribute('agent-id', 'agent_2601kffvm9v2ebaa4a72hndgggcq');
+    container.appendChild(widget);
+    document.body.appendChild(container);
     
-    // Apply styling directly
-    convaiElement.style.position = 'fixed';
-    convaiElement.style.bottom = '80px';  // Position above chat input
-    convaiElement.style.right = '20px';
-    convaiElement.style.zIndex = '9999';
-    convaiElement.style.width = '200px';
-    convaiElement.style.height = '60px';
-    convaiElement.style.backgroundColor = 'white';
-    convaiElement.style.borderRadius = '12px';
-    convaiElement.style.boxShadow = '0 4px 20px rgba(0,0,0,0.15)';
-    convaiElement.style.overflow = 'visible';
-    
-    // Append to container
-    container.appendChild(convaiElement);
-    
-    // Load the ElevenLabs script if not already loaded
-    if (!document.querySelector('script[src*="elevenlabs"]')) {
-        const script = document.createElement('script');
-        script.src = 'https://unpkg.com/@elevenlabs/convai-widget-embed';
-        script.async = true;
-        script.type = 'text/javascript';
-        document.head.appendChild(script);
-        
-        // Log for debugging
-        script.onload = function() {
-            console.log('ElevenLabs widget script loaded successfully');
-        };
-        
-        script.onerror = function() {
-            console.error('Failed to load ElevenLabs widget script');
-        };
-    }
-}
-
-// Inject widget when page loads
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', injectElevenLabsWidget);
-} else {
-    injectElevenLabsWidget();
-}
-
-// Re-inject widget after Streamlit updates (important for Streamlit apps)
-document.addEventListener('DOMContentLoaded', function() {
-    // Observe for Streamlit DOM changes
-    const observer = new MutationObserver(function(mutations) {
-        // Check if widget container still exists
-        const widget = document.querySelector('elevenlabs-convai');
-        if (!widget) {
-            injectElevenLabsWidget();
-        }
-    });
-    
-    // Start observing
-    observer.observe(document.body, {
-        childList: true,
-        subtree: true
-    });
-});
+    // Load the ElevenLabs script
+    const script = document.createElement('script');
+    script.src = 'https://unpkg.com/@elevenlabs/convai-widget-embed';
+    script.async = true;
+    document.head.appendChild(script);
+})();
 </script>
 """, unsafe_allow_html=True)
 
