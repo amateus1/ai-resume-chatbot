@@ -102,42 +102,35 @@ st.markdown("""
         justify-content: center;
     }
     
-    /* === COLORED BUTTONS === */
-    /* Projects button */
-    button[kind="secondary"][data-testid="baseButton-secondary"] {
+    /* === COLORED BUTTONS - WORKING VERSION === */
+    /* First button (Projects) */
+    button[data-testid="baseButton-secondary"][id*="menu_0"] {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        color: white !important;
         border: none !important;
     }
     
-    /* Target specific buttons by their content */
-    div[data-testid="column"]:nth-child(1) button {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-        color: white !important;
-    }
-    
-    div[data-testid="column"]:nth-child(2) button {
+    /* Second button (Experience) */
+    button[data-testid="baseButton-secondary"][id*="menu_1"] {
         background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
         color: white !important;
+        border: none !important;
     }
     
-    div[data-testid="column"]:nth-child(3) button {
+    /* Third button (Skills) */
+    button[data-testid="baseButton-secondary"][id*="menu_2"] {
         background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%) !important;
         color: white !important;
+        border: none !important;
     }
     
-    /* Hover effects */
-    button[kind="secondary"][data-testid="baseButton-secondary"]:hover {
+    /* Button hover effects */
+    button[data-testid="baseButton-secondary"]:hover {
         opacity: 0.9 !important;
         transform: translateY(-2px) !important;
         transition: all 0.3s ease !important;
     }
 </style>
-
-<!-- ELEVENLABS WIDGET - PLACED IN HTML HEAD -->
-<elevenlabs-convai 
-    agent-id="agent_2601kffvm9v2ebaa4a72hndgggcq"
-    style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;"
-></elevenlabs-convai>
-<script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async></script>
 """, unsafe_allow_html=True)
 
 # 🌍 Language options
@@ -355,3 +348,31 @@ if user_input:
     except Exception as e:
         # Silent fail - don't break the chat experience
         pass
+
+# 🔽 ELEVENLABS WIDGET - ADD AT THE VERY END
+st.markdown("""
+<div id="elevenlabs-widget-container"></div>
+<script>
+// Create and inject the ElevenLabs widget
+const widgetContainer = document.getElementById('elevenlabs-widget-container');
+if (widgetContainer) {
+    // Create the convai element
+    const convaiElement = document.createElement('elevenlabs-convai');
+    convaiElement.setAttribute('agent-id', 'agent_2601kffvm9v2ebaa4a72hndgggcq');
+    convaiElement.style.position = 'fixed';
+    convaiElement.style.bottom = '20px';
+    convaiElement.style.right = '20px';
+    convaiElement.style.zIndex = '9999';
+    
+    // Append to container
+    widgetContainer.appendChild(convaiElement);
+    
+    // Load the script
+    const script = document.createElement('script');
+    script.src = 'https://unpkg.com/@elevenlabs/convai-widget-embed';
+    script.async = true;
+    script.type = 'text/javascript';
+    document.head.appendChild(script);
+}
+</script>
+""", unsafe_allow_html=True)
