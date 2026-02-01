@@ -48,12 +48,12 @@ st.markdown("""
     /* === MAIN LAYOUT === */
     .block-container {
         padding-top: 1rem;   /* Tight top padding */
-        padding-bottom: 1rem;
+        padding-bottom: 6rem;  /* Increased for footer */
     }
     .main .block-container {
         max-width: 1000px;
         padding-top: 1.5rem;
-        padding-bottom: 2rem;
+        padding-bottom: 6rem;  /* Increased for footer */
         margin: auto;
     }
     
@@ -102,41 +102,38 @@ st.markdown("""
         justify-content: center;
     }
     
-    /* === ELEVENLABS IFRAME POSITIONING === */
-    .elevenlabs-iframe-container {
+    /* === CUSTOM CHAT FOOTER === */
+    .chat-footer-container {
         position: fixed;
-        bottom: 85px;
-        right: 20px;
-        z-index: 9999;
-        width: 60px;
-        height: 60px;
-        transition: all 0.3s ease;
-        overflow: hidden;
-    }
-    
-    .elevenlabs-iframe-container.expanded {
-        width: 320px;
-        height: 520px;
-    }
-    
-    .elevenlabs-iframe {
-        width: 100%;
-        height: 100%;
-        border: none;
-        border-radius: 12px;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-    
-    .elevenlabs-iframe-container.expanded .elevenlabs-iframe {
-        opacity: 1;
-    }
-    
-    .elevenlabs-toggle-btn {
-        position: absolute;
         bottom: 0;
+        left: 0;
         right: 0;
+        background: white;
+        padding: 15px;
+        border-top: 1px solid #e0e0e0;
+        z-index: 1000;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+    }
+    
+    .chat-input-wrapper {
+        flex-grow: 1;
+        margin: 0;
+    }
+    
+    /* Override Streamlit's default chat input margin */
+    div[data-testid="stChatInput"] {
+        margin: 0 !important;
+        width: 100% !important;
+    }
+    
+    .voice-btn-wrapper {
+        flex-shrink: 0;
+    }
+    
+    .voice-btn {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         border: none;
@@ -149,18 +146,28 @@ st.markdown("""
         display: flex;
         align-items: center;
         gap: 8px;
-        z-index: 10000;
         transition: all 0.3s ease;
+        white-space: nowrap;
+        height: 52px; /* Match chat input height */
     }
     
-    .elevenlabs-toggle-btn:hover {
+    .voice-btn:hover {
         transform: translateY(-2px);
         box-shadow: 0 6px 20px rgba(0,0,0,0.3);
     }
     
-    /* Make space for the widget */
-    div[data-testid="stChatInput"] {
-        margin-right: 80px !important;
+    /* Make sure chat content doesn't hide behind footer */
+    @media (max-width: 768px) {
+        .block-container {
+            padding-bottom: 7rem;
+        }
+        .main .block-container {
+            padding-bottom: 7rem;
+        }
+        .voice-btn {
+            padding: 10px 15px;
+            font-size: 13px;
+        }
     }
 </style>
 """, unsafe_allow_html=True)
@@ -283,51 +290,27 @@ for user, bot in st.session_state.history:
     with st.chat_message("assistant", avatar="🤖"):
         st.markdown(bot, unsafe_allow_html=True)
 
-# 🎤 ELEVENLABS WIDGET - IFRAME APPROACH
+# Add spacer so content doesn't hide behind fixed footer
+st.markdown("<div style='height: 80px;'></div>", unsafe_allow_html=True)
+
+# 🎤 CUSTOM FOOTER WITH INPUT + BUTTON
 st.markdown("""
-<div class="elevenlabs-iframe-container" id="voiceWidget">
-    <iframe 
-        class="elevenlabs-iframe"
-        src="https://elevenlabs.io/app/talk-to?agent_id=agent_2601kffvm9v2ebaa4a72hndgggcq"
-        title="Voice AI Demo"
-        loading="lazy"
-    ></iframe>
-    <button class="elevenlabs-toggle-btn" onclick="toggleVoiceWidget()" id="voiceToggleBtn">
-        🎤 Voice AI
-    </button>
-</div>
-
-<script>
-function toggleVoiceWidget() {
-    const container = document.getElementById('voiceWidget');
-    const btn = document.getElementById('voiceToggleBtn');
-    
-    if (container.classList.contains('expanded')) {
-        container.classList.remove('expanded');
-        btn.innerHTML = '🎤 Voice AI';
-    } else {
-        container.classList.add('expanded');
-        btn.innerHTML = '✕ Close';
-    }
-}
-
-// Close iframe when clicking outside (optional)
-document.addEventListener('click', function(event) {
-    const container = document.getElementById('voiceWidget');
-    const btn = document.getElementById('voiceToggleBtn');
-    
-    if (container.classList.contains('expanded') && 
-        !container.contains(event.target) && 
-        event.target !== btn) {
-        container.classList.remove('expanded');
-        btn.innerHTML = '🎤 Voice AI';
-    }
-});
-</script>
+<div class="chat-footer-container">
+    <div class="chat-input-wrapper">
 """, unsafe_allow_html=True)
 
-# 🧾 Input box
+# The chat input will render here
 user_input = st.chat_input(ui["input_placeholder"])
+
+st.markdown("""
+    </div>
+    <div class="voice-btn-wrapper">
+        <button class="voice-btn" onclick="window.open('https://elevenlabs.io/app/talk-to?agent_id=agent_2601kffvm9v2ebaa4a72hndgggcq', '_blank', 'width=400,height=600,left=100,top=100')">
+            🎤 Voice AI
+        </button>
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
 if st.session_state.user_input:
     user_input = st.session_state.user_input
