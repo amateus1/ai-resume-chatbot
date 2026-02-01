@@ -44,6 +44,7 @@ st.markdown("""
     div[data-testid="stChatInput"] > div > div {
         background-color: #e6f3ff !important;
         border-radius: 12px;
+        width: 100% !important;
     }
    
     /* === MAIN LAYOUT === */
@@ -54,7 +55,7 @@ st.markdown("""
     .main .block-container {
         max-width: 1000px;
         padding-top: 1.5rem;
-        padding-bottom: 2rem;
+        padding-bottom: 100px; /* Extra space for fixed input */
         margin: auto;
     }
     
@@ -103,37 +104,63 @@ st.markdown("""
         justify-content: center;
     }
     
-    /* === COLORED BUTTONS - DIRECT TARGETING === */
-    /* Add custom CSS classes to buttons */
-    .projects-btn {
-        background: #667eea !important;
+    /* === COLORED BUTTONS === */
+    /* Projects button */
+    button[kind="secondary"][data-testid="baseButton-secondary"][id*="menu_0"] {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
         color: white !important;
         border: none !important;
     }
     
-    .experience-btn {
-        background: #11998e !important;
+    /* Experience button */
+    button[kind="secondary"][data-testid="baseButton-secondary"][id*="menu_1"] {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
         color: white !important;
         border: none !important;
     }
     
-    .skills-btn {
-        background: #f7971e !important;
+    /* Skills button */
+    button[kind="secondary"][data-testid="baseButton-secondary"][id*="menu_2"] {
+        background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%) !important;
         color: white !important;
         border: none !important;
     }
     
     /* Button hover effects */
-    button[data-testid="baseButton-secondary"]:hover {
+    button[kind="secondary"][data-testid="baseButton-secondary"]:hover {
         opacity: 0.9 !important;
         transform: translateY(-2px) !important;
         transition: all 0.3s ease !important;
     }
     
-    /* === ELEVENLABS WIDGET OVERRIDES === */
-    /* Make sure widget stays on top */
-    iframe {
-        z-index: 9999 !important;
+    /* === INPUT CONTAINER STYLING === */
+    /* Create a container for both input and widget */
+    .input-widget-container {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 800px;
+        max-width: 90%;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        z-index: 100;
+        background: white;
+        padding: 10px;
+        border-radius: 12px;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Adjust chat input width */
+    div[data-testid="stChatInput"] {
+        flex: 1;
+        margin-bottom: 0 !important;
+    }
+    
+    /* Make room for messages above the fixed input */
+    [data-testid="stVerticalBlock"] > [style*="flex-grow"] {
+        padding-bottom: 100px !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -228,29 +255,14 @@ me = Me()
 # 🧢 Header
 st.markdown(ui["desc"])
 
-# 📂 Simple Menu Buttons (under intro) - WITH CUSTOM CLASSES
+# 📂 Simple Menu Buttons (under intro)
 menu_items = ui["menu"]  # comes from the selected language
 
 # Create responsive columns - 4 on desktop, 2x2 on tablet, 1x4 on mobile
 cols = st.columns([1, 1, 1, 1])  # Equal width for all columns
 
-# CSS class mapping for each button
-button_classes = ["projects-btn", "experience-btn", "skills-btn"]
-
 for idx, item in enumerate(menu_items):
     with cols[idx]:
-        if idx < len(button_classes):
-            # Add custom class to button via markdown before button
-            st.markdown(f"""
-            <style>
-                button[data-testid="baseButton-secondary"][id*="menu_{idx}"] {{
-                    background: {'#667eea' if idx == 0 else '#11998e' if idx == 1 else '#f7971e'} !important;
-                    color: white !important;
-                    border: none !important;
-                }}
-            </style>
-            """, unsafe_allow_html=True)
-        
         if st.button(item, key=f"menu_{idx}", use_container_width=True):
             st.session_state.user_input = f"Show me {item}"
 
@@ -269,6 +281,17 @@ for user, bot in st.session_state.history:
         )
     with st.chat_message("assistant", avatar="🤖"):
         st.markdown(bot, unsafe_allow_html=True)
+
+# 🔽 CREATE A CUSTOM CONTAINER FOR INPUT + WIDGET
+# Add container structure first
+st.markdown("""
+<div class="input-widget-container">
+    <!-- Chat input will go here -->
+    <div style="flex: 1;"></div>
+    <!-- Widget will be placed in this iframe -->
+    <div id="widget-holder" style="width: 200px; height: 60px; overflow: visible;"></div>
+</div>
+""", unsafe_allow_html=True)
 
 # 🧾 Input box
 user_input = st.chat_input(ui["input_placeholder"])
@@ -369,64 +392,63 @@ if user_input:
         # Silent fail - don't break the chat experience
         pass
 
-# 🔽 ELEVENLABS WIDGET - USING IFRAME FOR BETTER COMPATIBILITY
-# Create a standalone HTML page that hosts the widget
+# 🔽 EMBED ELEVENLABS WIDGET
+# Create HTML for the widget with proper sizing
 widget_html = """
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>Voice Chat Widget</title>
     <style>
-        body {
+        * {
             margin: 0;
             padding: 0;
-            background: transparent;
+            box-sizing: border-box;
         }
-        #widget-container {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 9999;
+        body {
+            background: transparent !important;
+            overflow: visible !important;
+        }
+        elevenlabs-convai {
+            display: block !important;
+            width: 100% !important;
+            height: 100% !important;
+            min-width: 180px !important;
+            min-height: 50px !important;
+        }
+        /* Force widget to be visible */
+        elevenlabs-convai * {
+            visibility: visible !important;
+            display: block !important;
         }
     </style>
 </head>
 <body>
-    <div id="widget-container">
-        <elevenlabs-convai agent-id="agent_2601kffvm9v2ebaa4a72hndgggcq"></elevenlabs-convai>
-    </div>
-    <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+    <elevenlabs-convai agent-id="agent_2601kffvm9v2ebaa4a72hndgggcq"></elevenlabs-convai>
+    <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async></script>
 </body>
 </html>
 """
 
-# Embed the widget using components.html with proper permissions
-components.html(
-    widget_html,
-    height=100,  # Small height for the widget button
-    width=200,   # Width for the widget button
-    scrolling=False
-)
-
-# Add JavaScript to ensure widget loads properly
-st.markdown("""
+# Embed the widget in the widget-holder div
+components.html(f"""
 <script>
-// Ensure widget loads after page is ready
-window.addEventListener('load', function() {
-    setTimeout(function() {
-        // Check if widget script loaded
-        if (typeof window.ElevenLabsConvAI !== 'undefined') {
-            console.log('ElevenLabs widget script loaded');
-        } else {
-            console.log('Loading ElevenLabs widget script...');
-            // Manually load the script if needed
-            const script = document.createElement('script');
-            script.src = 'https://unpkg.com/@elevenlabs/convai-widget-embed';
-            script.async = true;
-            script.type = 'text/javascript';
-            document.head.appendChild(script);
-        }
-    }, 1000);
-});
+// Inject widget directly into the widget-holder div
+document.addEventListener('DOMContentLoaded', function() {{
+    const widgetHTML = `{widget_html}`;
+    const holder = document.getElementById('widget-holder');
+    if (holder) {{
+        holder.innerHTML = widgetHTML;
+        // Force resize
+        setTimeout(() => {{
+            const convaiElement = holder.querySelector('elevenlabs-convai');
+            if (convaiElement) {{
+                convaiElement.style.width = '100%';
+                convaiElement.style.height = '100%';
+                convaiElement.style.minWidth = '180px';
+                convaiElement.style.minHeight = '50px';
+            }}
+        }}, 1000);
+    }}
+}});
 </script>
-""", unsafe_allow_html=True)
+""", height=0, width=0)
