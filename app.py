@@ -102,33 +102,42 @@ st.markdown("""
         justify-content: center;
     }
     
-    /* === SIMPLE BUTTON COLORS - DIRECT STYLING === */
-    /* First column button (Projects) */
-    div.stButton > button:first-child {
-        background: #667eea !important;
-        color: white !important;
+    /* === COLORED BUTTONS === */
+    /* Projects button */
+    button[kind="secondary"][data-testid="baseButton-secondary"] {
         border: none !important;
     }
     
-    /* Second column button (Experience) */
-    div.stButton > button:nth-child(2) {
-        background: #11998e !important;
+    /* Target specific buttons by their content */
+    div[data-testid="column"]:nth-child(1) button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
         color: white !important;
-        border: none !important;
     }
     
-    /* Third column button (Skills) */
-    div.stButton > button:nth-child(3) {
-        background: #f7971e !important;
+    div[data-testid="column"]:nth-child(2) button {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
         color: white !important;
-        border: none !important;
     }
     
-    /* Button hover effect */
-    div.stButton > button:hover {
+    div[data-testid="column"]:nth-child(3) button {
+        background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%) !important;
+        color: white !important;
+    }
+    
+    /* Hover effects */
+    button[kind="secondary"][data-testid="baseButton-secondary"]:hover {
         opacity: 0.9 !important;
+        transform: translateY(-2px) !important;
+        transition: all 0.3s ease !important;
     }
 </style>
+
+<!-- ELEVENLABS WIDGET - PLACED IN HTML HEAD -->
+<elevenlabs-convai 
+    agent-id="agent_2601kffvm9v2ebaa4a72hndgggcq"
+    style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;"
+></elevenlabs-convai>
+<script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async></script>
 """, unsafe_allow_html=True)
 
 # 🌍 Language options
@@ -229,9 +238,7 @@ cols = st.columns([1, 1, 1, 1])  # Equal width for all columns
 
 for idx, item in enumerate(menu_items):
     with cols[idx]:
-        # Add a custom class for each button
-        button_key = f"menu_{idx}"
-        if st.button(item, key=button_key, use_container_width=True):
+        if st.button(item, key=f"menu_{idx}", use_container_width=True):
             st.session_state.user_input = f"Show me {item}"
 
 # 💬 History rendering
@@ -249,14 +256,6 @@ for user, bot in st.session_state.history:
         )
     with st.chat_message("assistant", avatar="🤖"):
         st.markdown(bot, unsafe_allow_html=True)
-
-# 🔽 ADD ELEVENLABS WIDGET AT BOTTOM
-st.components.v1.html("""
-<div style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;">
-    <elevenlabs-convai agent-id="agent_2601kffvm9v2ebaa4a72hndgggcq"></elevenlabs-convai>
-    <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
-</div>
-""", height=0)
 
 # 🧾 Input box
 user_input = st.chat_input(ui["input_placeholder"])
