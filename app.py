@@ -3,6 +3,7 @@ import streamlit as st
 import time
 import uuid
 import requests
+import streamlit.components.v1 as components
 from me_chatbot import Me
 
 # 🚀 SILENT KEEP-AWAKE (Hidden from users)
@@ -53,7 +54,7 @@ st.markdown("""
     .main .block-container {
         max-width: 1000px;
         padding-top: 1.5rem;
-        padding-bottom: 2rem;
+        padding-bottom: 100px; /* Space for fixed elements */
         margin: auto;
     }
     
@@ -131,35 +132,17 @@ st.markdown("""
         transition: all 0.3s ease !important;
     }
     
-    /* === WIDGET POSITIONING === */
-    /* Position the ElevenLabs widget */
-    elevenlabs-convai {
-        position: fixed !important;
-        bottom: 20px !important;
-        right: 20px !important;
-        z-index: 9999 !important;
-        width: 200px !important;
-        height: 60px !important;
-    }
-    
-    /* Adjust chat input to make space for widget */
+    /* === INPUT CONTAINER ADJUSTMENT === */
+    /* Make space for the widget on the right */
     div[data-testid="stChatInput"] {
-        margin-right: 220px !important; /* Space for widget */
-        transition: margin-right 0.3s ease;
+        margin-right: 220px !important;
     }
     
-    /* Make sure messages don't overlap with fixed elements */
+    /* Ensure chat messages don't overlap */
     [data-testid="stVerticalBlock"] > [style*="flex-grow"] {
         padding-bottom: 80px !important;
     }
 </style>
-
-<!-- ELEVENLABS WIDGET - INJECT DIRECTLY INTO HTML -->
-<elevenlabs-convai 
-    agent-id="agent_2601kffvm9v2ebaa4a72hndgggcq"
-    style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; width: 200px; height: 60px;"
-></elevenlabs-convai>
-<script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async></script>
 """, unsafe_allow_html=True)
 
 # 🌍 Language options
@@ -278,6 +261,51 @@ for user, bot in st.session_state.history:
         )
     with st.chat_message("assistant", avatar="🤖"):
         st.markdown(bot, unsafe_allow_html=True)
+
+# 🔽 EMBED ELEVENLABS WIDGET USING components.html
+# This creates a fixed-position widget at bottom right
+widget_html = """
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: transparent;
+            overflow: hidden;
+        }
+        #widget-wrapper {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 200px;
+            height: 60px;
+            z-index: 9999;
+        }
+        elevenlabs-convai {
+            display: block !important;
+            width: 100% !important;
+            height: 100% !important;
+        }
+    </style>
+</head>
+<body>
+    <div id="widget-wrapper">
+        <elevenlabs-convai agent-id="agent_2601kffvm9v2ebaa4a72hndgggcq"></elevenlabs-convai>
+    </div>
+    <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+</body>
+</html>
+"""
+
+# Embed the widget - this MUST be called before the chat input
+components.html(
+    widget_html,
+    height=80,  # Slightly larger to accommodate the widget
+    width=220,
+    scrolling=False
+)
 
 # 🧾 Input box
 user_input = st.chat_input(ui["input_placeholder"])
