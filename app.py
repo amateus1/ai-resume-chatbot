@@ -3,6 +3,7 @@ import streamlit as st
 import time
 import uuid
 import requests
+import streamlit.components.v1 as components
 from me_chatbot import Me
 
 # 🚀 SILENT KEEP-AWAKE (Hidden from users)
@@ -53,7 +54,7 @@ st.markdown("""
     .main .block-container {
         max-width: 1000px;
         padding-top: 1.5rem;
-        padding-bottom: 2rem;
+        padding-bottom: 100px; /* Space for fixed elements */
         margin: auto;
     }
     
@@ -129,24 +130,6 @@ st.markdown("""
         opacity: 0.9 !important;
         transform: translateY(-2px) !important;
         transition: all 0.3s ease !important;
-    }
-    
-    /* === ELEVENLABS WIDGET STYLING === */
-    elevenlabs-convai {
-        position: fixed !important;
-        bottom: 80px !important;
-        right: 20px !important;
-        z-index: 9999 !important;
-        width: 200px !important;
-        height: 60px !important;
-        background: white !important;
-        border-radius: 12px !important;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.15) !important;
-    }
-    
-    /* Make room for chat messages */
-    [data-testid="stVerticalBlock"] > [style*="flex-grow"] {
-        padding-bottom: 120px !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -268,38 +251,54 @@ for user, bot in st.session_state.history:
     with st.chat_message("assistant", avatar="🤖"):
         st.markdown(bot, unsafe_allow_html=True)
 
-# 🔽 SIMPLIFIED WIDGET INJECTION
-# Use a cleaner approach with proper JavaScript escaping
-st.markdown("""
-<div id="elevenlabs-widget-container"></div>
-<script>
-(function() {
-    // Create container for widget
-    const container = document.createElement('div');
-    container.style.position = 'fixed';
-    container.style.bottom = '80px';
-    container.style.right = '20px';
-    container.style.zIndex = '9999';
-    container.style.width = '200px';
-    container.style.height = '60px';
-    
-    // Create the ElevenLabs widget
-    const widget = document.createElement('elevenlabs-convai');
-    widget.setAttribute('agent-id', 'agent_2601kffvm9v2ebaa4a72hndgggcq');
-    widget.style.width = '100%';
-    widget.style.height = '100%';
-    
-    container.appendChild(widget);
-    document.body.appendChild(container);
-    
-    // Load the ElevenLabs script
-    const script = document.createElement('script');
-    script.src = 'https://unpkg.com/@elevenlabs/convai-widget-embed';
-    script.async = true;
-    document.head.appendChild(script);
-})();
-</script>
-""", unsafe_allow_html=True)
+# 🔽 ELEVENLABS WIDGET USING components.html()
+# This is the correct way to embed external widgets in Streamlit
+widget_html = """
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        #widget-wrapper {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 200px;
+            height: 60px;
+            z-index: 9999;
+            background: transparent;
+        }
+        elevenlabs-convai {
+            display: block !important;
+            width: 100% !important;
+            height: 100% !important;
+        }
+    </style>
+</head>
+<body>
+    <div id="widget-wrapper">
+        <elevenlabs-convai agent-id="agent_2601kffvm9v2ebaa4a72hndgggcq"></elevenlabs-convai>
+    </div>
+    <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async></script>
+</body>
+</html>
+"""
+
+# Embed the widget with proper dimensions
+components.html(
+    widget_html,
+    height=80,  # Height for the widget
+    width=220,  # Width for the widget
+    scrolling=False
+)
 
 # 🧾 Input box
 user_input = st.chat_input(ui["input_placeholder"])
