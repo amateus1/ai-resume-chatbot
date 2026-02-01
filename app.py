@@ -101,9 +101,48 @@ st.markdown("""
         display: flex;
         justify-content: center;
     }
-    /* .stSelectbox > label {
-        display: none;
-    } */
+    
+    /* === CUSTOM CHAT FOOTER === */
+    .custom-chat-footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: white;
+        padding: 10px 20px;
+        border-top: 1px solid #e0e0e0;
+        z-index: 1000;
+    }
+    
+    /* Force chat input to be inline */
+    .stChatInputContainer {
+        display: inline-block !important;
+        width: 75% !important;
+        margin-right: 10px !important;
+    }
+    
+    /* ElevenLabs widget container */
+    .elevenlabs-widget-inline {
+        display: inline-block !important;
+        vertical-align: bottom !important;
+        width: 23% !important;
+        height: 52px !important;
+    }
+    
+    /* Hide default Streamlit spacing */
+    .stChatInput {
+        margin-bottom: 0 !important;
+    }
+    
+    /* Adjust for mobile */
+    @media (max-width: 768px) {
+        .stChatInputContainer {
+            width: 65% !important;
+        }
+        .elevenlabs-widget-inline {
+            width: 33% !important;
+        }
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -225,14 +264,26 @@ for user, bot in st.session_state.history:
     with st.chat_message("assistant", avatar="🤖"):
         st.markdown(bot, unsafe_allow_html=True)
 
-# 🎤 ELEVENLABS VOICE WIDGET - SIMPLE EMBED
+# Add some spacing before the custom footer
+st.markdown("<div style='height: 80px;'></div>", unsafe_allow_html=True)
+
+# 🎤 CUSTOM FOOTER WITH CHAT INPUT + ELEVENLABS WIDGET
 st.markdown("""
-<elevenlabs-convai agent-id="agent_2601kffvm9v2ebaa4a72hndgggcq"></elevenlabs-convai>
-<script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+<div class="custom-chat-footer">
+    <div class="stChatInputContainer">
 """, unsafe_allow_html=True)
 
-# 🧾 Input box
+# 🧾 Chat input in the left column
 user_input = st.chat_input(ui["input_placeholder"])
+
+st.markdown("""
+    </div>
+    <div class="elevenlabs-widget-inline">
+        <elevenlabs-convai agent-id="agent_2601kffvm9v2ebaa4a72hndgggcq"></elevenlabs-convai>
+        <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
 if st.session_state.user_input:
     user_input = st.session_state.user_input
