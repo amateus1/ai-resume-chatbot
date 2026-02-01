@@ -3,6 +3,7 @@ import streamlit as st
 import time
 import uuid
 import requests
+import streamlit.components.v1 as components
 from me_chatbot import Me
 
 # 🚀 SILENT KEEP-AWAKE (Hidden from users)
@@ -102,33 +103,33 @@ st.markdown("""
         justify-content: center;
     }
     
-    /* === COLORED BUTTONS - WORKING VERSION === */
-    /* First button (Projects) */
-    button[data-testid="baseButton-secondary"][id*="menu_0"] {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-        color: white !important;
+    /* === SIMPLE COLORED BUTTONS - TARGET BY KEY ATTRIBUTE === */
+    /* Projects button */
+    button[data-testid="baseButton-secondary"][class*="st-emotion-cache"] {
         border: none !important;
+        transition: all 0.3s ease !important;
     }
     
-    /* Second button (Experience) */
-    button[data-testid="baseButton-secondary"][id*="menu_1"] {
-        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
+    /* Specific button colors - targeting by generated key pattern */
+    button[data-testid="baseButton-secondary"]:nth-of-type(1) {
+        background: #667eea !important;
         color: white !important;
-        border: none !important;
     }
     
-    /* Third button (Skills) */
-    button[data-testid="baseButton-secondary"][id*="menu_2"] {
-        background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%) !important;
+    button[data-testid="baseButton-secondary"]:nth-of-type(2) {
+        background: #11998e !important;
         color: white !important;
-        border: none !important;
+    }
+    
+    button[data-testid="baseButton-secondary"]:nth-of-type(3) {
+        background: #f7971e !important;
+        color: white !important;
     }
     
     /* Button hover effects */
     button[data-testid="baseButton-secondary"]:hover {
         opacity: 0.9 !important;
         transform: translateY(-2px) !important;
-        transition: all 0.3s ease !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -349,30 +350,11 @@ if user_input:
         # Silent fail - don't break the chat experience
         pass
 
-# 🔽 ELEVENLABS WIDGET - ADD AT THE VERY END
-st.markdown("""
-<div id="elevenlabs-widget-container"></div>
-<script>
-// Create and inject the ElevenLabs widget
-const widgetContainer = document.getElementById('elevenlabs-widget-container');
-if (widgetContainer) {
-    // Create the convai element
-    const convaiElement = document.createElement('elevenlabs-convai');
-    convaiElement.setAttribute('agent-id', 'agent_2601kffvm9v2ebaa4a72hndgggcq');
-    convaiElement.style.position = 'fixed';
-    convaiElement.style.bottom = '20px';
-    convaiElement.style.right = '20px';
-    convaiElement.style.zIndex = '9999';
-    
-    // Append to container
-    widgetContainer.appendChild(convaiElement);
-    
-    // Load the script
-    const script = document.createElement('script');
-    script.src = 'https://unpkg.com/@elevenlabs/convai-widget-embed';
-    script.async = true;
-    script.type = 'text/javascript';
-    document.head.appendChild(script);
-}
-</script>
-""", unsafe_allow_html=True)
+# 🔽 ELEVENLABS WIDGET - PROPER INTEGRATION USING components.html
+# This creates a fixed widget at bottom right
+components.html("""
+<div style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;">
+    <elevenlabs-convai agent-id="agent_2601kffvm9v2ebaa4a72hndgggcq"></elevenlabs-convai>
+</div>
+<script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+""", height=0, width=0)
