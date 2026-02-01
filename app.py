@@ -103,33 +103,37 @@ st.markdown("""
         justify-content: center;
     }
     
-    /* === SIMPLE COLORED BUTTONS - TARGET BY KEY ATTRIBUTE === */
-    /* Projects button */
-    button[data-testid="baseButton-secondary"][class*="st-emotion-cache"] {
-        border: none !important;
-        transition: all 0.3s ease !important;
-    }
-    
-    /* Specific button colors - targeting by generated key pattern */
-    button[data-testid="baseButton-secondary"]:nth-of-type(1) {
+    /* === COLORED BUTTONS - DIRECT TARGETING === */
+    /* Add custom CSS classes to buttons */
+    .projects-btn {
         background: #667eea !important;
         color: white !important;
+        border: none !important;
     }
     
-    button[data-testid="baseButton-secondary"]:nth-of-type(2) {
+    .experience-btn {
         background: #11998e !important;
         color: white !important;
+        border: none !important;
     }
     
-    button[data-testid="baseButton-secondary"]:nth-of-type(3) {
+    .skills-btn {
         background: #f7971e !important;
         color: white !important;
+        border: none !important;
     }
     
     /* Button hover effects */
     button[data-testid="baseButton-secondary"]:hover {
         opacity: 0.9 !important;
         transform: translateY(-2px) !important;
+        transition: all 0.3s ease !important;
+    }
+    
+    /* === ELEVENLABS WIDGET OVERRIDES === */
+    /* Make sure widget stays on top */
+    iframe {
+        z-index: 9999 !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -224,14 +228,29 @@ me = Me()
 # 🧢 Header
 st.markdown(ui["desc"])
 
-# 📂 Simple Menu Buttons (under intro)
+# 📂 Simple Menu Buttons (under intro) - WITH CUSTOM CLASSES
 menu_items = ui["menu"]  # comes from the selected language
 
 # Create responsive columns - 4 on desktop, 2x2 on tablet, 1x4 on mobile
 cols = st.columns([1, 1, 1, 1])  # Equal width for all columns
 
+# CSS class mapping for each button
+button_classes = ["projects-btn", "experience-btn", "skills-btn"]
+
 for idx, item in enumerate(menu_items):
     with cols[idx]:
+        if idx < len(button_classes):
+            # Add custom class to button via markdown before button
+            st.markdown(f"""
+            <style>
+                button[data-testid="baseButton-secondary"][id*="menu_{idx}"] {{
+                    background: {'#667eea' if idx == 0 else '#11998e' if idx == 1 else '#f7971e'} !important;
+                    color: white !important;
+                    border: none !important;
+                }}
+            </style>
+            """, unsafe_allow_html=True)
+        
         if st.button(item, key=f"menu_{idx}", use_container_width=True):
             st.session_state.user_input = f"Show me {item}"
 
@@ -350,11 +369,64 @@ if user_input:
         # Silent fail - don't break the chat experience
         pass
 
-# 🔽 ELEVENLABS WIDGET - PROPER INTEGRATION USING components.html
-# This creates a fixed widget at bottom right
-components.html("""
-<div style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;">
-    <elevenlabs-convai agent-id="agent_2601kffvm9v2ebaa4a72hndgggcq"></elevenlabs-convai>
-</div>
-<script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
-""", height=0, width=0)
+# 🔽 ELEVENLABS WIDGET - USING IFRAME FOR BETTER COMPATIBILITY
+# Create a standalone HTML page that hosts the widget
+widget_html = """
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Voice Chat Widget</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: transparent;
+        }
+        #widget-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+    <div id="widget-container">
+        <elevenlabs-convai agent-id="agent_2601kffvm9v2ebaa4a72hndgggcq"></elevenlabs-convai>
+    </div>
+    <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+</body>
+</html>
+"""
+
+# Embed the widget using components.html with proper permissions
+components.html(
+    widget_html,
+    height=100,  # Small height for the widget button
+    width=200,   # Width for the widget button
+    scrolling=False
+)
+
+# Add JavaScript to ensure widget loads properly
+st.markdown("""
+<script>
+// Ensure widget loads after page is ready
+window.addEventListener('load', function() {
+    setTimeout(function() {
+        // Check if widget script loaded
+        if (typeof window.ElevenLabsConvAI !== 'undefined') {
+            console.log('ElevenLabs widget script loaded');
+        } else {
+            console.log('Loading ElevenLabs widget script...');
+            // Manually load the script if needed
+            const script = document.createElement('script');
+            script.src = 'https://unpkg.com/@elevenlabs/convai-widget-embed';
+            script.async = true;
+            script.type = 'text/javascript';
+            document.head.appendChild(script);
+        }
+    }, 1000);
+});
+</script>
+""", unsafe_allow_html=True)
