@@ -365,5 +365,5 @@ if user_input:
         )
         
     except Exception as e:
-        # Silent fail - don't break the chat experience
+        # Silents fail - don't break the chat experience
         pass
