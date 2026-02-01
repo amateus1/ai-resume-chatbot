@@ -101,46 +101,32 @@ st.markdown("""
         display: flex;
         justify-content: center;
     }
-    /* .stSelectbox > label {
-        display: none;
-    } */
     
-    /* === ELEVENLABS WIDGET FIXED POSITION === */
-    elevenlabs-convai {
-        position: fixed !important;
-        bottom: 20px !important;
-        right: 20px !important;
-        z-index: 9999 !important;
-    }
-    
-    /* === COLORED NAV BUTTONS === */
-    /* Projects button - blue gradient */
-    button[kind="secondary"][data-testid="baseButton-secondary"]:has(+ span[aria-label*="Projects"]) {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    /* === SIMPLE BUTTON COLORS - DIRECT STYLING === */
+    /* First column button (Projects) */
+    div.stButton > button:first-child {
+        background: #667eea !important;
         color: white !important;
         border: none !important;
     }
     
-    /* Experience button - green gradient */
-    button[kind="secondary"][data-testid="baseButton-secondary"]:has(+ span[aria-label*="Experience"]) {
-        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
+    /* Second column button (Experience) */
+    div.stButton > button:nth-child(2) {
+        background: #11998e !important;
         color: white !important;
         border: none !important;
     }
     
-    /* Skills button - orange gradient */
-    button[kind="secondary"][data-testid="baseButton-secondary"]:has(+ span[aria-label*="Skills"]) {
-        background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%) !important;
+    /* Third column button (Skills) */
+    div.stButton > button:nth-child(3) {
+        background: #f7971e !important;
         color: white !important;
         border: none !important;
     }
     
-    /* Hover effects for all colored buttons */
-    button[kind="secondary"][data-testid="baseButton-secondary"]:hover {
+    /* Button hover effect */
+    div.stButton > button:hover {
         opacity: 0.9 !important;
-        transform: translateY(-2px) !important;
-        transition: all 0.3s ease !important;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -233,7 +219,6 @@ if "email_prompt_shown" not in st.session_state:
 me = Me()
 
 # 🧢 Header
-#st.markdown(f"## {ui['title']}")
 st.markdown(ui["desc"])
 
 # 📂 Simple Menu Buttons (under intro)
@@ -244,7 +229,9 @@ cols = st.columns([1, 1, 1, 1])  # Equal width for all columns
 
 for idx, item in enumerate(menu_items):
     with cols[idx]:
-        if st.button(item, key=f"menu_{idx}", use_container_width=True):
+        # Add a custom class for each button
+        button_key = f"menu_{idx}"
+        if st.button(item, key=button_key, use_container_width=True):
             st.session_state.user_input = f"Show me {item}"
 
 # 💬 History rendering
@@ -263,11 +250,13 @@ for user, bot in st.session_state.history:
     with st.chat_message("assistant", avatar="🤖"):
         st.markdown(bot, unsafe_allow_html=True)
 
-# 🔽 ADD ELEVENLABS WIDGET SCRIPT (BEFORE CHAT INPUT)
-st.markdown("""
-<elevenlabs-convai agent-id="agent_2601kffvm9v2ebaa4a72hndgggcq"></elevenlabs-convai>
-<script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
-""", unsafe_allow_html=True)
+# 🔽 ADD ELEVENLABS WIDGET AT BOTTOM
+st.components.v1.html("""
+<div style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;">
+    <elevenlabs-convai agent-id="agent_2601kffvm9v2ebaa4a72hndgggcq"></elevenlabs-convai>
+    <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+</div>
+""", height=0)
 
 # 🧾 Input box
 user_input = st.chat_input(ui["input_placeholder"])
@@ -365,5 +354,5 @@ if user_input:
         )
         
     except Exception as e:
-        # Silents fail - don't break the chat experience
+        # Silent fail - don't break the chat experience
         pass
