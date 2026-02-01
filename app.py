@@ -102,8 +102,8 @@ st.markdown("""
         justify-content: center;
     }
     
-    /* === CUSTOM FOOTER LAYOUT === */
-    .custom-footer {
+    /* === FIXED FOOTER === */
+    .fixed-footer {
         position: fixed;
         bottom: 0;
         left: 0;
@@ -115,7 +115,7 @@ st.markdown("""
         box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
     }
     
-    .footer-content {
+    .footer-inner {
         max-width: 1000px;
         margin: 0 auto;
         display: flex;
@@ -123,16 +123,17 @@ st.markdown("""
         align-items: center;
     }
     
-    .chat-input-container {
+    .chat-input-section {
         flex-grow: 1;
     }
     
-    .voice-btn-container {
+    .voice-btn-section {
         flex-shrink: 0;
+        width: 120px;
     }
     
-    /* Style the Streamlit button to match your design */
-    .stButton > button {
+    /* Style for Streamlit button */
+    .voice-btn-section .stButton > button {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
         color: white !important;
         border: none !important;
@@ -143,21 +144,17 @@ st.markdown("""
         box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
         display: flex !important;
         align-items: center !important;
+        justify-content: center !important;
         gap: 8px !important;
         transition: all 0.3s ease !important;
         height: 52px !important;
+        width: 100% !important;
         white-space: nowrap !important;
     }
     
-    .stButton > button:hover {
+    .voice-btn-section .stButton > button:hover {
         transform: translateY(-2px) !important;
         box-shadow: 0 6px 20px rgba(0,0,0,0.3) !important;
-    }
-    
-    /* Remove Streamlit's default button border */
-    .stButton > button:focus {
-        border: none !important;
-        outline: none !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -246,6 +243,10 @@ if "email_prompt_shown" not in st.session_state:
     st.session_state.email_prompt_shown = False
 # >>> END CHANGE 1 <<<
 
+# >>> ADD VOICE BUTTON STATE <<<
+if "voice_clicked" not in st.session_state:
+    st.session_state.voice_clicked = False
+
 # 🤖 Load bot
 me = Me()
 
@@ -283,27 +284,40 @@ for user, bot in st.session_state.history:
 # Add spacer so content doesn't hide behind fixed footer
 st.markdown("<div style='height: 80px;'></div>", unsafe_allow_html=True)
 
-# 🎤 CUSTOM FOOTER WITH STREAMLIT NATIVE BUTTON
-st.markdown('<div class="custom-footer"><div class="footer-content">', unsafe_allow_html=True)
+# 🎤 FIXED FOOTER - RENDERED AT THE VERY END
+# We'll use a container trick to make it persistent
 
-# Create two columns for the footer
-footer_col1, footer_col2 = st.columns([4, 1])  # 80% input, 20% button
+# Create the footer HTML structure
+st.markdown('<div class="fixed-footer"><div class="footer-inner">', unsafe_allow_html=True)
+
+# Create two columns inside the footer
+footer_col1, footer_col2 = st.columns([5, 1])  # 5:1 ratio
 
 with footer_col1:
-    # The chat input will render here
+    # Chat input
     user_input = st.chat_input(ui["input_placeholder"])
 
 with footer_col2:
-    # Streamlit native button that will be clickable
-    if st.button("🎤 Voice AI", key="voice_ai_btn", use_container_width=True):
-        # This JavaScript will execute when button is clicked
-        st.markdown("""
-        <script>
-        window.open('https://elevenlabs.io/app/talk-to?agent_id=agent_2601kffvm9v2ebaa4a72hndgggcq', '_blank', 'width=400,height=600,left=100,top=100');
-        </script>
-        """, unsafe_allow_html=True)
+    # Voice button - using session state to track clicks
+    if st.button("🎤 Voice AI", key="voice_ai_button", use_container_width=True):
+        st.session_state.voice_clicked = True
 
 st.markdown('</div></div>', unsafe_allow_html=True)
+
+# Handle voice button click AFTER the button is rendered
+if st.session_state.voice_clicked:
+    # Reset the state
+    st.session_state.voice_clicked = False
+    
+    # Open ElevenLabs in new window using JavaScript
+    st.markdown("""
+    <script>
+    window.open('https://elevenlabs.io/app/talk-to?agent_id=agent_2601kffvm9v2ebaa4a72hndgggcq', '_blank', 'width=400,height=600');
+    </script>
+    """, unsafe_allow_html=True)
+    
+    # Optional: Show a brief message
+    st.toast("Opening Voice AI Demo...", icon="🎤")
 
 if st.session_state.user_input:
     user_input = st.session_state.user_input
