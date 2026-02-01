@@ -39,12 +39,6 @@ st.markdown("""
     header {visibility: hidden;}
     .stDeployButton {display: none;}
 
-    /* === CHAT INPUT STYLING === */
-    div[data-testid="stChatInput"] > div > div {
-        background-color: #e6f3ff !important;
-        border-radius: 12px;
-    }
-   
     /* === MAIN LAYOUT === */
     .block-container {
         padding-top: 1rem;   /* Tight top padding */
@@ -102,53 +96,73 @@ st.markdown("""
         justify-content: center;
     }
     
-    /* === ELEVENLABS WIDGET POSITIONING === */
-    /* Position the widget container at bottom right */
-    elevenlabs-convai {
-        position: fixed !important;
-        bottom: 20px !important;
-        right: 20px !important;
-        z-index: 9999 !important;
+    /* === CUSTOM INPUT AND WIDGET LAYOUT === */
+    /* Container for chat input + widget */
+    .chat-widget-container {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 800px;
+        max-width: 90%;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        z-index: 9999;
+        background: white;
+        padding: 10px;
+        border-radius: 12px;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
     }
     
-    /* Ensure widget button is visible */
+    /* Make Streamlit chat input narrower */
+    div[data-testid="stChatInput"] {
+        flex: 1;
+        min-width: 0; /* Allow shrinking */
+        margin-bottom: 0 !important;
+    }
+    
+    /* Style the chat input box */
+    div[data-testid="stChatInput"] > div > div {
+        background-color: #e6f3ff !important;
+        border-radius: 12px !important;
+        min-height: 56px !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+    
+    /* ElevenLabs widget styling */
+    elevenlabs-convai {
+        flex-shrink: 0;
+        height: 56px !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+    
+    /* Ensure widget button looks good */
     elevenlabs-convai button {
+        height: 56px !important;
+        border-radius: 12px !important;
+        padding: 0 24px !important;
+        font-weight: 600 !important;
+        white-space: nowrap !important;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
         color: white !important;
-        border-radius: 50px !important;
-        padding: 12px 24px !important;
-        font-weight: 600 !important;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
         border: none !important;
         cursor: pointer !important;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
     }
     
-    /* Adjust Streamlit chat input to make room for widget */
-    div[data-testid="stChatInput"] {
-        margin-right: 120px !important; /* Make space for the voice button */
-    }
-    
-    /* Ensure chat history scrolls but input stays fixed */
-    .main {
-        display: flex;
-        flex-direction: column;
-        height: 100vh;
-    }
-    
-    /* Chat message container - will scroll */
+    /* Make sure chat messages don't overlap with fixed container */
     [data-testid="stVerticalBlock"] > [style*="flex-grow"] {
         flex-grow: 1;
         overflow-y: auto;
-        max-height: calc(100vh - 200px);
+        padding-bottom: 100px !important; /* Space for fixed input */
     }
     
-    /* Keep input at bottom */
-    [data-testid="stChatInput"] {
-        position: sticky !important;
-        bottom: 20px !important;
-        background: white !important;
-        padding-top: 10px !important;
-        z-index: 100 !important;
+    /* Adjust main container to account for fixed input */
+    .main .block-container {
+        padding-bottom: 120px !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -270,10 +284,17 @@ for user, bot in st.session_state.history:
     with st.chat_message("assistant", avatar="🤖"):
         st.markdown(bot, unsafe_allow_html=True)
 
-# 🔽 ADD ELEVENLABS WIDGET SCRIPT (BEFORE CHAT INPUT)
+# 🔽 ADD ELEVENLABS WIDGET SCRIPT
 st.markdown("""
 <elevenlabs-convai agent-id="agent_2601kffvm9v2ebaa4a72hndgggcq"></elevenlabs-convai>
 <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+
+<!-- Custom container for chat input + widget -->
+<div class="chat-widget-container">
+    <!-- Streamlit chat input will be placed here by CSS -->
+    <div style="flex: 1;"></div>
+    <!-- ElevenLabs widget will appear here -->
+</div>
 """, unsafe_allow_html=True)
 
 # 🧾 Input box
