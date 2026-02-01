@@ -3,7 +3,6 @@ import streamlit as st
 import time
 import uuid
 import requests
-import streamlit.components.v1 as components
 from me_chatbot import Me
 
 # 🚀 SILENT KEEP-AWAKE (Hidden from users)
@@ -54,7 +53,7 @@ st.markdown("""
     .main .block-container {
         max-width: 1000px;
         padding-top: 1.5rem;
-        padding-bottom: 100px; /* Space for fixed elements */
+        padding-bottom: 2rem;
         margin: auto;
     }
     
@@ -132,15 +131,29 @@ st.markdown("""
         transition: all 0.3s ease !important;
     }
     
-    /* === INPUT CONTAINER ADJUSTMENT === */
-    /* Make space for the widget on the right */
-    div[data-testid="stChatInput"] {
-        margin-right: 220px !important;
+    /* === ELEVENLABS WIDGET STYLING === */
+    /* This will style the injected widget */
+    elevenlabs-convai {
+        position: fixed !important;
+        bottom: 80px !important;  /* Position above chat input */
+        right: 20px !important;
+        z-index: 9999 !important;
+        width: 200px !important;
+        height: 60px !important;
+        background: white !important;
+        border-radius: 12px !important;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15) !important;
     }
     
-    /* Ensure chat messages don't overlap */
+    /* Adjust chat input position */
+    div[data-testid="stChatInput"] {
+        position: relative !important;
+        z-index: 100 !important;
+    }
+    
+    /* Make room for chat messages */
     [data-testid="stVerticalBlock"] > [style*="flex-grow"] {
-        padding-bottom: 80px !important;
+        padding-bottom: 120px !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -262,50 +275,84 @@ for user, bot in st.session_state.history:
     with st.chat_message("assistant", avatar="🤖"):
         st.markdown(bot, unsafe_allow_html=True)
 
-# 🔽 EMBED ELEVENLABS WIDGET USING components.html
-# This creates a fixed-position widget at bottom right
-widget_html = """
-<!DOCTYPE html>
-<html>
-<head>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background: transparent;
-            overflow: hidden;
-        }
-        #widget-wrapper {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 200px;
-            height: 60px;
-            z-index: 9999;
-        }
-        elevenlabs-convai {
-            display: block !important;
-            width: 100% !important;
-            height: 100% !important;
-        }
-    </style>
-</head>
-<body>
-    <div id="widget-wrapper">
-        <elevenlabs-convai agent-id="agent_2601kffvm9v2ebaa4a72hndgggcq"></elevenlabs-convai>
-    </div>
-    <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
-</body>
-</html>
-"""
+# 🔽 INJECT ELEVENLABS WIDGET USING JAVASCRIPT
+# This injects the widget directly into the DOM with proper positioning
+st.markdown("""
+<div id="elevenlabs-widget-container"></div>
+<script>
+// Function to inject and style the ElevenLabs widget
+function injectElevenLabsWidget() {
+    // Create container for the widget
+    const container = document.getElementById('elevenlabs-widget-container');
+    if (!container) return;
+    
+    // Clear any existing content
+    container.innerHTML = '';
+    
+    // Create the convai element
+    const convaiElement = document.createElement('elevenlabs-convai');
+    convaiElement.setAttribute('agent-id', 'agent_2601kffvm9v2ebaa4a72hndgggcq');
+    
+    // Apply styling directly
+    convaiElement.style.position = 'fixed';
+    convaiElement.style.bottom = '80px';  // Position above chat input
+    convaiElement.style.right = '20px';
+    convaiElement.style.zIndex = '9999';
+    convaiElement.style.width = '200px';
+    convaiElement.style.height = '60px';
+    convaiElement.style.backgroundColor = 'white';
+    convaiElement.style.borderRadius = '12px';
+    convaiElement.style.boxShadow = '0 4px 20px rgba(0,0,0,0.15)';
+    convaiElement.style.overflow = 'visible';
+    
+    // Append to container
+    container.appendChild(convaiElement);
+    
+    // Load the ElevenLabs script if not already loaded
+    if (!document.querySelector('script[src*="elevenlabs"]')) {
+        const script = document.createElement('script');
+        script.src = 'https://unpkg.com/@elevenlabs/convai-widget-embed';
+        script.async = true;
+        script.type = 'text/javascript';
+        document.head.appendChild(script);
+        
+        // Log for debugging
+        script.onload = function() {
+            console.log('ElevenLabs widget script loaded successfully');
+        };
+        
+        script.onerror = function() {
+            console.error('Failed to load ElevenLabs widget script');
+        };
+    }
+}
 
-# Embed the widget - this MUST be called before the chat input
-components.html(
-    widget_html,
-    height=80,  # Slightly larger to accommodate the widget
-    width=220,
-    scrolling=False
-)
+// Inject widget when page loads
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', injectElevenLabsWidget);
+} else {
+    injectElevenLabsWidget();
+}
+
+// Re-inject widget after Streamlit updates (important for Streamlit apps)
+document.addEventListener('DOMContentLoaded', function() {
+    // Observe for Streamlit DOM changes
+    const observer = new MutationObserver(function(mutations) {
+        // Check if widget container still exists
+        const widget = document.querySelector('elevenlabs-convai');
+        if (!widget) {
+            injectElevenLabsWidget();
+        }
+    });
+    
+    // Start observing
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+});
+</script>
+""", unsafe_allow_html=True)
 
 # 🧾 Input box
 user_input = st.chat_input(ui["input_placeholder"])
