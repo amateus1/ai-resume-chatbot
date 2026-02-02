@@ -105,38 +105,45 @@ st.markdown("""
         justify-content: center;
     }
     
-    /* === NAV BUTTON COLORS === */
-    /* First button (Projects) - Blue */
-    div[data-testid="column"]:nth-child(1) .stButton > button {
+    /* === NAV BUTTON COLORS - ULTRA SPECIFIC SELECTORS === */
+    /* Projects button - Blue */
+    div[data-testid="column"] div[data-testid="column"] button[data-testid^="menu_"][data-testid$="0"] {
         background-color: #3b82f6 !important;
         color: white !important;
-    }
-    div[data-testid="column"]:nth-child(1) .stButton > button:hover {
-        background-color: #2563eb !important;
+        border: none !important;
+        border-radius: 6px !important;
     }
     
-    /* Second button (Experience) - Teal */
-    div[data-testid="column"]:nth-child(2) .stButton > button {
+    /* Experience button - Teal */
+    div[data-testid="column"] div[data-testid="column"] button[data-testid^="menu_"][data-testid$="1"] {
         background-color: #0d9488 !important;
         color: white !important;
-    }
-    div[data-testid="column"]:nth-child(2) .stButton > button:hover {
-        background-color: #0f766e !important;
+        border: none !important;
+        border-radius: 6px !important;
     }
     
-    /* Third button (Skills) - Purple */
-    div[datatestid="column"]:nth-child(3) .stButton > button {
+    /* Skills button - Purple */
+    div[data-testid="column"] div[data-testid="column"] button[data-testid^="menu_"][data-testid$="2"] {
         background-color: #7c3aed !important;
         color: white !important;
-    }
-    div[data-testid="column"]:nth-child(3) .stButton > button:hover {
-        background-color: #6d28d9 !important;
+        border: none !important;
+        border-radius: 6px !important;
     }
     
-    /* Fourth column (empty) - keep minimal */
-    div[data-testid="column"]:nth-child(4) .stButton > button {
-        background-color: #f3f4f6 !important;
-        color: #374151 !important;
+    /* Hover effects */
+    div[data-testid="column"] div[data-testid="column"] button[data-testid^="menu_"][data-testid$="0"]:hover {
+        background-color: #2563eb !important;
+        opacity: 0.9 !important;
+    }
+    
+    div[data-testid="column"] div[data-testid="column"] button[data-testid^="menu_"][data-testid$="1"]:hover {
+        background-color: #0f766e !important;
+        opacity: 0.9 !important;
+    }
+    
+    div[data-testid="column"] div[data-testid="column"] button[data-testid^="menu_"][data-testid$="2"]:hover {
+        background-color: #6d28d9 !important;
+        opacity: 0.9 !important;
     }
 </style>
 """, unsafe_allow_html=True)
