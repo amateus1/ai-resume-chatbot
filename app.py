@@ -96,14 +96,48 @@ st.markdown("""
         margin: 0;
         font-size: 0.9rem;
         line-height: 1;
+        border: none !important;
+        border-radius: 6px !important;
+        transition: all 0.2s ease !important;
     }
     div[data-testid="column"] {
         display: flex;
         justify-content: center;
     }
-    /* .stSelectbox > label {
-        display: none;
-    } */
+    
+    /* === NAV BUTTON COLORS === */
+    /* First button (Projects) - Blue */
+    div[data-testid="column"]:nth-child(1) .stButton > button {
+        background-color: #3b82f6 !important;
+        color: white !important;
+    }
+    div[data-testid="column"]:nth-child(1) .stButton > button:hover {
+        background-color: #2563eb !important;
+    }
+    
+    /* Second button (Experience) - Teal */
+    div[data-testid="column"]:nth-child(2) .stButton > button {
+        background-color: #0d9488 !important;
+        color: white !important;
+    }
+    div[data-testid="column"]:nth-child(2) .stButton > button:hover {
+        background-color: #0f766e !important;
+    }
+    
+    /* Third button (Skills) - Purple */
+    div[datatestid="column"]:nth-child(3) .stButton > button {
+        background-color: #7c3aed !important;
+        color: white !important;
+    }
+    div[data-testid="column"]:nth-child(3) .stButton > button:hover {
+        background-color: #6d28d9 !important;
+    }
+    
+    /* Fourth column (empty) - keep minimal */
+    div[data-testid="column"]:nth-child(4) .stButton > button {
+        background-color: #f3f4f6 !important;
+        color: #374151 !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
